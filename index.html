@@ -1,141 +1,838 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram LAN PrivateChat</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090b12">
+<title>Telegram LAN PrivateChat</title>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 430px;
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 24px;
-      padding: 25px;
-      text-align: center;
-    }
-
-    .logo {
-      width: 80px;
-      height: 80px;
-      margin: auto;
-      border-radius: 24px;
-      background: #6c5ce7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 38px;
-    }
-
-    h1 {
-      margin-bottom: 8px;
-    }
-
-    p {
-      color: #9da7b3;
-      line-height: 1.5;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      margin: 15px 0;
-      border-radius: 12px;
-      border: 1px solid #30363d;
-      background: #0d1117;
-      color: white;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border: 0;
-      border-radius: 12px;
-      background: #6c5ce7;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .status {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #63e6be;
-    }
-  </style>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:Inter,Arial,sans-serif;background:#090b12;color:#fff}
+body{overflow:hidden}
+button,input,textarea{font:inherit}
+button{border:0;cursor:pointer}
+.app{height:100%;display:flex;flex-direction:column;background:
+radial-gradient(circle at 80% 0%,rgba(108,92,231,.25),transparent 35%),
+#090b12}
+header{height:70px;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #252936;background:rgba(12,14,22,.92)}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#5b21b6);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 25px #0008}
+.title{flex:1}
+.title b{display:block;font-size:16px}
+.title span{font-size:11px;color:#8e96a8}
+.online-dot{width:9px;height:9px;border-radius:50%;background:#35d07f;box-shadow:0 0 10px #35d07f}
+main{flex:1;overflow:auto;padding:18px}
+.card{background:rgba(22,25,36,.92);border:1px solid #2a2e3d;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 12px 35px #0005}
+.hero{text-align:center;padding:28px 18px}
+.hero-icon{font-size:55px;margin-bottom:10px}
+h1{font-size:25px;margin:5px 0 10px}
+h2{font-size:16px;margin:0 0 12px}
+p{color:#9ca3b4;font-size:13px;line-height:1.55}
+input,textarea{width:100%;background:#0d1018;color:#fff;border:1px solid #303544;border-radius:13px;padding:13px;outline:none}
+input:focus,textarea:focus{border-color:#8b5cf6}
+textarea{min-height:100px;resize:none}
+.row{display:flex;gap:9px}
+.row>*{flex:1}
+.btn{padding:13px 15px;border-radius:13px;font-weight:700}
+.primary{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff}
+.secondary{background:#272b38;color:#fff}
+.danger{background:#351923;color:#ff8d9e}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:15px}
+.tab{padding:10px 4px;background:#181b26;color:#9299aa;border-radius:12px;font-size:11px}
+.tab.active{background:#6d28d9;color:#fff}
+.contact{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #292d39}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#272b38;font-weight:700}
+.contact-info{flex:1}
+.contact-info b{display:block;font-size:14px}
+.contact-info span{font-size:11px;color:#35d07f}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.status{padding:11px;border-radius:12px;background:#111521;color:#9ca3b4;font-size:12px;margin-top:10px}
+.chat{height:330px;overflow:auto;background:#0b0e15;border-radius:15px;padding:12px}
+.msg{max-width:78%;padding:10px 12px;border-radius:15px;margin:7px 0;font-size:13px;word-break:break-word}
+.me{margin-left:auto;background:#6d28d9}
+.them{background:#252a36}
+.msg img{max-width:100%;border-radius:10px}
+.chat-input{display:flex;gap:7px;margin-top:9px}
+.chat-input input{flex:1}
+.small{font-size:10px;color:#727a8c}
+.hidden{display:none!important}
+video{width:100%;background:#000;border-radius:16px;max-height:300px}
+.call-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.file-btn{position:relative;overflow:hidden}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.notice{font-size:12px;padding:12px;border-radius:12px;background:#211b31;color:#c7b9ff}
+footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
+</style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <div class="logo">🔐</div>
+<header>
+  <div class="logo">🔐</div>
+  <div class="title">
+    <b>PrivateChat</b>
+    <span>Telegram LAN • Ephemeral</span>
+  </div>
+  <div class="online-dot"></div>
+</header>
 
+<main>
+
+<div id="home">
+
+  <div class="card hero">
+    <div class="hero-icon">🔒</div>
     <h1>PrivateChat</h1>
-
     <p>
       Private one-to-one communication with
-      ephemeral encrypted sessions.
+      temporary sessions and peer-to-peer WebRTC.
     </p>
 
-    <input
-      id="username"
-      type="text"
-      placeholder="Enter username"
-      maxlength="32"
-    >
+    <input id="username" placeholder="Your username" maxlength="32">
 
-    <button onclick="startApp()">
-      Start Private Session
+    <div style="height:9px"></div>
+
+    <button class="btn primary" onclick="enterApp()">
+      Enter PrivateChat
     </button>
 
-    <div id="status" class="status">
-      Ready
+    <div class="status" id="connectionStatus">
+      Not connected
     </div>
-
   </div>
 
-  <script>
-    if (window.Telegram && Telegram.WebApp) {
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand();
+  <div class="card">
+    <h2>Privacy</h2>
+    <p>
+      This interface is designed for ephemeral sessions.
+      Closing/logout clears local session data.
+    </p>
+  </div>
+
+</div>
+
+
+<div id="dashboard" class="hidden">
+
+  <div class="tabs">
+    <button class="tab active" onclick="showPanel('contacts',this)">Contacts</button>
+    <button class="tab" onclick="showPanel('chat',this)">Chat</button>
+    <button class="tab" onclick="showPanel('call',this)">Calls</button>
+    <button class="tab" onclick="showPanel('settings',this)">Settings</button>
+  </div>
+
+
+  <!-- CONTACTS -->
+
+  <section id="contacts" class="panel">
+
+    <div class="card">
+      <h2>Add private contact</h2>
+
+      <input id="contactName" placeholder="@username">
+
+      <div style="height:9px"></div>
+
+      <button class="btn primary" onclick="addContact()">
+        Add Contact
+      </button>
+
+      <div id="contactStatus" class="status">
+        No contact selected
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Contacts</h2>
+      <div id="contactList"></div>
+    </div>
+
+  </section>
+
+
+  <!-- CHAT -->
+
+  <section id="chat" class="panel hidden">
+
+    <div class="card">
+
+      <h2 id="chatTitle">Private Chat</h2>
+
+      <div id="chatBox" class="chat"></div>
+
+      <div class="chat-input">
+        <input id="messageInput" placeholder="Private message...">
+        <button class="btn primary" onclick="sendMessage()">➤</button>
+      </div>
+
+      <div style="height:8px"></div>
+
+      <div class="row">
+
+        <label class="btn secondary file-btn">
+          🖼 Image
+          <input type="file" accept="image/*" onchange="sendImage(event)">
+        </label>
+
+        <button class="btn danger" onclick="clearSession()">
+          🗑 Clear
+        </button>
+
+      </div>
+
+      <div class="notice" style="margin-top:10px">
+        Messages and images are intended to exist only during the active session.
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CALL -->
+
+  <section id="call" class="panel hidden">
+
+    <div class="card">
+
+      <h2>One-to-One Call</h2>
+
+      <div class="call-grid">
+        <video id="localVideo" autoplay muted playsinline></video>
+        <video id="remoteVideo" autoplay playsinline></video>
+      </div>
+
+      <div style="height:10px"></div>
+
+      <div class="actions">
+
+        <button class="btn primary" onclick="startVoiceCall()">
+          🎙 Voice
+        </button>
+
+        <button class="btn primary" onclick="startVideoCall()">
+          📹 Video
+        </button>
+
+        <button class="btn secondary" onclick="stopCall()">
+          End Call
+        </button>
+
+      </div>
+
+      <div id="callStatus" class="status">
+        Calls require both users to be online and a signaling connection.
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- SETTINGS -->
+
+  <section id="settings" class="panel hidden">
+
+    <div class="card">
+
+      <h2>Session</h2>
+
+      <p>
+        Current user:
+        <b id="currentUser"></b>
+      </p>
+
+      <button class="btn danger" onclick="logout()">
+        Logout & Delete Session
+      </button>
+
+      <div id="deleteStatus" class="status">
+        Session active
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h2>Connection</h2>
+
+      <div class="status">
+        Browser: <span id="browserStatus">Ready</span>
+      </div>
+
+      <div class="status">
+        Camera: <span id="cameraStatus">Not requested</span>
+      </div>
+
+      <div class="status">
+        Microphone: <span id="micStatus">Not requested</span>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+</main>
+
+<footer>
+Telegram LAN PrivateChat • Temporary session
+</footer>
+
+</div>
+
+
+<script>
+
+/*
+==========================================================
+Telegram LAN PrivateChat
+Single-file frontend
+==========================================================
+
+IMPORTANT:
+
+A static GitHub Pages file cannot itself provide:
+- cross-device WebSocket signaling
+- server-side presence
+- automatic delivery between users
+
+Those require a backend.
+
+This frontend therefore works independently as a UI/demo
+and contains the WebRTC foundation.
+
+WebRTC media itself uses encrypted DTLS/SRTP transport.
+*/
+
+
+let currentUser = "";
+let selectedContact = "";
+let contacts = [];
+let messages = [];
+
+let peerConnection = null;
+let localStream = null;
+
+
+/* TELEGRAM */
+
+if (window.Telegram && Telegram.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+}
+
+
+/* ENTER */
+
+function enterApp(){
+
+  const username =
+    document.getElementById("username").value.trim();
+
+  if(!username){
+    alert("Please enter a username.");
+    return;
+  }
+
+  currentUser = username;
+
+  localStorage.setItem(
+    "privatechat_session",
+    JSON.stringify({
+      username: currentUser,
+      created: Date.now()
+    })
+  );
+
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+
+  document.getElementById("currentUser").textContent =
+    currentUser;
+
+  document.getElementById("connectionStatus").textContent =
+    "Session active";
+
+  document.getElementById("browserStatus").textContent =
+    "Ready";
+
+}
+
+
+/* PANEL */
+
+function showPanel(id, button){
+
+  document.querySelectorAll(".panel")
+    .forEach(x => x.classList.add("hidden"));
+
+  document.getElementById(id)
+    .classList.remove("hidden");
+
+  document.querySelectorAll(".tab")
+    .forEach(x => x.classList.remove("active"));
+
+  if(button)
+    button.classList.add("active");
+}
+
+
+/* CONTACT */
+
+function addContact(){
+
+  const name =
+    document.getElementById("contactName").value.trim();
+
+  if(!name){
+    alert("Enter a username.");
+    return;
+  }
+
+  if(contacts.includes(name)){
+    alert("Contact already exists.");
+    return;
+  }
+
+  contacts.push(name);
+
+  selectedContact = name;
+
+  renderContacts();
+
+  document.getElementById("contactStatus").textContent =
+    name + " • offline until connected to signaling";
+
+  document.getElementById("contactName").value = "";
+
+}
+
+
+function renderContacts(){
+
+  const list =
+    document.getElementById("contactList");
+
+  list.innerHTML = "";
+
+  contacts.forEach(name => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "contact";
+
+    div.innerHTML = `
+      <div class="avatar">
+        ${escapeHTML(name.charAt(0).toUpperCase())}
+      </div>
+
+      <div class="contact-info">
+        <b>${escapeHTML(name)}</b>
+        <span>● Local session</span>
+      </div>
+
+      <button class="btn secondary"
+        onclick="selectContact('${escapeAttr(name)}')">
+        Chat
+      </button>
+    `;
+
+    list.appendChild(div);
+
+  });
+
+}
+
+
+function selectContact(name){
+
+  selectedContact = name;
+
+  document.getElementById("chatTitle").textContent =
+    "Chat with " + name;
+
+  document.getElementById("contactStatus").textContent =
+    name + " selected";
+
+  showPanel("chat");
+
+}
+
+
+/* CHAT */
+
+function sendMessage(){
+
+  if(!selectedContact){
+    alert("Add/select a contact first.");
+    return;
+  }
+
+  const input =
+    document.getElementById("messageInput");
+
+  const text = input.value.trim();
+
+  if(!text) return;
+
+  messages.push({
+    from: currentUser,
+    to: selectedContact,
+    type: "text",
+    text: text,
+    time: Date.now()
+  });
+
+  renderMessages();
+
+  input.value = "";
+
+}
+
+
+function sendImage(event){
+
+  if(!selectedContact){
+    alert("Add/select a contact first.");
+    event.target.value = "";
+    return;
+  }
+
+  const file = event.target.files[0];
+
+  if(!file) return;
+
+  if(!file.type.startsWith("image/")){
+    alert("Please select an image.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(){
+
+    messages.push({
+      from: currentUser,
+      to: selectedContact,
+      type: "image",
+      data: reader.result,
+      time: Date.now()
+    });
+
+    renderMessages();
+
+  };
+
+  reader.readAsDataURL(file);
+
+  event.target.value = "";
+
+}
+
+
+function renderMessages(){
+
+  const box =
+    document.getElementById("chatBox");
+
+  box.innerHTML = "";
+
+  messages.forEach(msg => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "msg " +
+      (msg.from === currentUser ? "me" : "them");
+
+    if(msg.type === "image"){
+
+      const img =
+        document.createElement("img");
+
+      img.src = msg.data;
+
+      img.draggable = false;
+
+      div.appendChild(img);
+
+    }else{
+
+      div.textContent = msg.text;
+
     }
 
-    function startApp() {
-      const username =
-        document.getElementById("username").value.trim();
+    box.appendChild(div);
 
-      if (!username) {
-        document.getElementById("status").textContent =
-          "Please enter your username.";
-        return;
-      }
+  });
 
-      document.getElementById("status").textContent =
-        "Welcome, " + username + " ✓";
-    }
-  </script>
+  box.scrollTop = box.scrollHeight;
+
+}
+
+
+/* CAMERA / MICROPHONE */
+
+async function requestMedia(video){
+
+  try{
+
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true,
+        video:video
+      });
+
+    document.getElementById("cameraStatus").textContent =
+      video ? "Granted" : "Not requested";
+
+    document.getElementById("micStatus").textContent =
+      "Granted";
+
+    document.getElementById("localVideo").srcObject =
+      localStream;
+
+    return localStream;
+
+  }catch(error){
+
+    document.getElementById("callStatus").textContent =
+      "Permission failed: " + error.message;
+
+    return null;
+
+  }
+
+}
+
+
+/* WEBRTC */
+
+function createPeerConnection(){
+
+  peerConnection =
+    new RTCPeerConnection({
+      iceServers: []
+    });
+
+  peerConnection.ontrack = event => {
+
+    document.getElementById("remoteVideo")
+      .srcObject = event.streams[0];
+
+  };
+
+  peerConnection.onconnectionstatechange = () => {
+
+    const state =
+      peerConnection.connectionState;
+
+    document.getElementById("callStatus").textContent =
+      "WebRTC: " + state;
+
+  };
+
+  if(localStream){
+
+    localStream.getTracks().forEach(track => {
+
+      peerConnection.addTrack(
+        track,
+        localStream
+      );
+
+    });
+
+  }
+
+  return peerConnection;
+
+}
+
+
+/*
+For a real automatic call:
+
+Browser A
+   ↓
+createOffer()
+   ↓
+signaling server
+   ↓
+Browser B
+   ↓
+createAnswer()
+   ↓
+signaling server
+   ↓
+Browser A
+
+The signaling server is intentionally not embedded here.
+*/
+
+
+async function startVoiceCall(){
+
+  if(!selectedContact){
+    alert("Select a contact first.");
+    return;
+  }
+
+  const stream =
+    await requestMedia(false);
+
+  if(!stream) return;
+
+  createPeerConnection();
+
+  document.getElementById("callStatus").textContent =
+    "Microphone ready. Waiting for signaling connection.";
+
+}
+
+
+async function startVideoCall(){
+
+  if(!selectedContact){
+    alert("Select a contact first.");
+    return;
+  }
+
+  const stream =
+    await requestMedia(true);
+
+  if(!stream) return;
+
+  createPeerConnection();
+
+  document.getElementById("callStatus").textContent =
+    "Camera and microphone ready. Waiting for signaling connection.";
+
+}
+
+
+function stopCall(){
+
+  if(localStream){
+
+    localStream.getTracks().forEach(track => {
+      track.stop();
+    });
+
+    localStream = null;
+
+  }
+
+  if(peerConnection){
+
+    peerConnection.close();
+    peerConnection = null;
+
+  }
+
+  document.getElementById("localVideo").srcObject = null;
+  document.getElementById("remoteVideo").srcObject = null;
+
+  document.getElementById("callStatus").textContent =
+    "Call ended.";
+
+}
+
+
+/* DELETE SESSION */
+
+function clearSession(){
+
+  messages = [];
+
+  renderMessages();
+
+  document.getElementById("deleteStatus").textContent =
+    "Messages deleted from this browser.";
+
+}
+
+
+function logout(){
+
+  stopCall();
+
+  messages = [];
+  contacts = [];
+  selectedContact = "";
+
+  localStorage.removeItem("privatechat_session");
+
+  document.getElementById("deleteStatus").textContent =
+    "Session deleted.";
+
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("home").classList.remove("hidden");
+
+  document.getElementById("username").value = "";
+
+}
+
+
+/* BASIC PROTECTION */
+
+document.addEventListener("contextmenu", e => {
+  e.preventDefault();
+});
+
+document.addEventListener("dragstart", e => {
+  if(e.target.tagName === "IMG")
+    e.preventDefault();
+});
+
+
+document.addEventListener("visibilitychange", () => {
+
+  if(document.hidden){
+
+    document.body.style.filter =
+      "blur(8px)";
+
+  }else{
+
+    document.body.style.filter =
+      "none";
+
+  }
+
+});
+
+
+/* HELPERS */
+
+function escapeHTML(value){
+
+  return value
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+function escapeAttr(value){
+
+  return value
+    .replaceAll("\\","\\\\")
+    .replaceAll("'","\\'");
+
+}
+
+</script>
 
 </body>
 </html>
