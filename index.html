@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram LAN PrivateChat</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0d1117;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 24px;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: auto;
+      border-radius: 24px;
+      background: #6c5ce7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: #9da7b3;
+      line-height: 1.5;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 15px 0;
+      border-radius: 12px;
+      border: 1px solid #30363d;
+      background: #0d1117;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #6c5ce7;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .status {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #63e6be;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <div class="logo">🔐</div>
+
+    <h1>PrivateChat</h1>
+
+    <p>
+      Private one-to-one communication with
+      ephemeral encrypted sessions.
+    </p>
+
+    <input
+      id="username"
+      type="text"
+      placeholder="Enter username"
+      maxlength="32"
+    >
+
+    <button onclick="startApp()">
+      Start Private Session
+    </button>
+
+    <div id="status" class="status">
+      Ready
+    </div>
+
+  </div>
+
+  <script>
+    if (window.Telegram && Telegram.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+    }
+
+    function startApp() {
+      const username =
+        document.getElementById("username").value.trim();
+
+      if (!username) {
+        document.getElementById("status").textContent =
+          "Please enter your username.";
+        return;
+      }
+
+      document.getElementById("status").textContent =
+        "Welcome, " + username + " ✓";
+    }
+  </script>
+
+</body>
+</html>
