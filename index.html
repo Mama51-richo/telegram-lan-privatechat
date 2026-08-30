@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>🔢 Decision Matrix · weigh options</title>
+  <title>🔇 Sound Level Guardian · kill noise</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,569 +11,547 @@
       padding: 0;
     }
     body {
-      background: linear-gradient(145deg, #f5f7fa 0%, #e9edf5 100%);
+      background: radial-gradient(circle at 20% 20%, #0b1a2e, #030811);
       font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 12px;
       margin: 0;
+      color: #eaf0fa;
     }
-    .app-card {
-      max-width: 800px;
+    .app-shell {
+      max-width: 700px;
       width: 100%;
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 36px;
-      box-shadow: 0 25px 45px rgba(0, 10, 30, 0.18), 0 6px 12px rgba(0, 0, 0, 0.08);
-      padding: 24px 20px 28px;
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(18, 28, 46, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 42px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      padding: 24px 20px 30px;
     }
     h1 {
-      font-size: 2rem;
+      font-size: 2.1rem;
       font-weight: 650;
       letter-spacing: -0.02em;
-      color: #0a1e3c;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      padding: 0 6px;
+      gap: 12px;
+      margin-bottom: 6px;
+      color: #ffffff;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.4);
     }
-    .subhead {
-      font-size: 0.95rem;
-      color: #3c4e6b;
-      margin-bottom: 24px;
-      padding: 0 8px;
-      font-weight: 400;
-      background: rgba(255, 255, 255, 0.4);
+    .subtitle {
+      font-size: 0.9rem;
+      color: #a7bdd6;
+      margin-bottom: 22px;
+      background: rgba(255,255,255,0.05);
       display: inline-block;
       border-radius: 40px;
-      padding: 6px 16px;
+      padding: 6px 18px;
+      font-weight: 400;
     }
-    .control-grid {
+    .monitor-panel {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 34px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+    }
+    .level-row {
       display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 24px;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
     }
-    .field-group {
+    .sound-bar-container {
+      flex: 3;
+      min-width: 180px;
+    }
+    .sound-bar-bg {
+      background: #1f2b3c;
+      height: 24px;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px #00000070;
+    }
+    .sound-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+      border-radius: 30px;
+      transition: width 0.08s linear;
+    }
+    .decibel-readout {
+      font-weight: 700;
+      font-size: 1.7rem;
+      background: #0e1622;
+      padding: 8px 20px;
+      border-radius: 40px;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      min-width: 100px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .threshold-control {
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: white;
+      gap: 12px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 30px;
       padding: 8px 16px;
-      border-radius: 40px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.03);
-      flex: 1 1 200px;
+      flex-wrap: wrap;
+      margin-top: 15px;
     }
-    .field-group label {
+    .threshold-control label {
       font-weight: 600;
-      color: #1f3a5f;
+      color: #b7c9e0;
       font-size: 0.9rem;
-      white-space: nowrap;
     }
-    .field-group input {
-      border: none;
-      background: transparent;
-      padding: 8px 4px;
+    .threshold-control input {
+      width: 90px;
+      font-weight: 700;
+      background: #0e1a2b;
+      color: white;
+      border: 1px solid #3b516d;
+      border-radius: 30px;
+      padding: 10px 8px;
+      text-align: center;
       font-size: 1rem;
-      flex: 1;
-      min-width: 50px;
       outline: none;
-      font-weight: 500;
-      color: #0b1f38;
     }
-    .field-group input::placeholder {
-      color: #9aaec9;
-      font-weight: 400;
-      opacity: 0.7;
-    }
-    .btn {
-      background: #0a1e3c;
+    .toggle-btn {
+      background: #2c3e57;
       border: none;
       color: white;
-      font-weight: 600;
-      padding: 12px 22px;
+      padding: 12px 20px;
       border-radius: 40px;
-      font-size: 0.95rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: 0.2s ease;
-      box-shadow: 0 6px 14px rgba(10, 30, 60, 0.25);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      transition: 0.15s;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
       letter-spacing: 0.3px;
-      border: 1px solid #ffffff40;
+      border: 1px solid #ffffff30;
     }
-    .btn:hover {
-      background: #1c3c6e;
-      transform: scale(1.02);
-      box-shadow: 0 10px 18px rgba(10, 30, 60, 0.3);
+    .toggle-btn.active {
+      background: #b91c1c;
+      box-shadow: 0 0 16px #ef4444a0;
     }
-    .btn-outline {
-      background: #ffffffd9;
-      color: #0a1e3c;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      border: 1px solid #cbd5e1;
-    }
-    .btn-outline:hover {
-      background: #ffffff;
-      color: #0a1e3c;
-    }
-    .section-title {
-      font-weight: 600;
-      font-size: 1.2rem;
-      color: #152b4e;
-      margin: 20px 0 12px 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .option-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 12px 0 18px;
-    }
-    .option-item {
-      background: white;
-      border-radius: 28px;
-      padding: 6px 14px 6px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.02);
-      border: 1px solid #eef2f7;
-      transition: 0.1s;
-    }
-    .option-item input[type="text"] {
-      flex: 1;
-      border: none;
-      background: transparent;
-      font-size: 1rem;
-      padding: 10px 0;
-      outline: none;
-      font-weight: 500;
-      color: #1f2937;
-      min-width: 40px;
-    }
-    .option-item .weight-input {
-      width: 68px;
-      text-align: center;
-      font-weight: 600;
-      background: #f8fafc;
-      border-radius: 30px;
-      padding: 8px 6px;
-      border: 1px solid #dce3ec;
-      outline: none;
-    }
-    .remove-btn {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: #b91c1c;
-      padding: 6px 8px;
+    .alert-badge {
+      background: #dc2626;
+      color: white;
+      font-weight: 800;
+      padding: 6px 18px;
       border-radius: 40px;
-      transition: 0.1s;
-      line-height: 1;
-      font-weight: 500;
+      display: inline-block;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      animation: pulse 1s infinite;
+      box-shadow: 0 0 18px #ef4444;
     }
-    .remove-btn:hover {
-      background: #fee2e2;
-      color: #991b1b;
+    @keyframes pulse {
+      0% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.02); }
+      100% { opacity: 0.9; transform: scale(1); }
     }
-    .score-row {
+    .action-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 12px;
-      align-items: center;
+      margin: 20px 0 18px;
     }
-    .score-box {
-      background: #ffffffdb;
-      border-radius: 24px;
-      padding: 10px 16px;
-      display: flex;
+    .btn {
+      background: #1d2f44;
+      border: none;
+      color: #f0f6ff;
+      font-weight: 600;
+      padding: 13px 22px;
+      border-radius: 38px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #ffffff30;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      flex: 1 1 180px;
-      border: 1px solid #e1e8f0;
-      backdrop-filter: blur(4px);
+      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
+      flex: 1 1 160px;
+      justify-content: center;
     }
-    .score-box input {
-      width: 70px;
-      font-weight: 700;
-      text-align: center;
-      border: 1px solid #cfddee;
-      background: white;
-      border-radius: 30px;
-      padding: 8px 6px;
-      font-size: 0.95rem;
+    .btn:hover {
+      background: #2b4261;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.6);
     }
-    .result-panel {
-      margin-top: 26px;
-      background: #0f2547;
-      border-radius: 36px;
-      padding: 18px 22px;
-      color: white;
-      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.2);
+    .btn-kill {
+      background: #991b1b;
+      border-color: #ef4444a0;
     }
-    .result-title {
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      opacity: 0.9;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      text-transform: uppercase;
+    .btn-kill:hover {
+      background: #b91c1c;
     }
-    .rank-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .log-area {
+      background: #0a121f;
+      border-radius: 24px;
+      padding: 14px 18px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      border: 1px solid #2f4058;
     }
-    .rank-item {
-      background: rgba(255, 255, 255, 0.07);
-      border-radius: 30px;
-      padding: 10px 18px;
+    .log-entry {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      border: 1px solid rgba(255,255,255,0.15);
-      font-weight: 500;
-      backdrop-filter: blur(2px);
+      padding: 6px 4px;
+      border-bottom: 1px solid #1f2e42;
+      color: #cbd5e1;
     }
-    .rank-name {
-      font-size: 1rem;
-      letter-spacing: 0.2px;
+    .log-entry.warning {
+      color: #fecaca;
+      font-weight: 600;
     }
-    .rank-score {
-      font-weight: 700;
-      background: #1f4b8a;
-      padding: 4px 14px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-    }
-    .rank-badge {
-      background: #facc15;
-      color: #0a1e3c;
-      font-weight: 800;
-      border-radius: 40px;
-      padding: 2px 12px;
-      font-size: 0.75rem;
-      margin-left: 8px;
-    }
-    .empty-msg {
-      text-align: center;
-      color: #4b5c7a;
-      padding: 12px;
-      font-style: italic;
-    }
-    .action-bar {
+    .soundscape-toggle {
       display: flex;
+      align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-      justify-content: flex-start;
+      background: #152238;
+      border-radius: 30px;
+      padding: 8px 18px;
+      margin-top: 14px;
+      cursor: pointer;
+      transition: 0.1s;
+      border: 1px solid #3b4f6b;
+    }
+    .soundscape-toggle input {
+      width: 20px;
+      height: 20px;
+      accent-color: #22c55e;
     }
     hr {
+      border: 0.5px solid #2f4058;
       margin: 18px 0 6px;
-      border: 0.5px solid #d0dae8;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: #22c55e;
+      border-radius: 20px;
+      margin-right: 6px;
+      box-shadow: 0 0 8px #22c55e;
     }
   </style>
 </head>
 <body>
-<div class="app-card">
-  <h1>⚖️ Decision Matrix</h1>
-  <div class="subhead">📱 Score your options · fully functional</div>
+<div class="app-shell">
+  <h1>🔇 Sound Guardian</h1>
+  <div class="subtitle">📱 kill loud noise · monitor & alert</div>
 
-  <!-- Add option & weight -->
-  <div class="control-grid">
-    <div class="field-group">
-      <label>➕ Option</label>
-      <input type="text" id="newOptionName" placeholder="e.g. Tokyo" value="Kyoto" />
+  <!-- Live monitor -->
+  <div class="monitor-panel">
+    <div class="level-row">
+      <div class="sound-bar-container">
+        <div class="sound-bar-bg">
+          <div class="sound-bar-fill" id="soundBarFill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="decibel-readout" id="dbReadout">-∞ dB</div>
     </div>
-    <div class="field-group">
-      <label>⚖️ Weight</label>
-      <input type="number" id="newOptionWeight" min="1" max="10" step="0.5" value="5" />
+    <div class="threshold-control">
+      <label>🔊 Alert threshold:</label>
+      <input type="number" id="thresholdInput" min="40" max="120" step="1" value="85" />
+      <span style="font-weight:600;">dB</span>
     </div>
-    <button class="btn" id="addOptionBtn">➕ Add</button>
+    <div id="alertIndicator" style="margin-top:12px; min-height:32px;"></div>
   </div>
 
-  <!-- Option list -->
-  <div class="section-title">
-    <span>📋 Options & weights</span>
-    <span style="font-size:0.8rem; background:#e2e8f0; padding:4px 10px; border-radius:30px;">weight 1–10</span>
-  </div>
-  <div id="optionsContainer" class="option-list">
-    <!-- dynamic options -->
+  <!-- Actions -->
+  <div class="action-grid">
+    <button class="btn btn-kill" id="killSoundBtn">🔇 MUTE OUTPUT</button>
+    <button class="btn" id="simulateLoudBtn">📢 Simulate loud</button>
+    <button class="btn" id="resetAlertBtn">🔄 Reset</button>
   </div>
 
-  <!-- Score input -->
-  <div class="section-title">
-    <span>🎯 Rate each option (0–10)</span>
-  </div>
-  <div id="scoreInputContainer" class="score-row">
-    <!-- dynamic score fields -->
+  <!-- Soundscape -->
+  <div class="soundscape-toggle">
+    <input type="checkbox" id="soundscapeCheckbox" />
+    <label for="soundscapeCheckbox" style="font-weight:500;">🎵 Play calming soundscape (white noise)</label>
   </div>
 
+  <!-- Log -->
   <hr />
-
-  <div class="action-bar">
-    <button class="btn" id="calculateBtn">📊 Calculate ranking</button>
-    <button class="btn btn-outline" id="resetBtn">🔄 Reset demo</button>
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-weight:600;">📋 Alert log</span>
+    <span id="logCount" style="background:#1e2d42; padding:4px 12px; border-radius:20px;">0</span>
   </div>
-
-  <!-- Result panel -->
-  <div class="result-panel" id="resultPanel">
-    <div class="result-title">🏆 Decision ranking</div>
-    <div id="rankingList" class="rank-list">
-      <div class="empty-msg">Add options and calculate</div>
-    </div>
+  <div class="log-area" id="logContainer">
+    <div style="color:#64748b; text-align:center;">— monitoring ready —</div>
   </div>
 </div>
 
 <script>
   (function() {
     // ---------- STATE ----------
-    let options = [];  // [{ id, name, weight }]
+    let isMuted = false;             // "kill sound" manual mute (visual + audio gain)
+    let threshold = 85;              // dB alert threshold
+    let currentDb = -Infinity;       // measured volume (approximated from mic)
+    let audioContext = null;
+    let analyser = null;
+    let microphone = null;
+    let stream = null;
+    let isListening = false;
+    let soundscapeGain = null;
+    let soundscapeActive = false;
+    let audioBufferForNoise = null;
+    let noiseSource = null;
+    let alertLogs = [];
+    
+    // DOM elements
+    const dbReadout = document.getElementById('dbReadout');
+    const soundBarFill = document.getElementById('soundBarFill');
+    const thresholdInput = document.getElementById('thresholdInput');
+    const alertIndicator = document.getElementById('alertIndicator');
+    const killSoundBtn = document.getElementById('killSoundBtn');
+    const simulateLoudBtn = document.getElementById('simulateLoudBtn');
+    const resetAlertBtn = document.getElementById('resetAlertBtn');
+    const soundscapeCheckbox = document.getElementById('soundscapeCheckbox');
+    const logContainer = document.getElementById('logContainer');
+    const logCount = document.getElementById('logCount');
 
-    // ---------- DOM elements ----------
-    const optionsContainer = document.getElementById('optionsContainer');
-    const scoreInputContainer = document.getElementById('scoreInputContainer');
-    const newOptionName = document.getElementById('newOptionName');
-    const newOptionWeight = document.getElementById('newOptionWeight');
-    const addOptionBtn = document.getElementById('addOptionBtn');
-    const calculateBtn = document.getElementById('calculateBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const rankingList = document.getElementById('rankingList');
-
-    // ---------- Helper: generate unique id ----------
-    function generateId() {
-      return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    }
-
-    // ---------- Render option list (weights) ----------
-    function renderOptionList() {
-      if (!optionsContainer) return;
-      if (options.length === 0) {
-        optionsContainer.innerHTML = `<div class="empty-msg" style="grid-column:1/-1;">No options yet. Add one above ⬆️</div>`;
-        return;
-      }
-      let html = '';
-      options.forEach((opt, index) => {
-        html += `
-          <div class="option-item" data-option-id="${opt.id}">
-            <input type="text" class="option-name-input" value="${escapeHtml(opt.name)}" placeholder="Option name" data-id="${opt.id}" />
-            <span style="color:#475569; font-weight:500; font-size:0.8rem;">⚖️</span>
-            <input type="number" class="weight-input" min="1" max="10" step="0.5" value="${opt.weight}" data-id="${opt.id}" />
-            <button class="remove-btn" data-id="${opt.id}" aria-label="Remove">✕</button>
-          </div>
-        `;
-      });
-      optionsContainer.innerHTML = html;
-
-      // Attach event listeners for dynamic inputs inside option list
-      document.querySelectorAll('.option-name-input').forEach(input => {
-        input.addEventListener('change', function(e) {
-          const id = this.dataset.id;
-          const newName = this.value.trim() || 'Unnamed';
-          const opt = options.find(o => o.id === id);
-          if (opt) {
-            opt.name = newName;
-            // update score input label dynamically
-            renderScoreInputs();
-          }
-        });
-      });
-
-      document.querySelectorAll('.weight-input').forEach(input => {
-        input.addEventListener('change', function(e) {
-          const id = this.dataset.id;
-          let newWeight = parseFloat(this.value);
-          if (isNaN(newWeight)) newWeight = 1;
-          newWeight = Math.min(10, Math.max(1, newWeight));
-          this.value = newWeight; // enforce bounds
-          const opt = options.find(o => o.id === id);
-          if (opt) {
-            opt.weight = newWeight;
-          }
-        });
-      });
-
-      document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          const id = this.dataset.id;
-          options = options.filter(o => o.id !== id);
-          renderOptionList();
-          renderScoreInputs();
-        });
-      });
-    }
-
-    // ---------- Render score inputs for each option ----------
-    function renderScoreInputs() {
-      if (!scoreInputContainer) return;
-      if (options.length === 0) {
-        scoreInputContainer.innerHTML = `<div class="empty-msg" style="width:100%;">Add options to rate them</div>`;
-        return;
-      }
-      let html = '';
-      options.forEach(opt => {
-        html += `
-          <div class="score-box">
-            <span style="font-weight:600; color:#1e293b;">🎯 ${escapeHtml(opt.name)}</span>
-            <input type="number" class="score-input" min="0" max="10" step="0.5" placeholder="0-10" data-id="${opt.id}" value="7" />
-          </div>
-        `;
-      });
-      scoreInputContainer.innerHTML = html;
-
-      // attach listeners to clamp
-      document.querySelectorAll('.score-input').forEach(input => {
-        input.addEventListener('change', function() {
-          let val = parseFloat(this.value);
-          if (isNaN(val)) val = 0;
-          val = Math.min(10, Math.max(0, val));
-          this.value = val;
-        });
-      });
-    }
-
-    // ---------- escape html for safe injection ----------
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>"]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        if (m === '"') return '&quot;';
-        return m;
-      });
-    }
-
-    // ---------- Calculate and display ranking ----------
-    function calculateRanking() {
-      if (options.length === 0) {
-        rankingList.innerHTML = `<div class="empty-msg">No options to rank</div>`;
-        return;
-      }
-
-      // Gather score inputs from DOM
-      const scoreMap = new Map(); // id -> numeric score
-      document.querySelectorAll('.score-input').forEach(input => {
-        const id = input.dataset.id;
-        let score = parseFloat(input.value);
-        if (isNaN(score)) score = 0;
-        score = Math.min(10, Math.max(0, score));
-        scoreMap.set(id, score);
-      });
-
-      // Build ranking array
-      const ranked = options.map(opt => {
-        const score = scoreMap.has(opt.id) ? scoreMap.get(opt.id) : 0;
-        const weight = opt.weight || 1;
-        const weightedScore = score * weight;
-        return {
-          id: opt.id,
-          name: opt.name || 'Unnamed',
-          weight: weight,
-          score: score,
-          weightedScore: weightedScore
-        };
-      });
-
-      // Sort descending by weightedScore
-      ranked.sort((a, b) => b.weightedScore - a.weightedScore);
-
-      // Render ranking list
-      if (ranked.length === 0) {
-        rankingList.innerHTML = `<div class="empty-msg">No data</div>`;
-        return;
-      }
-
-      let rankHtml = '';
-      ranked.forEach((item, index) => {
-        const medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `#${index+1}`));
-        rankHtml += `
-          <div class="rank-item">
-            <span class="rank-name">${medal} ${escapeHtml(item.name)} <span style="opacity:0.7; font-size:0.8rem;">(w:${item.weight})</span></span>
-            <span class="rank-score">${item.weightedScore.toFixed(1)}</span>
-            <span class="rank-badge">${item.score.toFixed(1)} × ${item.weight}</span>
-          </div>
-        `;
-      });
-      rankingList.innerHTML = rankHtml;
-    }
-
-    // ---------- Add new option ----------
-    function addOption() {
-      const nameInput = newOptionName.value.trim();
-      const weightVal = parseFloat(newOptionWeight.value);
-      const name = nameInput || 'Option ' + (options.length + 1);
-      let weight = isNaN(weightVal) ? 5 : weightVal;
-      weight = Math.min(10, Math.max(1, weight));
-      
-      const newOpt = {
-        id: generateId(),
-        name: name,
-        weight: weight
-      };
-      options.push(newOpt);
-      
-      // Clear input for next
-      newOptionName.value = '';
-      newOptionWeight.value = '5';
-      
-      renderOptionList();
-      renderScoreInputs();
-      // reset ranking area
-      rankingList.innerHTML = `<div class="empty-msg">Options updated. Press calculate.</div>`;
-    }
-
-    // ---------- Reset to demo data ----------
-    function resetDemo() {
-      options = [
-        { id: 'demo1', name: 'Kyoto', weight: 8 },
-        { id: 'demo2', name: 'Lisbon', weight: 7 },
-        { id: 'demo3', name: 'Bali', weight: 6 }
-      ];
-      newOptionName.value = '';
-      newOptionWeight.value = '5';
-      renderOptionList();
-      renderScoreInputs();
-      // set some sample scores (after rendering)
-      requestAnimationFrame(() => {
-        const scoreInputs = document.querySelectorAll('.score-input');
-        if (scoreInputs.length >= 3) {
-          scoreInputs[0].value = '9';
-          scoreInputs[1].value = '8';
-          scoreInputs[2].value = '7';
+    // ---------- Microphone & analyser setup ----------
+    async function initAudioMonitoring() {
+      if (isListening) return;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
-      });
-      rankingList.innerHTML = `<div class="empty-msg">Demo loaded. Calculate to rank.</div>`;
+        await audioContext.resume();
+        microphone = audioContext.createMediaStreamSource(stream);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 1024;
+        analyser.smoothingTimeConstant = 0.75;
+        microphone.connect(analyser);
+        isListening = true;
+        startVolumeLoop();
+        addLog('🎤 Microphone active', false);
+      } catch (err) {
+        console.warn('Microphone access denied or unavailable.', err);
+        alertIndicator.innerHTML = `<span style="color:#fbbf24;">⚠️ Microphone unavailable — using simulation mode.</span>`;
+        // fallback simulation loop for testing without mic
+        startSimulatedMonitoring();
+      }
+    }
+
+    // Fallback simulated volume (for testing on devices without mic)
+    function startSimulatedMonitoring() {
+      if (isListening) return;
+      isListening = true;
+      setInterval(() => {
+        if (!isListening) return;
+        // simulate background noise 30-90 dB
+        const simulatedDb = 40 + Math.random() * 35;
+        updateVolume(simulatedDb);
+      }, 300);
+      addLog('⚙️ Simulation mode (no mic)', false);
+    }
+
+    // Main volume loop using analyser
+    function startVolumeLoop() {
+      const update = () => {
+        if (!isListening) return;
+        if (analyser && !isMuted) {
+          const dataArray = new Uint8Array(analyser.fftSize);
+          analyser.getByteTimeDomainData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            const val = (dataArray[i] - 128) / 128;
+            sum += val * val;
+          }
+          const rms = Math.sqrt(sum / dataArray.length);
+          // Map RMS to dB approximation (0 .. ~100 dB)
+          let db = Math.round(20 * Math.log10(rms + 0.0001) + 90);
+          if (db < 20) db = 20;
+          if (db > 110) db = 110;
+          updateVolume(db);
+        }
+        requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+    }
+
+    // Update UI with current volume, check threshold
+    function updateVolume(db) {
+      currentDb = db;
+      const displayDb = isFinite(db) ? db : 0;
+      dbReadout.textContent = `${Math.max(0, Math.round(displayDb))} dB`;
+      const percent = Math.min(100, Math.max(0, ((displayDb - 20) / (110 - 20)) * 100));
+      soundBarFill.style.width = percent + '%';
+      
+      if (displayDb >= threshold && !isMuted) {
+        showAlert(displayDb);
+      } else {
+        alertIndicator.innerHTML = `<span style="color:#a7bdd6;"><span class="status-dot"></span>Normal level</span>`;
+      }
+    }
+
+    // Alert trigger
+    function showAlert(db) {
+      alertIndicator.innerHTML = `<span class="alert-badge">🔔 NOISE ALERT! ${Math.round(db)} dB exceeds ${threshold} dB</span>`;
+      addLog(`⚠️ Loud noise detected: ${Math.round(db)} dB`, true);
+      // optional haptic feedback if supported
+      if (navigator.vibrate) navigator.vibrate(200);
+    }
+
+    // Add log entry
+    function addLog(message, isWarning = false) {
+      const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const entryDiv = document.createElement('div');
+      entryDiv.className = `log-entry ${isWarning ? 'warning' : ''}`;
+      entryDiv.innerHTML = `<span>${timestamp}</span><span>${message}</span>`;
+      logContainer.prepend(entryDiv);
+      alertLogs.push({ timestamp, message, isWarning });
+      logCount.textContent = alertLogs.length;
+      // keep log area manageable
+      if (logContainer.children.length > 30) {
+        logContainer.removeChild(logContainer.lastChild);
+      }
+    }
+
+    // Manual mute / kill sound (simulates blocking output)
+    function toggleKillSound() {
+      isMuted = !isMuted;
+      if (isMuted) {
+        killSoundBtn.textContent = '🔇 MUTED (click to unmute)';
+        killSoundBtn.style.background = '#7f1d1d';
+        addLog('🔇 Sound output killed (visual mute)', false);
+        alertIndicator.innerHTML = `<span style="color:#fbbf24;">⛔ Muted — all audio ignored</span>`;
+        if (audioContext && microphone) {
+          // Disconnect microphone from analyser to stop reading? We keep monitoring but visually muted.
+          // Actual kill output: we can't stop physical speaker, but we simulate silence.
+          if (soundscapeGain) soundscapeGain.gain.value = 0;
+        }
+      } else {
+        killSoundBtn.textContent = '🔇 MUTE OUTPUT';
+        killSoundBtn.style.background = '#991b1b';
+        addLog('🔊 Sound unmuted', false);
+        if (soundscapeGain && soundscapeActive) soundscapeGain.gain.value = 0.6;
+      }
+    }
+
+    // Simulate loud event (for testing)
+    function simulateLoud() {
+      const simulatedDb = 92 + Math.random() * 18; // 92-110 dB
+      updateVolume(simulatedDb);
+      if (simulatedDb >= threshold) showAlert(simulatedDb);
+      addLog(`📢 Simulated loud: ${Math.round(simulatedDb)} dB`, true);
+    }
+
+    // Reset threshold & clear alerts
+    function resetAlerts() {
+      threshold = parseInt(thresholdInput.value) || 85;
+      alertLogs = [];
+      logContainer.innerHTML = `<div style="color:#64748b; text-align:center;">— log cleared —</div>`;
+      logCount.textContent = '0';
+      alertIndicator.innerHTML = `<span style="color:#a7bdd6;">✨ Reset complete</span>`;
+      if (!isMuted) {
+        isMuted = false;
+        killSoundBtn.textContent = '🔇 MUTE OUTPUT';
+      }
+      addLog('🔄 Reset threshold & logs', false);
+    }
+
+    // Soundscape white noise generator
+    function toggleSoundscape() {
+      soundscapeActive = soundscapeCheckbox.checked;
+      if (soundscapeActive) {
+        startSoundscape();
+        addLog('🎵 Calming soundscape ON', false);
+      } else {
+        stopSoundscape();
+        addLog('🎵 Soundscape OFF', false);
+      }
+    }
+
+    function startSoundscape() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (!audioBufferForNoise) {
+        const bufferSize = 2 * audioContext.sampleRate;
+        audioBufferForNoise = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = audioBufferForNoise.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+      }
+      if (!noiseSource) {
+        noiseSource = audioContext.createBufferSource();
+        noiseSource.buffer = audioBufferForNoise;
+        noiseSource.loop = true;
+        soundscapeGain = audioContext.createGain();
+        soundscapeGain.gain.value = 0.6;
+        noiseSource.connect(soundscapeGain);
+        soundscapeGain.connect(audioContext.destination);
+        noiseSource.start();
+      } else {
+        if (soundscapeGain) soundscapeGain.gain.value = 0.6;
+      }
+    }
+
+    function stopSoundscape() {
+      if (soundscapeGain) {
+        soundscapeGain.gain.value = 0;
+      }
+      if (noiseSource) {
+        try { noiseSource.stop(); } catch(e) {}
+        noiseSource.disconnect();
+        noiseSource = null;
+        soundscapeGain = null;
+      }
     }
 
     // ---------- Event listeners ----------
-    addOptionBtn.addEventListener('click', addOption);
-    calculateBtn.addEventListener('click', calculateRanking);
-    resetBtn.addEventListener('click', resetDemo);
-
-    // Allow Enter key on name field to add option
-    newOptionName.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        addOption();
-      }
+    thresholdInput.addEventListener('change', function() {
+      let val = parseInt(this.value);
+      if (isNaN(val)) val = 85;
+      val = Math.min(120, Math.max(40, val));
+      this.value = val;
+      threshold = val;
+      addLog(`🔔 Threshold set to ${threshold} dB`, false);
     });
 
-    // ---------- Initial load with demo data ----------
-    resetDemo();
+    killSoundBtn.addEventListener('click', toggleKillSound);
+    simulateLoudBtn.addEventListener('click', simulateLoud);
+    resetAlertBtn.addEventListener('click', resetAlerts);
+    soundscapeCheckbox.addEventListener('change', toggleSoundscape);
+
+    // Initialize microphone on first interaction (browser policy)
+    window.addEventListener('load', () => {
+      // attempt microphone after a short delay or click gesture
+      document.body.addEventListener('click', function initAudioOnFirstClick() {
+        if (!isListening) {
+          initAudioMonitoring();
+        }
+        document.body.removeEventListener('click', initAudioOnFirstClick);
+      }, { once: true });
+
+      // also try immediately (may fail if not allowed)
+      setTimeout(() => {
+        if (!isListening) {
+          initAudioMonitoring().catch(() => {});
+        }
+      }, 500);
+    });
+
+    // initial threshold value
+    threshold = parseInt(thresholdInput.value) || 85;
+    addLog('🔔 Threshold: 85 dB · tap to enable mic', false);
   })();
 </script>
 </body>
