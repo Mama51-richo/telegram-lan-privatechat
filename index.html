@@ -81,6 +81,7 @@ video{width:100%;background:#000;border-radius:16px;max-height:300px;object-fit:
 .file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .notice{font-size:12px;padding:12px;border-radius:12px;background:#211b31;color:#c7b9ff}
 footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
+.bot-badge{display:inline-block;background:#6d28d9;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;margin-left:6px;font-weight:600}
 
 /* Notification System */
 #notification-container{position:fixed;top:80px;right:20px;z-index:9999;max-width:340px;width:100%;pointer-events:none}
@@ -106,6 +107,15 @@ footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
 .permission-box h3{margin-top:0}
 .permission-box .btn{margin-top:15px}
 
+/* Add contact modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:9997;padding:20px}
+.modal-overlay.hidden{display:none}
+.modal-box{background:#1a1d2e;border:1px solid #2a2e3d;border-radius:20px;padding:30px;max-width:450px;width:100%}
+.modal-box h3{margin-top:0;margin-bottom:15px}
+.modal-box .row{margin-bottom:12px}
+.modal-box .input-group{margin-bottom:15px}
+.modal-box .input-group label{display:block;font-size:12px;color:#8e96a8;margin-bottom:5px}
+
 /* Responsive */
 @media(max-width:600px){.call-grid{grid-template-columns:1fr}.call-grid #local-video{max-height:150px;order:2}.call-grid #remote-video{order:1}.tabs{grid-template-columns:repeat(2,1fr)}.header .title span{font-size:9px}#notification-container{right:10px;left:10px;max-width:none}}
 </style>
@@ -118,7 +128,7 @@ footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
 <header>
   <div class="logo">🔐</div>
   <div class="title">
-    <b>PrivateChat</b>
+    <b>PrivateChat <span class="bot-badge">@mama51R</span></b>
     <span>Telegram LAN • Ephemeral</span>
   </div>
   <div class="online-dot" id="connectionDot" title="Connection status"></div>
@@ -150,10 +160,11 @@ footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
   </div>
 
   <div class="card">
-    <h2>Privacy</h2>
+    <h2>🤖 Bot Integration</h2>
     <p>
-      This interface is designed for ephemeral sessions.
-      Closing/logout clears local session data.
+      This app is integrated with <strong>@mama51R</strong> bot.
+      Add contacts by their <strong>Telegram User ID</strong> or 
+      <strong>Phone Number</strong> to start private sessions.
     </p>
   </div>
 
@@ -175,11 +186,20 @@ footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
   <section id="contacts" class="panel">
 
     <div class="card">
-      <h2>Add private contact</h2>
+      <h2>Add contact via Telegram</h2>
+      <p style="font-size:12px;color:#8e96a8;margin-bottom:12px;">
+        Enter a Telegram User ID or Phone Number to find and add a contact
+      </p>
+
+      <div class="input-group" style="margin-bottom:12px;">
+        <label style="font-size:12px;color:#8e96a8;">User ID (numeric) or Phone Number</label>
+        <input id="contactIdInput" placeholder="e.g., 123456789 or +1234567890">
+      </div>
 
       <div class="row">
-        <input id="contactName" placeholder="@username">
-        <button class="btn primary" onclick="addContact()" style="flex:0 0 auto;">Add</button>
+        <button class="btn primary" onclick="addContactByTelegram()" style="flex:1;">
+          🔍 Find Contact
+        </button>
       </div>
 
       <div style="height:9px"></div>
@@ -329,6 +349,16 @@ footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
 
     </div>
 
+    <div class="card">
+      <h2>🤖 Bot Info</h2>
+      <div class="status info">
+        Bot: <strong>@mama51R</strong>
+      </div>
+      <div class="status info">
+        Contact lookup: By User ID or Phone Number
+      </div>
+    </div>
+
   </section>
 
 </div>
@@ -336,7 +366,7 @@ footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
 </main>
 
 <footer>
-Telegram LAN PrivateChat • Temporary session • 🔒 End-to-end encrypted
+Telegram LAN PrivateChat • Temporary session • 🔒 End-to-end encrypted • 🤖 @mama51R
 </footer>
 
 </div>
@@ -354,19 +384,53 @@ Telegram LAN PrivateChat • Temporary session • 🔒 End-to-end encrypted
   </div>
 </div>
 
+<!-- Add Contact Modal -->
+<div id="addContactModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>🔍 Find Telegram Contact</h3>
+    <p style="font-size:13px;color:#9ca3b4;margin-bottom:15px;">
+      Enter the Telegram User ID or Phone Number of the person you want to connect with.
+    </p>
+    
+    <div class="input-group">
+      <label>User ID (numeric) or Phone Number</label>
+      <input id="modalContactInput" placeholder="e.g., 123456789 or +1234567890">
+    </div>
+    
+    <div class="input-group">
+      <label>Display Name (optional)</label>
+      <input id="modalDisplayName" placeholder="Custom name for this contact">
+    </div>
+    
+    <div class="row" style="margin-top:15px;">
+      <button class="btn primary" onclick="confirmAddContact()" style="flex:1;">
+        ✅ Add Contact
+      </button>
+      <button class="btn secondary" onclick="closeAddContactModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 /*
 ==========================================================
 Telegram LAN PrivateChat
-Enhanced with Notification System & Detailed Status
+Enhanced with @mama51R Bot Integration
+- Add contacts by Telegram User ID or Phone Number
+- Bot-powered contact discovery
+- Simulated bot responses for demo
 ==========================================================
 */
 
 // --- State ---
 let currentUser = "";
+let currentUserId = null;
 let selectedContact = "";
 let contacts = [];
+let contactDetails = {}; // Store details for each contact
 let messages = [];
 let sessionStartTime = null;
 let peerConnection = null;
@@ -374,6 +438,74 @@ let localStream = null;
 let isInCall = false;
 let callType = null; // 'voice' or 'video'
 let permissionCallback = null;
+let telegramUser = null;
+
+// --- Telegram Bot Integration ---
+
+// Simulated bot API for @mama51R
+const BotAPI = {
+  // In a real implementation, this would call the actual bot API
+  findUser: (identifier) => {
+    return new Promise((resolve) => {
+      // Simulate network delay
+      setTimeout(() => {
+        // Check if it's a numeric user ID or phone number
+        const isUserId = /^\d+$/.test(identifier);
+        const isPhone = /^\+?\d{7,15}$/.test(identifier);
+        
+        if (!isUserId && !isPhone) {
+          resolve({ 
+            success: false, 
+            error: 'Invalid identifier. Please enter a numeric User ID or Phone Number.' 
+          });
+          return;
+        }
+        
+        // Simulate finding a user
+        const mockUsers = {
+          '123456789': { id: 123456789, username: 'john_doe', first_name: 'John', last_name: 'Doe', phone: '+1234567890' },
+          '987654321': { id: 987654321, username: 'jane_smith', first_name: 'Jane', last_name: 'Smith', phone: '+1987654321' },
+          '+1234567890': { id: 123456789, username: 'john_doe', first_name: 'John', last_name: 'Doe', phone: '+1234567890' },
+          '+1987654321': { id: 987654321, username: 'jane_smith', first_name: 'Jane', last_name: 'Smith', phone: '+1987654321' }
+        };
+        
+        // Check if this identifier is in our mock database or looks like a valid contact
+        let user = mockUsers[identifier];
+        let userId = identifier;
+        
+        // If not in mock, generate a plausible user
+        if (!user && (isUserId || isPhone)) {
+          const id = isUserId ? parseInt(identifier) : Math.floor(Math.random() * 1000000000);
+          user = {
+            id: id,
+            username: `user_${id}`,
+            first_name: `User${id}`,
+            last_name: '',
+            phone: isPhone ? identifier : `+${Math.floor(Math.random() * 1000000000)}`
+          };
+        }
+        
+        if (user) {
+          resolve({
+            success: true,
+            user: user
+          });
+        } else {
+          resolve({
+            success: false,
+            error: 'User not found. Please check the ID or phone number.'
+          });
+        }
+      }, 800);
+    });
+  },
+  
+  // Send notification via bot
+  sendNotification: (userId, message) => {
+    console.log(`[Bot @mama51R] Notification to ${userId}:`, message);
+    return Promise.resolve({ success: true });
+  }
+};
 
 // --- Notification System ---
 
@@ -385,7 +517,8 @@ function showNotification(title, text, type = 'info', duration = 5000) {
     info: 'ℹ️',
     success: '✅',
     warning: '⚠️',
-    error: '❌'
+    error: '❌',
+    bot: '🤖'
   };
   
   notif.className = `notification-item ${type}`;
@@ -445,30 +578,6 @@ function updateConnectionStatus(status, message) {
     `<span id="statusIcon">${icon.textContent}</span> ${message || status}`;
 }
 
-function updateContactStatus(contact, status, statusText) {
-  const statusMap = {
-    online: { dot: 'online', text: '🟢 Online' },
-    offline: { dot: 'offline', text: '⚪ Offline' },
-    unknown: { dot: 'unknown', text: '❓ Unknown' },
-    calling: { dot: 'online', text: '📞 Calling...' },
-    'in-call': { dot: 'online', text: '📞 In call' }
-  };
-  
-  const info = statusMap[status] || statusMap.unknown;
-  
-  // Update contact list items
-  document.querySelectorAll('.contact').forEach(el => {
-    const name = el.dataset.contact;
-    if (name === contact) {
-      const statusEl = el.querySelector('.status-text');
-      const dotEl = el.querySelector('.status-dot');
-      if (statusEl) {
-        statusEl.innerHTML = `<span class="status-dot ${info.dot}"></span> ${info.text}`;
-      }
-    }
-  });
-}
-
 // --- Enter App ---
 
 function enterApp() {
@@ -482,15 +591,31 @@ function enterApp() {
   currentUser = username;
   sessionStartTime = new Date();
   
+  // Get Telegram user data if available
+  if (window.Telegram && Telegram.WebApp) {
+    const tgData = Telegram.WebApp.initDataUnsafe;
+    if (tgData && tgData.user) {
+      telegramUser = tgData.user;
+      currentUserId = tgData.user.id;
+      showNotification('Telegram Connected', `Welcome ${tgData.user.first_name}! Your ID: ${tgData.user.id}`, 'success', 3000);
+    }
+  }
+  
+  // Generate a mock user ID if not from Telegram
+  if (!currentUserId) {
+    currentUserId = Math.floor(Math.random() * 1000000000);
+  }
+  
   localStorage.setItem("privatechat_session", JSON.stringify({
     username: currentUser,
+    userId: currentUserId,
     created: Date.now()
   }));
   
   document.getElementById("home").classList.add("hidden");
   document.getElementById("dashboard").classList.remove("hidden");
   
-  document.getElementById("currentUser").textContent = currentUser;
+  document.getElementById("currentUser").textContent = `${currentUser} (ID: ${currentUserId})`;
   document.getElementById("sessionStart").textContent = sessionStartTime.toLocaleString();
   document.getElementById("browserStatus").textContent = "Connected";
   
@@ -519,35 +644,93 @@ function showPanel(id, button) {
   if(button) button.classList.add("active");
 }
 
-// --- Contacts ---
+// --- Add Contact by Telegram ---
 
-function addContact() {
-  const name = document.getElementById("contactName").value.trim();
-  
-  if(!name) {
-    showNotification('Error', 'Please enter a username.', 'warning');
+function addContactByTelegram() {
+  const input = document.getElementById('contactIdInput').value.trim();
+  if (!input) {
+    showNotification('Input Required', 'Please enter a User ID or Phone Number.', 'warning');
     return;
   }
   
-  if(name === currentUser) {
-    showNotification('Error', 'You cannot add yourself as a contact.', 'error');
+  // Show the modal with pre-filled input
+  document.getElementById('modalContactInput').value = input;
+  document.getElementById('modalDisplayName').value = '';
+  document.getElementById('addContactModal').classList.remove('hidden');
+}
+
+function closeAddContactModal() {
+  document.getElementById('addContactModal').classList.add('hidden');
+  document.getElementById('modalContactInput').value = '';
+  document.getElementById('modalDisplayName').value = '';
+}
+
+async function confirmAddContact() {
+  const identifier = document.getElementById('modalContactInput').value.trim();
+  const displayName = document.getElementById('modalDisplayName').value.trim();
+  
+  if (!identifier) {
+    showNotification('Error', 'Please enter a User ID or Phone Number.', 'warning');
     return;
   }
   
-  if(contacts.includes(name)) {
-    showNotification('Duplicate', `${name} is already in your contacts.`, 'warning');
-    return;
+  // Show loading state
+  const btn = document.querySelector('#addContactModal .btn.primary');
+  const originalText = btn.textContent;
+  btn.textContent = '🔍 Searching...';
+  btn.disabled = true;
+  
+  try {
+    // Query the bot for the user
+    const result = await BotAPI.findUser(identifier);
+    
+    if (result.success && result.user) {
+      const user = result.user;
+      const contactId = user.id.toString();
+      const contactName = displayName || user.username || user.first_name || `User ${contactId}`;
+      
+      // Check if already in contacts
+      if (contacts.includes(contactId)) {
+        showNotification('Already Added', `${contactName} is already in your contacts.`, 'warning');
+        closeAddContactModal();
+        return;
+      }
+      
+      // Add contact
+      contacts.push(contactId);
+      contactDetails[contactId] = {
+        id: contactId,
+        username: user.username,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        phone: user.phone,
+        displayName: contactName,
+        status: 'unknown',
+        added: Date.now()
+      };
+      
+      renderContacts();
+      
+      document.getElementById("contactStatusText").textContent = `${contactName} added to contacts (ID: ${contactId})`;
+      document.getElementById("contactStatusIcon").textContent = '✅';
+      document.getElementById("contactStatus").className = 'status success';
+      
+      showNotification('Contact Added', `${contactName} added successfully via @mama51R bot!`, 'success', 4000);
+      
+      // Send notification via bot
+      BotAPI.sendNotification(contactId, `${currentUser} added you as a contact on PrivateChat.`);
+      
+      closeAddContactModal();
+    } else {
+      showNotification('User Not Found', result.error || 'Could not find this Telegram user.', 'error');
+    }
+  } catch (error) {
+    showNotification('Error', 'Failed to lookup user. Please try again.', 'error');
+    console.error('Bot lookup error:', error);
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
-  
-  contacts.push(name);
-  renderContacts();
-  
-  document.getElementById("contactName").value = "";
-  document.getElementById("contactStatusText").textContent = `${name} added to contacts`;
-  document.getElementById("contactStatusIcon").textContent = '✅';
-  document.getElementById("contactStatus").className = 'status success';
-  
-  showNotification('Contact Added', `You can now chat with ${name}`, 'success');
 }
 
 function renderContacts() {
@@ -557,47 +740,52 @@ function renderContacts() {
   document.getElementById("contactCount").textContent = `(${contacts.length})`;
   
   if (contacts.length === 0) {
-    list.innerHTML = '<div class="status info" style="margin:0;text-align:center;padding:20px;">No contacts yet. Add someone to start chatting.</div>';
+    list.innerHTML = '<div class="status info" style="margin:0;text-align:center;padding:20px;">No contacts yet. Add someone via Telegram ID or phone number.</div>';
     return;
   }
   
-  contacts.forEach(name => {
+  contacts.forEach(id => {
+    const details = contactDetails[id] || { displayName: `User ${id}`, id: id };
+    const displayName = details.displayName || `User ${id}`;
+    const status = details.status || 'unknown';
+    const statusText = status === 'online' ? '🟢 Online' : status === 'offline' ? '⚪ Offline' : '❓ Unknown';
+    const statusDot = status === 'online' ? 'online' : status === 'offline' ? 'offline' : 'unknown';
+    
     const div = document.createElement("div");
     div.className = "contact";
-    div.dataset.contact = name;
+    div.dataset.contact = id;
     div.innerHTML = `
       <div class="avatar">
-        ${escapeHTML(name.charAt(0).toUpperCase())}
+        ${escapeHTML(displayName.charAt(0).toUpperCase())}
       </div>
       <div class="contact-info">
-        <b>${escapeHTML(name)}</b>
+        <b>${escapeHTML(displayName)}</b>
         <span class="status-text">
-          <span class="status-dot unknown"></span> 
-          <span class="status-label">Unknown</span>
+          <span class="status-dot ${statusDot}"></span> 
+          <span class="status-label">${statusText}</span>
         </span>
+        <div style="font-size:9px;color:#727a8c;margin-top:2px;">ID: ${id}</div>
       </div>
-      <button class="btn secondary" onclick="selectContact('${escapeAttr(name)}')">
+      <button class="btn secondary" onclick="selectContact('${escapeAttr(id)}')">
         💬
       </button>
     `;
     list.appendChild(div);
   });
-  
-  // Set initial status for all contacts
-  contacts.forEach(name => {
-    updateContactStatus(name, 'unknown', 'Unknown');
-  });
 }
 
-function selectContact(name) {
-  if (!contacts.includes(name)) {
-    showNotification('Error', `${name} is not in your contacts.`, 'error');
+function selectContact(id) {
+  if (!contacts.includes(id)) {
+    showNotification('Error', 'Contact not found.', 'error');
     return;
   }
   
-  selectedContact = name;
-  document.getElementById("chatTitle").textContent = `💬 Chat with ${name}`;
-  document.getElementById("contactStatusText").textContent = `Chatting with ${name}`;
+  selectedContact = id;
+  const details = contactDetails[id] || { displayName: `User ${id}` };
+  const displayName = details.displayName || `User ${id}`;
+  
+  document.getElementById("chatTitle").textContent = `💬 Chat with ${displayName}`;
+  document.getElementById("contactStatusText").textContent = `Chatting with ${displayName} (ID: ${id})`;
   document.getElementById("contactStatusIcon").textContent = '💬';
   document.getElementById("contactStatus").className = 'status info';
   
@@ -608,7 +796,7 @@ function selectContact(name) {
   showPanel("chat");
   renderMessages();
   
-  showNotification('Chat Opened', `You are now chatting with ${name}`, 'info', 3000);
+  showNotification('Chat Opened', `You are now chatting with ${displayName}`, 'info', 3000);
 }
 
 // --- Chat ---
@@ -626,6 +814,7 @@ function sendMessage() {
   
   const msg = {
     from: currentUser,
+    fromId: currentUserId,
     to: selectedContact,
     type: "text",
     text: text,
@@ -637,13 +826,16 @@ function sendMessage() {
   renderMessages();
   input.value = "";
   
-  // Simulate delivery notification
-  showNotification('Message Sent', `Message to ${selectedContact} delivered securely 🔒`, 'success', 2000);
+  const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
+  showNotification('Message Sent', `Message to ${contactName} delivered securely 🔒`, 'success', 2000);
+  
+  // Simulate bot notification
+  BotAPI.sendNotification(selectedContact, `New message from ${currentUser}: ${text.substring(0, 30)}...`);
   
   // Simulate reply after delay
-  if (Math.random() > 0.5) {
+  if (Math.random() > 0.4) {
     setTimeout(() => {
-      const replies = ['👍', 'Got it!', 'Thanks!', 'Interesting...', 'Sure!', '🔥', '✅'];
+      const replies = ['👍', 'Got it!', 'Thanks!', 'Interesting...', 'Sure!', '🔥', '✅', 'Will do!', 'Great!', 'Let me think...'];
       const reply = replies[Math.floor(Math.random() * replies.length)];
       messages.push({
         from: selectedContact,
@@ -654,7 +846,8 @@ function sendMessage() {
         encrypted: true
       });
       renderMessages();
-      showNotification('New Message', `${selectedContact}: ${reply}`, 'info', 3000);
+      const replyName = contactDetails[selectedContact]?.displayName || selectedContact;
+      showNotification('New Message', `${replyName}: ${reply}`, 'info', 3000);
     }, 1500 + Math.random() * 2500);
   }
 }
@@ -691,7 +884,8 @@ function sendImage(event) {
       encrypted: true
     });
     renderMessages();
-    showNotification('Image Sent', `Image sent to ${selectedContact} 🔒`, 'success', 2000);
+    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
+    showNotification('Image Sent', `Image sent to ${contactName} 🔒`, 'success', 2000);
   };
   reader.readAsDataURL(file);
   event.target.value = "";
@@ -701,7 +895,9 @@ function renderMessages() {
   const box = document.getElementById("chatBox");
   const filtered = messages.filter(m => 
     (m.from === currentUser && m.to === selectedContact) ||
-    (m.from === selectedContact && m.to === currentUser)
+    (m.from === selectedContact && m.to === currentUser) ||
+    (m.fromId === currentUserId && m.to === selectedContact) ||
+    (m.from === selectedContact && m.to === currentUserId)
   );
   
   if (filtered.length === 0) {
@@ -711,8 +907,9 @@ function renderMessages() {
   
   box.innerHTML = "";
   filtered.forEach(msg => {
+    const isMe = msg.from === currentUser || msg.fromId === currentUserId;
     const div = document.createElement("div");
-    div.className = "msg " + (msg.from === currentUser ? "me" : "them");
+    div.className = "msg " + (isMe ? "me" : "them");
     
     if(msg.type === "image") {
       const img = document.createElement("img");
@@ -744,12 +941,12 @@ function renderMessages() {
 // --- Invite ---
 
 function generateInviteLink() {
-  if (!currentUser) {
+  if (!currentUser || !currentUserId) {
     showNotification('Error', 'Please log in first.', 'warning');
     return;
   }
   
-  const link = `${window.location.origin}?invite=${encodeURIComponent(currentUser)}`;
+  const link = `${window.location.origin}?invite=${encodeURIComponent(currentUserId)}`;
   
   if (navigator.clipboard) {
     navigator.clipboard.writeText(link).then(() => {
@@ -761,7 +958,7 @@ function generateInviteLink() {
     showNotification('Invite Link', `Share this link: ${link}`, 'info', 5000);
   }
   
-  document.getElementById("contactName").value = link;
+  document.getElementById("contactIdInput").value = link;
 }
 
 // --- Media & Calls ---
@@ -824,7 +1021,6 @@ function createPeerConnection() {
   
   peerConnection.onicecandidate = event => {
     if (event.candidate) {
-      // In a real implementation, this would be sent via signaling server
       console.log('ICE Candidate:', event.candidate);
     }
   };
@@ -866,10 +1062,13 @@ async function startVoiceCall() {
     document.getElementById("videoCallBtn").disabled = true;
     document.getElementById("endCallBtn").disabled = false;
     
-    // In a real implementation, offer would be sent via signaling server
     console.log('Call offer created:', offer);
     
-    showNotification('Call Initiated', `Voice call to ${selectedContact}...`, 'info', 3000);
+    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
+    showNotification('Call Initiated', `Voice call to ${contactName}...`, 'info', 3000);
+    
+    // Send call notification via bot
+    BotAPI.sendNotification(selectedContact, `${currentUser} is calling you.`);
   } catch(error) {
     showNotification('Call Failed', error.message, 'error');
     stopCall();
@@ -905,7 +1104,12 @@ async function startVideoCall() {
     document.getElementById("endCallBtn").disabled = false;
     
     console.log('Video call offer created:', offer);
-    showNotification('Call Initiated', `Video call to ${selectedContact}...`, 'info', 3000);
+    
+    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
+    showNotification('Call Initiated', `Video call to ${contactName}...`, 'info', 3000);
+    
+    // Send call notification via bot
+    BotAPI.sendNotification(selectedContact, `${currentUser} is video calling you.`);
   } catch(error) {
     showNotification('Call Failed', error.message, 'error');
     stopCall();
@@ -943,19 +1147,24 @@ function stopCall() {
 function clearSession() {
   const count = messages.filter(m => 
     (m.from === currentUser && m.to === selectedContact) ||
-    (m.from === selectedContact && m.to === currentUser)
+    (m.from === selectedContact && m.to === currentUser) ||
+    (m.fromId === currentUserId && m.to === selectedContact) ||
+    (m.from === selectedContact && m.to === currentUserId)
   ).length;
   
   if (count > 0) {
     messages = messages.filter(m => 
       !((m.from === currentUser && m.to === selectedContact) ||
-        (m.from === selectedContact && m.to === currentUser))
+        (m.from === selectedContact && m.to === currentUser) ||
+        (m.fromId === currentUserId && m.to === selectedContact) ||
+        (m.from === selectedContact && m.to === currentUserId))
     );
     renderMessages();
     document.getElementById("deleteStatus").textContent = `🗑️ ${count} messages deleted from this session.`;
     document.getElementById("deleteStatus").className = "status success";
     
-    showNotification('Cleared', `${count} messages deleted from chat with ${selectedContact}`, 'info', 3000);
+    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
+    showNotification('Cleared', `${count} messages deleted from chat with ${contactName}`, 'info', 3000);
   } else {
     showNotification('Nothing to Clear', 'No messages to delete.', 'info', 2000);
   }
@@ -967,6 +1176,7 @@ function logout() {
   const messageCount = messages.length;
   messages = [];
   contacts = [];
+  contactDetails = {};
   selectedContact = "";
   
   localStorage.removeItem("privatechat_session");
@@ -1012,15 +1222,11 @@ function dismissPermissions() {
 
 // --- Browser Protections ---
 
-// Disable right-click
 document.addEventListener("contextmenu", e => e.preventDefault());
-
-// Disable drag for images
 document.addEventListener("dragstart", e => {
   if(e.target.tagName === "IMG") e.preventDefault();
 });
 
-// Blur on tab change
 document.addEventListener("visibilitychange", () => {
   if(document.hidden) {
     document.body.style.filter = "blur(8px)";
@@ -1047,6 +1253,9 @@ if (saved) {
     const data = JSON.parse(saved);
     if (data.username && Date.now() - data.created < 24 * 60 * 60 * 1000) {
       document.getElementById("username").value = data.username;
+      if (data.userId) {
+        currentUserId = data.userId;
+      }
     }
   } catch(e) {}
 }
@@ -1057,9 +1266,14 @@ if (window.Telegram && Telegram.WebApp) {
   Telegram.WebApp.expand();
   
   const tgUser = Telegram.WebApp.initDataUnsafe?.user;
-  if (tgUser?.username) {
-    document.getElementById("username").value = tgUser.username;
-    showNotification('Telegram Detected', `Welcome ${tgUser.first_name || tgUser.username}!`, 'success', 3000);
+  if (tgUser) {
+    telegramUser = tgUser;
+    currentUserId = tgUser.id;
+    document.getElementById("username").value = tgUser.username || tgUser.first_name || '';
+    showNotification('Telegram Detected', `Welcome ${tgUser.first_name || tgUser.username}! ID: ${tgUser.id}`, 'success', 3000);
+    
+    // Auto-fill contact search with Telegram info
+    document.getElementById("contactIdInput").placeholder = "Enter User ID or Phone Number";
   }
 }
 
@@ -1084,24 +1298,35 @@ function escapeAttr(value) {
 
 // --- Dev Tools ---
 
-// Display connection status for demo
 setTimeout(() => {
   updateConnectionStatus('online', 'Connected to signaling (simulated)');
-  showNotification('System Ready', 'All features are ready. Add contacts to start.', 'success', 3000);
+  showNotification('System Ready', 'All features are ready. Add contacts via Telegram ID or phone.', 'success', 3000);
 }, 1000);
 
-// Show browser info
 console.log('🔒 Telegram LAN PrivateChat loaded');
+console.log('🤖 Bot: @mama51R');
 console.log('📱 Session:', saved ? 'Restored' : 'New');
-console.log('🌐 Browser:', navigator.userAgent);
+console.log('👤 Current User ID:', currentUserId || 'Not set');
 
-// --- Keyboard Shortcuts ---
+// Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.key === 'k') {
     e.preventDefault();
     document.getElementById('messageInput').focus();
   }
+  if (e.key === 'Escape') {
+    closeAddContactModal();
+  }
 });
+
+// Handle invite from URL
+const urlParams = new URLSearchParams(window.location.search);
+const inviteId = urlParams.get('invite');
+if (inviteId) {
+  showNotification('Invite Received', `You've been invited by User ID: ${inviteId}`, 'info', 5000);
+  // Auto-fill the contact input
+  document.getElementById('contactIdInput').value = inviteId;
+}
 
 </script>
 
