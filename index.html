@@ -1,1334 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#090b12">
-<title>Telegram LAN PrivateChat</title>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;font-family:Inter,Arial,sans-serif;background:#090b12;color:#fff}
-body{overflow:hidden}
-button,input,textarea{font:inherit}
-button{border:0;cursor:pointer}
-.app{height:100%;display:flex;flex-direction:column;background:
-radial-gradient(circle at 80% 0%,rgba(108,92,231,.25),transparent 35%),
-#090b12}
-header{height:70px;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #252936;background:rgba(12,14,22,.92);position:relative}
-.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#5b21b6);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 25px #0008}
-.title{flex:1}
-.title b{display:block;font-size:16px}
-.title span{font-size:11px;color:#8e96a8}
-.online-dot{width:9px;height:9px;border-radius:50%;background:#35d07f;box-shadow:0 0 10px #35d07f;transition:all .3s}
-.online-dot.offline{background:#ff4757;box-shadow:0 0 10px #ff4757}
-.online-dot.connecting{background:#ffa502;box-shadow:0 0 10px #ffa502;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-main{flex:1;overflow:auto;padding:18px}
-.card{background:rgba(22,25,36,.92);border:1px solid #2a2e3d;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 12px 35px #0005}
-.hero{text-align:center;padding:28px 18px}
-.hero-icon{font-size:55px;margin-bottom:10px}
-h1{font-size:25px;margin:5px 0 10px}
-h2{font-size:16px;margin:0 0 12px}
-p{color:#9ca3b4;font-size:13px;line-height:1.55}
-input,textarea{width:100%;background:#0d1018;color:#fff;border:1px solid #303544;border-radius:13px;padding:13px;outline:none}
-input:focus,textarea:focus{border-color:#8b5cf6}
-textarea{min-height:100px;resize:none}
-.row{display:flex;gap:9px}
-.row>*{flex:1}
-.btn{padding:13px 15px;border-radius:13px;font-weight:700;transition:all .2s}
-.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 15px rgba(0,0,0,.3)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.primary{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff}
-.secondary{background:#272b38;color:#fff}
-.danger{background:#351923;color:#ff8d9e}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:15px}
-.tab{padding:10px 4px;background:#181b26;color:#9299aa;border-radius:12px;font-size:11px;transition:all .2s}
-.tab.active{background:#6d28d9;color:#fff}
-.tab:hover:not(.active){background:#222736}
-.contact{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #292d39;transition:background .2s;border-radius:8px;padding:10px 12px}
-.contact:hover{background:rgba(255,255,255,.04)}
-.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#272b38;font-weight:700;flex-shrink:0}
-.contact-info{flex:1;min-width:0}
-.contact-info b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.contact-info .status-text{font-size:11px;display:flex;align-items:center;gap:5px}
-.contact-info .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%}
-.contact-info .status-dot.online{background:#35d07f}
-.contact-info .status-dot.offline{background:#ff4757}
-.contact-info .status-dot.unknown{background:#8e96a8}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.status{padding:11px;border-radius:12px;background:#111521;color:#9ca3b4;font-size:12px;margin-top:10px;border-left:3px solid transparent}
-.status.info{border-left-color:#8b5cf6}
-.status.success{border-left-color:#35d07f}
-.status.warning{border-left-color:#ffa502}
-.status.error{border-left-color:#ff4757}
-.chat{height:330px;overflow:auto;background:#0b0e15;border-radius:15px;padding:12px}
-.msg{max-width:78%;padding:10px 12px;border-radius:15px;margin:7px 0;font-size:13px;word-break:break-word;position:relative}
-.msg.me{margin-left:auto;background:#6d28d9}
-.msg.them{background:#252a36}
-.msg .msg-time{font-size:9px;opacity:.5;margin-top:4px;display:block}
-.msg img{max-width:100%;border-radius:10px;display:block}
-.msg .encryption-badge{font-size:9px;color:#35d07f;display:block;margin-top:4px}
-.chat-input{display:flex;gap:7px;margin-top:9px}
-.chat-input input{flex:1}
-.small{font-size:10px;color:#727a8c}
-.hidden{display:none!important}
-video{width:100%;background:#000;border-radius:16px;max-height:300px;object-fit:cover}
-.call-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.file-btn{position:relative;overflow:hidden}
-.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.notice{font-size:12px;padding:12px;border-radius:12px;background:#211b31;color:#c7b9ff}
-footer{text-align:center;color:#555c6c;font-size:10px;padding:8px}
-.bot-badge{display:inline-block;background:#6d28d9;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;margin-left:6px;font-weight:600}
-
-/* Notification System */
-#notification-container{position:fixed;top:80px;right:20px;z-index:9999;max-width:340px;width:100%;pointer-events:none}
-.notification-item{background:rgba(22,25,36,.95);backdrop-filter:blur(10px);border:1px solid #2a2e3d;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 10px 30px rgba(0,0,0,.5);pointer-events:auto;animation:slideIn .3s ease;display:flex;align-items:flex-start;gap:10px}
-.notification-item.info{border-left:3px solid #8b5cf6}
-.notification-item.success{border-left:3px solid #35d07f}
-.notification-item.warning{border-left:3px solid #ffa502}
-.notification-item.error{border-left:3px solid #ff4757}
-.notification-item .notif-icon{font-size:18px;flex-shrink:0;margin-top:2px}
-.notification-item .notif-content{flex:1;min-width:0}
-.notification-item .notif-title{font-weight:600;font-size:13px;display:block}
-.notification-item .notif-text{font-size:12px;color:#9ca3b4;display:block;margin-top:2px}
-.notification-item .notif-time{font-size:10px;color:#727a8c;display:block;margin-top:4px}
-.notification-item .notif-close{background:transparent;color:#727a8c;padding:4px 6px;font-size:16px;cursor:pointer;flex-shrink:0}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-.notification-item.removing{animation:slideOut .3s ease forwards}
-@keyframes slideOut{to{transform:translateX(100%);opacity:0}}
-
-/* Permission request overlay */
-.permission-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:9998;padding:20px}
-.permission-overlay.hidden{display:none}
-.permission-box{background:#1a1d2e;border:1px solid #2a2e3d;border-radius:20px;padding:30px;max-width:400px;width:100%;text-align:center}
-.permission-box h3{margin-top:0}
-.permission-box .btn{margin-top:15px}
-
-/* Add contact modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:9997;padding:20px}
-.modal-overlay.hidden{display:none}
-.modal-box{background:#1a1d2e;border:1px solid #2a2e3d;border-radius:20px;padding:30px;max-width:450px;width:100%}
-.modal-box h3{margin-top:0;margin-bottom:15px}
-.modal-box .row{margin-bottom:12px}
-.modal-box .input-group{margin-bottom:15px}
-.modal-box .input-group label{display:block;font-size:12px;color:#8e96a8;margin-bottom:5px}
-
-/* Responsive */
-@media(max-width:600px){.call-grid{grid-template-columns:1fr}.call-grid #local-video{max-height:150px;order:2}.call-grid #remote-video{order:1}.tabs{grid-template-columns:repeat(2,1fr)}.header .title span{font-size:9px}#notification-container{right:10px;left:10px;max-width:none}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>🔢 Decision Matrix · weigh options</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: linear-gradient(145deg, #f5f7fa 0%, #e9edf5 100%);
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      margin: 0;
+    }
+    .app-card {
+      max-width: 800px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 36px;
+      box-shadow: 0 25px 45px rgba(0, 10, 30, 0.18), 0 6px 12px rgba(0, 0, 0, 0.08);
+      padding: 24px 20px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: #0a1e3c;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 0 6px;
+    }
+    .subhead {
+      font-size: 0.95rem;
+      color: #3c4e6b;
+      margin-bottom: 24px;
+      padding: 0 8px;
+      font-weight: 400;
+      background: rgba(255, 255, 255, 0.4);
+      display: inline-block;
+      border-radius: 40px;
+      padding: 6px 16px;
+    }
+    .control-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .field-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 40px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+      flex: 1 1 200px;
+    }
+    .field-group label {
+      font-weight: 600;
+      color: #1f3a5f;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    .field-group input {
+      border: none;
+      background: transparent;
+      padding: 8px 4px;
+      font-size: 1rem;
+      flex: 1;
+      min-width: 50px;
+      outline: none;
+      font-weight: 500;
+      color: #0b1f38;
+    }
+    .field-group input::placeholder {
+      color: #9aaec9;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+    .btn {
+      background: #0a1e3c;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 6px 14px rgba(10, 30, 60, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.3px;
+      border: 1px solid #ffffff40;
+    }
+    .btn:hover {
+      background: #1c3c6e;
+      transform: scale(1.02);
+      box-shadow: 0 10px 18px rgba(10, 30, 60, 0.3);
+    }
+    .btn-outline {
+      background: #ffffffd9;
+      color: #0a1e3c;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      border: 1px solid #cbd5e1;
+    }
+    .btn-outline:hover {
+      background: #ffffff;
+      color: #0a1e3c;
+    }
+    .section-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #152b4e;
+      margin: 20px 0 12px 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0 18px;
+    }
+    .option-item {
+      background: white;
+      border-radius: 28px;
+      padding: 6px 14px 6px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.02);
+      border: 1px solid #eef2f7;
+      transition: 0.1s;
+    }
+    .option-item input[type="text"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      padding: 10px 0;
+      outline: none;
+      font-weight: 500;
+      color: #1f2937;
+      min-width: 40px;
+    }
+    .option-item .weight-input {
+      width: 68px;
+      text-align: center;
+      font-weight: 600;
+      background: #f8fafc;
+      border-radius: 30px;
+      padding: 8px 6px;
+      border: 1px solid #dce3ec;
+      outline: none;
+    }
+    .remove-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #b91c1c;
+      padding: 6px 8px;
+      border-radius: 40px;
+      transition: 0.1s;
+      line-height: 1;
+      font-weight: 500;
+    }
+    .remove-btn:hover {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: center;
+    }
+    .score-box {
+      background: #ffffffdb;
+      border-radius: 24px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 180px;
+      border: 1px solid #e1e8f0;
+      backdrop-filter: blur(4px);
+    }
+    .score-box input {
+      width: 70px;
+      font-weight: 700;
+      text-align: center;
+      border: 1px solid #cfddee;
+      background: white;
+      border-radius: 30px;
+      padding: 8px 6px;
+      font-size: 0.95rem;
+    }
+    .result-panel {
+      margin-top: 26px;
+      background: #0f2547;
+      border-radius: 36px;
+      padding: 18px 22px;
+      color: white;
+      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.2);
+    }
+    .result-title {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rank-item {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 30px;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.15);
+      font-weight: 500;
+      backdrop-filter: blur(2px);
+    }
+    .rank-name {
+      font-size: 1rem;
+      letter-spacing: 0.2px;
+    }
+    .rank-score {
+      font-weight: 700;
+      background: #1f4b8a;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+    }
+    .rank-badge {
+      background: #facc15;
+      color: #0a1e3c;
+      font-weight: 800;
+      border-radius: 40px;
+      padding: 2px 12px;
+      font-size: 0.75rem;
+      margin-left: 8px;
+    }
+    .empty-msg {
+      text-align: center;
+      color: #4b5c7a;
+      padding: 12px;
+      font-style: italic;
+    }
+    .action-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      justify-content: flex-start;
+    }
+    hr {
+      margin: 18px 0 6px;
+      border: 0.5px solid #d0dae8;
+    }
+  </style>
 </head>
-
 <body>
+<div class="app-card">
+  <h1>⚖️ Decision Matrix</h1>
+  <div class="subhead">📱 Score your options · fully functional</div>
 
-<div class="app">
-
-<header>
-  <div class="logo">🔐</div>
-  <div class="title">
-    <b>PrivateChat <span class="bot-badge">@mama51R</span></b>
-    <span>Telegram LAN • Ephemeral</span>
-  </div>
-  <div class="online-dot" id="connectionDot" title="Connection status"></div>
-</header>
-
-<main>
-
-<div id="home">
-
-  <div class="card hero">
-    <div class="hero-icon">🔒</div>
-    <h1>PrivateChat</h1>
-    <p>
-      Private one-to-one communication with
-      temporary sessions and peer-to-peer WebRTC.
-    </p>
-
-    <input id="username" placeholder="Your username" maxlength="32">
-
-    <div style="height:9px"></div>
-
-    <button class="btn primary" onclick="enterApp()" id="enterBtn">
-      Enter PrivateChat
-    </button>
-
-    <div class="status info" id="connectionStatus">
-      <span id="statusIcon">⚪</span> Not connected
+  <!-- Add option & weight -->
+  <div class="control-grid">
+    <div class="field-group">
+      <label>➕ Option</label>
+      <input type="text" id="newOptionName" placeholder="e.g. Tokyo" value="Kyoto" />
     </div>
+    <div class="field-group">
+      <label>⚖️ Weight</label>
+      <input type="number" id="newOptionWeight" min="1" max="10" step="0.5" value="5" />
+    </div>
+    <button class="btn" id="addOptionBtn">➕ Add</button>
   </div>
 
-  <div class="card">
-    <h2>🤖 Bot Integration</h2>
-    <p>
-      This app is integrated with <strong>@mama51R</strong> bot.
-      Add contacts by their <strong>Telegram User ID</strong> or 
-      <strong>Phone Number</strong> to start private sessions.
-    </p>
+  <!-- Option list -->
+  <div class="section-title">
+    <span>📋 Options & weights</span>
+    <span style="font-size:0.8rem; background:#e2e8f0; padding:4px 10px; border-radius:30px;">weight 1–10</span>
+  </div>
+  <div id="optionsContainer" class="option-list">
+    <!-- dynamic options -->
   </div>
 
-</div>
-
-
-<div id="dashboard" class="hidden">
-
-  <div class="tabs">
-    <button class="tab active" onclick="showPanel('contacts',this)">👥 Contacts</button>
-    <button class="tab" onclick="showPanel('chat',this)">💬 Chat</button>
-    <button class="tab" onclick="showPanel('call',this)">📞 Calls</button>
-    <button class="tab" onclick="showPanel('settings',this)">⚙️ Settings</button>
+  <!-- Score input -->
+  <div class="section-title">
+    <span>🎯 Rate each option (0–10)</span>
+  </div>
+  <div id="scoreInputContainer" class="score-row">
+    <!-- dynamic score fields -->
   </div>
 
-
-  <!-- CONTACTS -->
-
-  <section id="contacts" class="panel">
-
-    <div class="card">
-      <h2>Add contact via Telegram</h2>
-      <p style="font-size:12px;color:#8e96a8;margin-bottom:12px;">
-        Enter a Telegram User ID or Phone Number to find and add a contact
-      </p>
-
-      <div class="input-group" style="margin-bottom:12px;">
-        <label style="font-size:12px;color:#8e96a8;">User ID (numeric) or Phone Number</label>
-        <input id="contactIdInput" placeholder="e.g., 123456789 or +1234567890">
-      </div>
-
-      <div class="row">
-        <button class="btn primary" onclick="addContactByTelegram()" style="flex:1;">
-          🔍 Find Contact
-        </button>
-      </div>
-
-      <div style="height:9px"></div>
-
-      <button class="btn secondary" onclick="generateInviteLink()" style="width:100%">
-        🔗 Generate Invite Link
-      </button>
-
-      <div id="contactStatus" class="status info">
-        <span id="contactStatusIcon">👤</span> <span id="contactStatusText">No contact selected</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Contacts <span id="contactCount" style="font-size:12px;color:#727a8c;font-weight:400;">(0)</span></h2>
-      <div id="contactList"></div>
-    </div>
-
-  </section>
-
-
-  <!-- CHAT -->
-
-  <section id="chat" class="panel hidden">
-
-    <div class="card">
-
-      <h2 id="chatTitle">💬 Private Chat</h2>
-
-      <div id="chatBox" class="chat"></div>
-
-      <div class="chat-input">
-        <input id="messageInput" placeholder="Private message..." onkeypress="if(event.key==='Enter')sendMessage()">
-        <button class="btn primary" onclick="sendMessage()" id="sendBtn">➤</button>
-      </div>
-
-      <div style="height:8px"></div>
-
-      <div class="row">
-
-        <label class="btn secondary file-btn">
-          🖼 Image
-          <input type="file" accept="image/*" onchange="sendImage(event)">
-        </label>
-
-        <button class="btn secondary" onclick="clearSession()">
-          🗑 Clear
-        </button>
-
-      </div>
-
-      <div class="notice" style="margin-top:10px">
-        🔒 Messages are encrypted and ephemeral. They exist only during this session.
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- CALL -->
-
-  <section id="call" class="panel hidden">
-
-    <div class="card">
-
-      <h2>📞 One-to-One Call</h2>
-
-      <div class="call-grid">
-        <video id="localVideo" autoplay muted playsinline></video>
-        <video id="remoteVideo" autoplay playsinline></video>
-      </div>
-
-      <div style="height:10px"></div>
-
-      <div class="actions">
-
-        <button class="btn primary" onclick="startVoiceCall()" id="voiceCallBtn">
-          🎙 Voice
-        </button>
-
-        <button class="btn primary" onclick="startVideoCall()" id="videoCallBtn">
-          📹 Video
-        </button>
-
-        <button class="btn danger" onclick="stopCall()" id="endCallBtn">
-          ⏹ End Call
-        </button>
-
-      </div>
-
-      <div id="callStatus" class="status info">
-        <span id="callStatusIcon">📡</span> <span id="callStatusText">Calls require both users to be online</span>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- SETTINGS -->
-
-  <section id="settings" class="panel hidden">
-
-    <div class="card">
-
-      <h2>👤 Session</h2>
-
-      <p>
-        Current user:
-        <b id="currentUser"></b>
-      </p>
-
-      <div class="status info" style="margin:10px 0">
-        Session started: <span id="sessionStart"></span>
-      </div>
-
-      <button class="btn danger" onclick="logout()" style="width:100%">
-        🚪 Logout & Delete Session
-      </button>
-
-      <div id="deleteStatus" class="status success">
-        ✅ Session active
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h2>🔌 Connection</h2>
-
-      <div class="status info">
-        Browser: <span id="browserStatus">Ready</span>
-      </div>
-
-      <div class="status info">
-        Camera: <span id="cameraStatus">Not requested</span>
-      </div>
-
-      <div class="status info">
-        Microphone: <span id="micStatus">Not requested</span>
-      </div>
-
-      <div class="status info">
-        WebRTC: <span id="webrtcStatus">Not connected</span>
-      </div>
-
-    </div>
-
-    <div class="card">
-      <h2>🤖 Bot Info</h2>
-      <div class="status info">
-        Bot: <strong>@mama51R</strong>
-      </div>
-      <div class="status info">
-        Contact lookup: By User ID or Phone Number
-      </div>
-    </div>
-
-  </section>
-
-</div>
-
-</main>
-
-<footer>
-Telegram LAN PrivateChat • Temporary session • 🔒 End-to-end encrypted • 🤖 @mama51R
-</footer>
-
-</div>
-
-<!-- Notification Container -->
-<div id="notification-container"></div>
-
-<!-- Permission Overlay -->
-<div id="permissionOverlay" class="permission-overlay hidden">
-  <div class="permission-box">
-    <h3>🔐 Permissions Required</h3>
-    <p id="permissionText">Camera and microphone access needed for calls.</p>
-    <button class="btn primary" onclick="acceptPermissions()">Allow</button>
-    <button class="btn secondary" onclick="dismissPermissions()" style="margin-left:10px;">Skip</button>
+  <hr />
+
+  <div class="action-bar">
+    <button class="btn" id="calculateBtn">📊 Calculate ranking</button>
+    <button class="btn btn-outline" id="resetBtn">🔄 Reset demo</button>
   </div>
-</div>
 
-<!-- Add Contact Modal -->
-<div id="addContactModal" class="modal-overlay hidden">
-  <div class="modal-box">
-    <h3>🔍 Find Telegram Contact</h3>
-    <p style="font-size:13px;color:#9ca3b4;margin-bottom:15px;">
-      Enter the Telegram User ID or Phone Number of the person you want to connect with.
-    </p>
-    
-    <div class="input-group">
-      <label>User ID (numeric) or Phone Number</label>
-      <input id="modalContactInput" placeholder="e.g., 123456789 or +1234567890">
-    </div>
-    
-    <div class="input-group">
-      <label>Display Name (optional)</label>
-      <input id="modalDisplayName" placeholder="Custom name for this contact">
-    </div>
-    
-    <div class="row" style="margin-top:15px;">
-      <button class="btn primary" onclick="confirmAddContact()" style="flex:1;">
-        ✅ Add Contact
-      </button>
-      <button class="btn secondary" onclick="closeAddContactModal()">
-        Cancel
-      </button>
+  <!-- Result panel -->
+  <div class="result-panel" id="resultPanel">
+    <div class="result-title">🏆 Decision ranking</div>
+    <div id="rankingList" class="rank-list">
+      <div class="empty-msg">Add options and calculate</div>
     </div>
   </div>
 </div>
 
 <script>
+  (function() {
+    // ---------- STATE ----------
+    let options = [];  // [{ id, name, weight }]
 
-/*
-==========================================================
-Telegram LAN PrivateChat
-Enhanced with @mama51R Bot Integration
-- Add contacts by Telegram User ID or Phone Number
-- Bot-powered contact discovery
-- Simulated bot responses for demo
-==========================================================
-*/
+    // ---------- DOM elements ----------
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scoreInputContainer = document.getElementById('scoreInputContainer');
+    const newOptionName = document.getElementById('newOptionName');
+    const newOptionWeight = document.getElementById('newOptionWeight');
+    const addOptionBtn = document.getElementById('addOptionBtn');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const rankingList = document.getElementById('rankingList');
 
-// --- State ---
-let currentUser = "";
-let currentUserId = null;
-let selectedContact = "";
-let contacts = [];
-let contactDetails = {}; // Store details for each contact
-let messages = [];
-let sessionStartTime = null;
-let peerConnection = null;
-let localStream = null;
-let isInCall = false;
-let callType = null; // 'voice' or 'video'
-let permissionCallback = null;
-let telegramUser = null;
-
-// --- Telegram Bot Integration ---
-
-// Simulated bot API for @mama51R
-const BotAPI = {8661054034:AAHXoziP9OMmJHgj6AQZVfmg_q5PrCGVebk
-  // In a real implementation, this would call the actual bot API
-  findUser: (identifier) => {
-    return new Promise((resolve) => {
-      // Simulate network delay
-      setTimeout(() => {
-        // Check if it's a numeric user ID or phone number
-        const isUserId = /^\d+$/.test(identifier);
-        const isPhone = /^\+?\d{7,15}$/.test(identifier);
-        
-        if (!isUserId && !isPhone) {
-          resolve({ 
-            success: false, 
-            error: 'Invalid identifier. Please enter a numeric User ID or Phone Number.' 
-          });
-          return;
-        }
-        
-        // Simulate finding a user
-        const mockUsers = {
-          '123456789': { id: 123456789, username: 'john_doe', first_name: 'John', last_name: 'Doe', phone: '+1234567890' },
-          '987654321': { id: 987654321, username: 'jane_smith', first_name: 'Jane', last_name: 'Smith', phone: '+1987654321' },
-          '+1234567890': { id: 123456789, username: 'john_doe', first_name: 'John', last_name: 'Doe', phone: '+1234567890' },
-          '+1987654321': { id: 987654321, username: 'jane_smith', first_name: 'Jane', last_name: 'Smith', phone: '+1987654321' }
-        };
-        
-        // Check if this identifier is in our mock database or looks like a valid contact
-        let user = mockUsers[identifier];
-        let userId = identifier;
-        
-        // If not in mock, generate a plausible user
-        if (!user && (isUserId || isPhone)) {
-          const id = isUserId ? parseInt(identifier) : Math.floor(Math.random() * 1000000000);
-          user = {
-            id: id,
-            username: `user_${id}`,
-            first_name: `User${id}`,
-            last_name: '',
-            phone: isPhone ? identifier : `+${Math.floor(Math.random() * 1000000000)}`
-          };
-        }
-        
-        if (user) {
-          resolve({
-            success: true,
-            user: user
-          });
-        } else {
-          resolve({
-            success: false,
-            error: 'User not found. Please check the ID or phone number.'
-          });
-        }
-      }, 800);
-    });
-  },
-  
-  // Send notification via bot
-  sendNotification: (userId, message) => {
-    console.log(`[Bot @mama51R] Notification to ${userId}:`, message);
-    return Promise.resolve({ success: true });
-  }
-};
-
-// --- Notification System ---
-
-function showNotification(title, text, type = 'info', duration = 5000) {
-  const container = document.getElementById('notification-container');
-  const notif = document.createElement('div');
-  
-  const icons = {
-    info: 'ℹ️',
-    success: '✅',
-    warning: '⚠️',
-    error: '❌',
-    bot: '🤖'
-  };
-  
-  notif.className = `notification-item ${type}`;
-  notif.innerHTML = `
-    <span class="notif-icon">${icons[type] || 'ℹ️'}</span>
-    <div class="notif-content">
-      <span class="notif-title">${title}</span>
-      <span class="notif-text">${text}</span>
-      <span class="notif-time">${new Date().toLocaleTimeString()}</span>
-    </div>
-    <button class="notif-close" onclick="this.parentElement.remove()">✕</button>
-  `;
-  
-  container.appendChild(notif);
-  
-  if (duration > 0) {
-    setTimeout(() => {
-      notif.classList.add('removing');
-      setTimeout(() => notif.remove(), 300);
-    }, duration);
-  }
-  
-  return notif;
-}
-
-// --- Status Helpers ---
-
-function updateConnectionStatus(status, message) {
-  const dot = document.getElementById('connectionDot');
-  const statusEl = document.getElementById('connectionStatus');
-  const icon = document.getElementById('statusIcon');
-  
-  dot.className = 'online-dot';
-  
-  switch(status) {
-    case 'online':
-      dot.classList.remove('offline', 'connecting');
-      statusEl.className = 'status success';
-      icon.textContent = '🟢';
-      break;
-    case 'connecting':
-      dot.classList.add('connecting');
-      dot.classList.remove('offline');
-      statusEl.className = 'status warning';
-      icon.textContent = '🟡';
-      break;
-    case 'offline':
-    default:
-      dot.classList.add('offline');
-      dot.classList.remove('connecting');
-      statusEl.className = 'status error';
-      icon.textContent = '🔴';
-      break;
-  }
-  
-  document.getElementById('connectionStatus').innerHTML = 
-    `<span id="statusIcon">${icon.textContent}</span> ${message || status}`;
-}
-
-// --- Enter App ---
-
-function enterApp() {
-  const username = document.getElementById("username").value.trim();
-  
-  if(!username) {
-    showNotification('Username Required', 'Please enter a username to continue.', 'warning');
-    return;
-  }
-  
-  currentUser = username;
-  sessionStartTime = new Date();
-  
-  // Get Telegram user data if available
-  if (window.Telegram && Telegram.WebApp) {
-    const tgData = Telegram.WebApp.initDataUnsafe;
-    if (tgData && tgData.user) {
-      telegramUser = tgData.user;
-      currentUserId = tgData.user.id;
-      showNotification('Telegram Connected', `Welcome ${tgData.user.first_name}! Your ID: ${tgData.user.id}`, 'success', 3000);
+    // ---------- Helper: generate unique id ----------
+    function generateId() {
+      return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     }
-  }
-  
-  // Generate a mock user ID if not from Telegram
-  if (!currentUserId) {
-    currentUserId = Math.floor(Math.random() * 1000000000);
-  }
-  
-  localStorage.setItem("privatechat_session", JSON.stringify({
-    username: currentUser,
-    userId: currentUserId,
-    created: Date.now()
-  }));
-  
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-  
-  document.getElementById("currentUser").textContent = `${currentUser} (ID: ${currentUserId})`;
-  document.getElementById("sessionStart").textContent = sessionStartTime.toLocaleString();
-  document.getElementById("browserStatus").textContent = "Connected";
-  
-  updateConnectionStatus('online', 'Session active');
-  
-  showNotification('Welcome!', `Hello ${currentUser}, your session is now active.`, 'success', 4000);
-  
-  // Check for Telegram WebApp
-  if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.MainButton.setText('Logout');
-    Telegram.WebApp.MainButton.show();
-    Telegram.WebApp.MainButton.onClick(() => {
-      logout();
-      Telegram.WebApp.close();
-    });
-  }
-}
 
-// --- Panel Navigation ---
-
-function showPanel(id, button) {
-  document.querySelectorAll(".panel").forEach(x => x.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-  
-  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
-  if(button) button.classList.add("active");
-}
-
-// --- Add Contact by Telegram ---
-
-function addContactByTelegram() {
-  const input = document.getElementById('contactIdInput').value.trim();
-  if (!input) {
-    showNotification('Input Required', 'Please enter a User ID or Phone Number.', 'warning');
-    return;
-  }
-  
-  // Show the modal with pre-filled input
-  document.getElementById('modalContactInput').value = input;
-  document.getElementById('modalDisplayName').value = '';
-  document.getElementById('addContactModal').classList.remove('hidden');
-}
-
-function closeAddContactModal() {
-  document.getElementById('addContactModal').classList.add('hidden');
-  document.getElementById('modalContactInput').value = '';
-  document.getElementById('modalDisplayName').value = '';
-}
-
-async function confirmAddContact() {
-  const identifier = document.getElementById('modalContactInput').value.trim();
-  const displayName = document.getElementById('modalDisplayName').value.trim();
-  
-  if (!identifier) {
-    showNotification('Error', 'Please enter a User ID or Phone Number.', 'warning');
-    return;
-  }
-  
-  // Show loading state
-  const btn = document.querySelector('#addContactModal .btn.primary');
-  const originalText = btn.textContent;
-  btn.textContent = '🔍 Searching...';
-  btn.disabled = true;
-  
-  try {
-    // Query the bot for the user
-    const result = await BotAPI.findUser(identifier);
-    
-    if (result.success && result.user) {
-      const user = result.user;
-      const contactId = user.id.toString();
-      const contactName = displayName || user.username || user.first_name || `User ${contactId}`;
-      
-      // Check if already in contacts
-      if (contacts.includes(contactId)) {
-        showNotification('Already Added', `${contactName} is already in your contacts.`, 'warning');
-        closeAddContactModal();
+    // ---------- Render option list (weights) ----------
+    function renderOptionList() {
+      if (!optionsContainer) return;
+      if (options.length === 0) {
+        optionsContainer.innerHTML = `<div class="empty-msg" style="grid-column:1/-1;">No options yet. Add one above ⬆️</div>`;
         return;
       }
-      
-      // Add contact
-      contacts.push(contactId);
-      contactDetails[contactId] = {
-        id: contactId,
-        username: user.username,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        phone: user.phone,
-        displayName: contactName,
-        status: 'unknown',
-        added: Date.now()
-      };
-      
-      renderContacts();
-      
-      document.getElementById("contactStatusText").textContent = `${contactName} added to contacts (ID: ${contactId})`;
-      document.getElementById("contactStatusIcon").textContent = '✅';
-      document.getElementById("contactStatus").className = 'status success';
-      
-      showNotification('Contact Added', `${contactName} added successfully via @mama51R bot!`, 'success', 4000);
-      
-      // Send notification via bot
-      BotAPI.sendNotification(contactId, `${currentUser} added you as a contact on PrivateChat.`);
-      
-      closeAddContactModal();
-    } else {
-      showNotification('User Not Found', result.error || 'Could not find this Telegram user.', 'error');
-    }
-  } catch (error) {
-    showNotification('Error', 'Failed to lookup user. Please try again.', 'error');
-    console.error('Bot lookup error:', error);
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
-  }
-}
-
-function renderContacts() {
-  const list = document.getElementById("contactList");
-  list.innerHTML = "";
-  
-  document.getElementById("contactCount").textContent = `(${contacts.length})`;
-  
-  if (contacts.length === 0) {
-    list.innerHTML = '<div class="status info" style="margin:0;text-align:center;padding:20px;">No contacts yet. Add someone via Telegram ID or phone number.</div>';
-    return;
-  }
-  
-  contacts.forEach(id => {
-    const details = contactDetails[id] || { displayName: `User ${id}`, id: id };
-    const displayName = details.displayName || `User ${id}`;
-    const status = details.status || 'unknown';
-    const statusText = status === 'online' ? '🟢 Online' : status === 'offline' ? '⚪ Offline' : '❓ Unknown';
-    const statusDot = status === 'online' ? 'online' : status === 'offline' ? 'offline' : 'unknown';
-    
-    const div = document.createElement("div");
-    div.className = "contact";
-    div.dataset.contact = id;
-    div.innerHTML = `
-      <div class="avatar">
-        ${escapeHTML(displayName.charAt(0).toUpperCase())}
-      </div>
-      <div class="contact-info">
-        <b>${escapeHTML(displayName)}</b>
-        <span class="status-text">
-          <span class="status-dot ${statusDot}"></span> 
-          <span class="status-label">${statusText}</span>
-        </span>
-        <div style="font-size:9px;color:#727a8c;margin-top:2px;">ID: ${id}</div>
-      </div>
-      <button class="btn secondary" onclick="selectContact('${escapeAttr(id)}')">
-        💬
-      </button>
-    `;
-    list.appendChild(div);
-  });
-}
-
-function selectContact(id) {
-  if (!contacts.includes(id)) {
-    showNotification('Error', 'Contact not found.', 'error');
-    return;
-  }
-  
-  selectedContact = id;
-  const details = contactDetails[id] || { displayName: `User ${id}` };
-  const displayName = details.displayName || `User ${id}`;
-  
-  document.getElementById("chatTitle").textContent = `💬 Chat with ${displayName}`;
-  document.getElementById("contactStatusText").textContent = `Chatting with ${displayName} (ID: ${id})`;
-  document.getElementById("contactStatusIcon").textContent = '💬';
-  document.getElementById("contactStatus").className = 'status info';
-  
-  // Enable chat
-  document.getElementById("messageInput").disabled = false;
-  document.getElementById("sendBtn").disabled = false;
-  
-  showPanel("chat");
-  renderMessages();
-  
-  showNotification('Chat Opened', `You are now chatting with ${displayName}`, 'info', 3000);
-}
-
-// --- Chat ---
-
-function sendMessage() {
-  if(!selectedContact) {
-    showNotification('Error', 'Select a contact first.', 'warning');
-    return;
-  }
-  
-  const input = document.getElementById("messageInput");
-  const text = input.value.trim();
-  
-  if(!text) return;
-  
-  const msg = {
-    from: currentUser,
-    fromId: currentUserId,
-    to: selectedContact,
-    type: "text",
-    text: text,
-    time: Date.now(),
-    encrypted: true
-  };
-  
-  messages.push(msg);
-  renderMessages();
-  input.value = "";
-  
-  const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
-  showNotification('Message Sent', `Message to ${contactName} delivered securely 🔒`, 'success', 2000);
-  
-  // Simulate bot notification
-  BotAPI.sendNotification(selectedContact, `New message from ${currentUser}: ${text.substring(0, 30)}...`);
-  
-  // Simulate reply after delay
-  if (Math.random() > 0.4) {
-    setTimeout(() => {
-      const replies = ['👍', 'Got it!', 'Thanks!', 'Interesting...', 'Sure!', '🔥', '✅', 'Will do!', 'Great!', 'Let me think...'];
-      const reply = replies[Math.floor(Math.random() * replies.length)];
-      messages.push({
-        from: selectedContact,
-        to: currentUser,
-        type: "text",
-        text: reply,
-        time: Date.now(),
-        encrypted: true
+      let html = '';
+      options.forEach((opt, index) => {
+        html += `
+          <div class="option-item" data-option-id="${opt.id}">
+            <input type="text" class="option-name-input" value="${escapeHtml(opt.name)}" placeholder="Option name" data-id="${opt.id}" />
+            <span style="color:#475569; font-weight:500; font-size:0.8rem;">⚖️</span>
+            <input type="number" class="weight-input" min="1" max="10" step="0.5" value="${opt.weight}" data-id="${opt.id}" />
+            <button class="remove-btn" data-id="${opt.id}" aria-label="Remove">✕</button>
+          </div>
+        `;
       });
-      renderMessages();
-      const replyName = contactDetails[selectedContact]?.displayName || selectedContact;
-      showNotification('New Message', `${replyName}: ${reply}`, 'info', 3000);
-    }, 1500 + Math.random() * 2500);
-  }
-}
+      optionsContainer.innerHTML = html;
 
-function sendImage(event) {
-  if(!selectedContact) {
-    showNotification('Error', 'Select a contact first.', 'warning');
-    event.target.value = "";
-    return;
-  }
-  
-  const file = event.target.files[0];
-  if(!file) return;
-  
-  if(!file.type.startsWith("image/")) {
-    showNotification('Error', 'Please select an image file.', 'error');
-    return;
-  }
-  
-  if(file.size > 10 * 1024 * 1024) {
-    showNotification('Error', 'Image size must be less than 10MB.', 'error');
-    event.target.value = "";
-    return;
-  }
-  
-  const reader = new FileReader();
-  reader.onload = function() {
-    messages.push({
-      from: currentUser,
-      to: selectedContact,
-      type: "image",
-      data: reader.result,
-      time: Date.now(),
-      encrypted: true
-    });
-    renderMessages();
-    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
-    showNotification('Image Sent', `Image sent to ${contactName} 🔒`, 'success', 2000);
-  };
-  reader.readAsDataURL(file);
-  event.target.value = "";
-}
+      // Attach event listeners for dynamic inputs inside option list
+      document.querySelectorAll('.option-name-input').forEach(input => {
+        input.addEventListener('change', function(e) {
+          const id = this.dataset.id;
+          const newName = this.value.trim() || 'Unnamed';
+          const opt = options.find(o => o.id === id);
+          if (opt) {
+            opt.name = newName;
+            // update score input label dynamically
+            renderScoreInputs();
+          }
+        });
+      });
 
-function renderMessages() {
-  const box = document.getElementById("chatBox");
-  const filtered = messages.filter(m => 
-    (m.from === currentUser && m.to === selectedContact) ||
-    (m.from === selectedContact && m.to === currentUser) ||
-    (m.fromId === currentUserId && m.to === selectedContact) ||
-    (m.from === selectedContact && m.to === currentUserId)
-  );
-  
-  if (filtered.length === 0) {
-    box.innerHTML = `<div class="status info" style="text-align:center;padding:30px;">No messages yet. Start the conversation!</div>`;
-    return;
-  }
-  
-  box.innerHTML = "";
-  filtered.forEach(msg => {
-    const isMe = msg.from === currentUser || msg.fromId === currentUserId;
-    const div = document.createElement("div");
-    div.className = "msg " + (isMe ? "me" : "them");
-    
-    if(msg.type === "image") {
-      const img = document.createElement("img");
-      img.src = msg.data;
-      img.draggable = false;
-      img.alt = "Shared image";
-      div.appendChild(img);
-    } else {
-      div.textContent = msg.text;
+      document.querySelectorAll('.weight-input').forEach(input => {
+        input.addEventListener('change', function(e) {
+          const id = this.dataset.id;
+          let newWeight = parseFloat(this.value);
+          if (isNaN(newWeight)) newWeight = 1;
+          newWeight = Math.min(10, Math.max(1, newWeight));
+          this.value = newWeight; // enforce bounds
+          const opt = options.find(o => o.id === id);
+          if (opt) {
+            opt.weight = newWeight;
+          }
+        });
+      });
+
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          const id = this.dataset.id;
+          options = options.filter(o => o.id !== id);
+          renderOptionList();
+          renderScoreInputs();
+        });
+      });
     }
-    
-    const time = document.createElement("span");
-    time.className = "msg-time";
-    time.textContent = new Date(msg.time).toLocaleTimeString();
-    div.appendChild(time);
-    
-    if (msg.encrypted) {
-      const badge = document.createElement("span");
-      badge.className = "encryption-badge";
-      badge.textContent = "🔒 End-to-end encrypted";
-      div.appendChild(badge);
-    }
-    
-    box.appendChild(div);
-  });
-  box.scrollTop = box.scrollHeight;
-}
 
-// --- Invite ---
-
-function generateInviteLink() {
-  if (!currentUser || !currentUserId) {
-    showNotification('Error', 'Please log in first.', 'warning');
-    return;
-  }
-  
-  const link = `${window.location.origin}?invite=${encodeURIComponent(currentUserId)}`;
-  
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(link).then(() => {
-      showNotification('Invite Link Copied!', `Share this link with others: ${link}`, 'success', 5000);
-    }).catch(() => {
-      showNotification('Invite Link', `Share this link: ${link}`, 'info', 5000);
-    });
-  } else {
-    showNotification('Invite Link', `Share this link: ${link}`, 'info', 5000);
-  }
-  
-  document.getElementById("contactIdInput").value = link;
-}
-
-// --- Media & Calls ---
-
-async function requestMedia(video) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: video ? { width: { ideal: 640 }, height: { ideal: 480 } } : false
-    });
-    
-    document.getElementById("cameraStatus").textContent = video ? "✅ Granted" : "Not requested";
-    document.getElementById("micStatus").textContent = "✅ Granted";
-    document.getElementById("localVideo").srcObject = stream;
-    
-    localStream = stream;
-    return stream;
-  } catch(error) {
-    document.getElementById("callStatusText").textContent = "Permission failed: " + error.message;
-    document.getElementById("callStatus").className = "status error";
-    
-    showNotification('Permission Error', error.message, 'error');
-    return null;
-  }
-}
-
-function createPeerConnection() {
-  if (peerConnection) {
-    peerConnection.close();
-  }
-  
-  peerConnection = new RTCPeerConnection({
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' }
-    ]
-  });
-  
-  peerConnection.ontrack = event => {
-    document.getElementById("remoteVideo").srcObject = event.streams[0];
-    document.getElementById("webrtcStatus").textContent = "✅ Connected";
-    document.getElementById("callStatusText").textContent = "Connected!";
-    document.getElementById("callStatus").className = "status success";
-    showNotification('Call Connected', 'The call is now active.', 'success', 3000);
-  };
-  
-  peerConnection.oniceconnectionstatechange = () => {
-    const state = peerConnection.iceConnectionState;
-    document.getElementById("webrtcStatus").textContent = state;
-    
-    if (state === 'connected') {
-      document.getElementById("callStatusText").textContent = "Connected (ICE)";
-      document.getElementById("callStatus").className = "status success";
-    } else if (state === 'disconnected' || state === 'failed') {
-      document.getElementById("callStatusText").textContent = "Disconnected";
-      document.getElementById("callStatus").className = "status error";
-      showNotification('Call Disconnected', 'The call has been disconnected.', 'error', 3000);
-      stopCall();
-    }
-  };
-  
-  peerConnection.onicecandidate = event => {
-    if (event.candidate) {
-      console.log('ICE Candidate:', event.candidate);
-    }
-  };
-  
-  if (localStream) {
-    localStream.getTracks().forEach(track => {
-      peerConnection.addTrack(track, localStream);
-    });
-  }
-  
-  return peerConnection;
-}
-
-async function startVoiceCall() {
-  if (!selectedContact) {
-    showNotification('Error', 'Select a contact first.', 'warning');
-    return;
-  }
-  
-  if (isInCall) {
-    showNotification('Busy', 'You are already in a call.', 'warning');
-    return;
-  }
-  
-  const stream = await requestMedia(false);
-  if (!stream) return;
-  
-  createPeerConnection();
-  
-  try {
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    
-    isInCall = true;
-    callType = 'voice';
-    document.getElementById("callStatusText").textContent = "Calling... (signaling required)";
-    document.getElementById("callStatus").className = "status warning";
-    document.getElementById("voiceCallBtn").disabled = true;
-    document.getElementById("videoCallBtn").disabled = true;
-    document.getElementById("endCallBtn").disabled = false;
-    
-    console.log('Call offer created:', offer);
-    
-    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
-    showNotification('Call Initiated', `Voice call to ${contactName}...`, 'info', 3000);
-    
-    // Send call notification via bot
-    BotAPI.sendNotification(selectedContact, `${currentUser} is calling you.`);
-  } catch(error) {
-    showNotification('Call Failed', error.message, 'error');
-    stopCall();
-  }
-}
-
-async function startVideoCall() {
-  if (!selectedContact) {
-    showNotification('Error', 'Select a contact first.', 'warning');
-    return;
-  }
-  
-  if (isInCall) {
-    showNotification('Busy', 'You are already in a call.', 'warning');
-    return;
-  }
-  
-  const stream = await requestMedia(true);
-  if (!stream) return;
-  
-  createPeerConnection();
-  
-  try {
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    
-    isInCall = true;
-    callType = 'video';
-    document.getElementById("callStatusText").textContent = "Calling... (signaling required)";
-    document.getElementById("callStatus").className = "status warning";
-    document.getElementById("voiceCallBtn").disabled = true;
-    document.getElementById("videoCallBtn").disabled = true;
-    document.getElementById("endCallBtn").disabled = false;
-    
-    console.log('Video call offer created:', offer);
-    
-    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
-    showNotification('Call Initiated', `Video call to ${contactName}...`, 'info', 3000);
-    
-    // Send call notification via bot
-    BotAPI.sendNotification(selectedContact, `${currentUser} is video calling you.`);
-  } catch(error) {
-    showNotification('Call Failed', error.message, 'error');
-    stopCall();
-  }
-}
-
-function stopCall() {
-  if (localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  
-  if (peerConnection) {
-    peerConnection.close();
-    peerConnection = null;
-  }
-  
-  document.getElementById("localVideo").srcObject = null;
-  document.getElementById("remoteVideo").srcObject = null;
-  document.getElementById("webrtcStatus").textContent = "Not connected";
-  document.getElementById("callStatusText").textContent = "Call ended.";
-  document.getElementById("callStatus").className = "status info";
-  document.getElementById("voiceCallBtn").disabled = false;
-  document.getElementById("videoCallBtn").disabled = false;
-  document.getElementById("endCallBtn").disabled = true;
-  
-  isInCall = false;
-  callType = null;
-  
-  showNotification('Call Ended', 'The call has been terminated.', 'info', 3000);
-}
-
-// --- Session Management ---
-
-function clearSession() {
-  const count = messages.filter(m => 
-    (m.from === currentUser && m.to === selectedContact) ||
-    (m.from === selectedContact && m.to === currentUser) ||
-    (m.fromId === currentUserId && m.to === selectedContact) ||
-    (m.from === selectedContact && m.to === currentUserId)
-  ).length;
-  
-  if (count > 0) {
-    messages = messages.filter(m => 
-      !((m.from === currentUser && m.to === selectedContact) ||
-        (m.from === selectedContact && m.to === currentUser) ||
-        (m.fromId === currentUserId && m.to === selectedContact) ||
-        (m.from === selectedContact && m.to === currentUserId))
-    );
-    renderMessages();
-    document.getElementById("deleteStatus").textContent = `🗑️ ${count} messages deleted from this session.`;
-    document.getElementById("deleteStatus").className = "status success";
-    
-    const contactName = contactDetails[selectedContact]?.displayName || selectedContact;
-    showNotification('Cleared', `${count} messages deleted from chat with ${contactName}`, 'info', 3000);
-  } else {
-    showNotification('Nothing to Clear', 'No messages to delete.', 'info', 2000);
-  }
-}
-
-function logout() {
-  stopCall();
-  
-  const messageCount = messages.length;
-  messages = [];
-  contacts = [];
-  contactDetails = {};
-  selectedContact = "";
-  
-  localStorage.removeItem("privatechat_session");
-  
-  document.getElementById("deleteStatus").textContent = `🗑️ Session deleted. ${messageCount} messages removed.`;
-  document.getElementById("deleteStatus").className = "status success";
-  
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("home").classList.remove("hidden");
-  document.getElementById("username").value = "";
-  document.getElementById("connectionStatus").className = "status info";
-  
-  updateConnectionStatus('offline', 'Logged out');
-  
-  showNotification('Logged Out', `All session data has been deleted. ${messageCount} messages removed.`, 'info', 5000);
-  
-  if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.MainButton.hide();
-  }
-}
-
-// --- Permissions ---
-
-function showPermissionRequest(text, callback) {
-  const overlay = document.getElementById('permissionOverlay');
-  document.getElementById('permissionText').textContent = text;
-  overlay.classList.remove('hidden');
-  permissionCallback = callback;
-}
-
-function acceptPermissions() {
-  document.getElementById('permissionOverlay').classList.add('hidden');
-  if (permissionCallback) {
-    permissionCallback();
-    permissionCallback = null;
-  }
-}
-
-function dismissPermissions() {
-  document.getElementById('permissionOverlay').classList.add('hidden');
-  permissionCallback = null;
-}
-
-// --- Browser Protections ---
-
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("dragstart", e => {
-  if(e.target.tagName === "IMG") e.preventDefault();
-});
-
-document.addEventListener("visibilitychange", () => {
-  if(document.hidden) {
-    document.body.style.filter = "blur(8px)";
-    if (isInCall) {
-      showNotification('App Blurred', 'The app is hidden. Call audio continues but video is paused.', 'warning', 3000);
-      if (localStream) {
-        localStream.getVideoTracks().forEach(track => track.enabled = false);
+    // ---------- Render score inputs for each option ----------
+    function renderScoreInputs() {
+      if (!scoreInputContainer) return;
+      if (options.length === 0) {
+        scoreInputContainer.innerHTML = `<div class="empty-msg" style="width:100%;">Add options to rate them</div>`;
+        return;
       }
-    }
-  } else {
-    document.body.style.filter = "none";
-    if (isInCall && localStream) {
-      localStream.getVideoTracks().forEach(track => track.enabled = callType === 'video');
-    }
-  }
-});
+      let html = '';
+      options.forEach(opt => {
+        html += `
+          <div class="score-box">
+            <span style="font-weight:600; color:#1e293b;">🎯 ${escapeHtml(opt.name)}</span>
+            <input type="number" class="score-input" min="0" max="10" step="0.5" placeholder="0-10" data-id="${opt.id}" value="7" />
+          </div>
+        `;
+      });
+      scoreInputContainer.innerHTML = html;
 
-// --- Init ---
+      // attach listeners to clamp
+      document.querySelectorAll('.score-input').forEach(input => {
+        input.addEventListener('change', function() {
+          let val = parseFloat(this.value);
+          if (isNaN(val)) val = 0;
+          val = Math.min(10, Math.max(0, val));
+          this.value = val;
+        });
+      });
+    }
 
-// Check for saved session
-const saved = localStorage.getItem("privatechat_session");
-if (saved) {
-  try {
-    const data = JSON.parse(saved);
-    if (data.username && Date.now() - data.created < 24 * 60 * 60 * 1000) {
-      document.getElementById("username").value = data.username;
-      if (data.userId) {
-        currentUserId = data.userId;
+    // ---------- escape html for safe injection ----------
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+      });
+    }
+
+    // ---------- Calculate and display ranking ----------
+    function calculateRanking() {
+      if (options.length === 0) {
+        rankingList.innerHTML = `<div class="empty-msg">No options to rank</div>`;
+        return;
       }
+
+      // Gather score inputs from DOM
+      const scoreMap = new Map(); // id -> numeric score
+      document.querySelectorAll('.score-input').forEach(input => {
+        const id = input.dataset.id;
+        let score = parseFloat(input.value);
+        if (isNaN(score)) score = 0;
+        score = Math.min(10, Math.max(0, score));
+        scoreMap.set(id, score);
+      });
+
+      // Build ranking array
+      const ranked = options.map(opt => {
+        const score = scoreMap.has(opt.id) ? scoreMap.get(opt.id) : 0;
+        const weight = opt.weight || 1;
+        const weightedScore = score * weight;
+        return {
+          id: opt.id,
+          name: opt.name || 'Unnamed',
+          weight: weight,
+          score: score,
+          weightedScore: weightedScore
+        };
+      });
+
+      // Sort descending by weightedScore
+      ranked.sort((a, b) => b.weightedScore - a.weightedScore);
+
+      // Render ranking list
+      if (ranked.length === 0) {
+        rankingList.innerHTML = `<div class="empty-msg">No data</div>`;
+        return;
+      }
+
+      let rankHtml = '';
+      ranked.forEach((item, index) => {
+        const medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `#${index+1}`));
+        rankHtml += `
+          <div class="rank-item">
+            <span class="rank-name">${medal} ${escapeHtml(item.name)} <span style="opacity:0.7; font-size:0.8rem;">(w:${item.weight})</span></span>
+            <span class="rank-score">${item.weightedScore.toFixed(1)}</span>
+            <span class="rank-badge">${item.score.toFixed(1)} × ${item.weight}</span>
+          </div>
+        `;
+      });
+      rankingList.innerHTML = rankHtml;
     }
-  } catch(e) {}
-}
 
-// Check for Telegram WebApp
-if (window.Telegram && Telegram.WebApp) {
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
-  
-  const tgUser = Telegram.WebApp.initDataUnsafe?.user;
-  if (tgUser) {
-    telegramUser = tgUser;
-    currentUserId = tgUser.id;
-    document.getElementById("username").value = tgUser.username || tgUser.first_name || '';
-    showNotification('Telegram Detected', `Welcome ${tgUser.first_name || tgUser.username}! ID: ${tgUser.id}`, 'success', 3000);
-    
-    // Auto-fill contact search with Telegram info
-    document.getElementById("contactIdInput").placeholder = "Enter User ID or Phone Number";
-  }
-}
+    // ---------- Add new option ----------
+    function addOption() {
+      const nameInput = newOptionName.value.trim();
+      const weightVal = parseFloat(newOptionWeight.value);
+      const name = nameInput || 'Option ' + (options.length + 1);
+      let weight = isNaN(weightVal) ? 5 : weightVal;
+      weight = Math.min(10, Math.max(1, weight));
+      
+      const newOpt = {
+        id: generateId(),
+        name: name,
+        weight: weight
+      };
+      options.push(newOpt);
+      
+      // Clear input for next
+      newOptionName.value = '';
+      newOptionWeight.value = '5';
+      
+      renderOptionList();
+      renderScoreInputs();
+      // reset ranking area
+      rankingList.innerHTML = `<div class="empty-msg">Options updated. Press calculate.</div>`;
+    }
 
-// --- Helper Functions ---
+    // ---------- Reset to demo data ----------
+    function resetDemo() {
+      options = [
+        { id: 'demo1', name: 'Kyoto', weight: 8 },
+        { id: 'demo2', name: 'Lisbon', weight: 7 },
+        { id: 'demo3', name: 'Bali', weight: 6 }
+      ];
+      newOptionName.value = '';
+      newOptionWeight.value = '5';
+      renderOptionList();
+      renderScoreInputs();
+      // set some sample scores (after rendering)
+      requestAnimationFrame(() => {
+        const scoreInputs = document.querySelectorAll('.score-input');
+        if (scoreInputs.length >= 3) {
+          scoreInputs[0].value = '9';
+          scoreInputs[1].value = '8';
+          scoreInputs[2].value = '7';
+        }
+      });
+      rankingList.innerHTML = `<div class="empty-msg">Demo loaded. Calculate to rank.</div>`;
+    }
 
-function escapeHTML(value) {
-  if (!value) return '';
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+    // ---------- Event listeners ----------
+    addOptionBtn.addEventListener('click', addOption);
+    calculateBtn.addEventListener('click', calculateRanking);
+    resetBtn.addEventListener('click', resetDemo);
 
-function escapeAttr(value) {
-  if (!value) return '';
-  return value
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'");
-}
+    // Allow Enter key on name field to add option
+    newOptionName.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addOption();
+      }
+    });
 
-// --- Dev Tools ---
-
-setTimeout(() => {
-  updateConnectionStatus('online', 'Connected to signaling (simulated)');
-  showNotification('System Ready', 'All features are ready. Add contacts via Telegram ID or phone.', 'success', 3000);
-}, 1000);
-
-console.log('🔒 Telegram LAN PrivateChat loaded');
-console.log('🤖 Bot: @mama51R');
-console.log('📱 Session:', saved ? 'Restored' : 'New');
-console.log('👤 Current User ID:', currentUserId || 'Not set');
-
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.key === 'k') {
-    e.preventDefault();
-    document.getElementById('messageInput').focus();
-  }
-  if (e.key === 'Escape') {
-    closeAddContactModal();
-  }
-});
-
-// Handle invite from URL
-const urlParams = new URLSearchParams(window.location.search);
-const inviteId = urlParams.get('invite');
-if (inviteId) {
-  showNotification('Invite Received', `You've been invited by User ID: ${inviteId}`, 'info', 5000);
-  // Auto-fill the contact input
-  document.getElementById('contactIdInput').value = inviteId;
-}
-
+    // ---------- Initial load with demo data ----------
+    resetDemo();
+  })();
 </script>
-
 </body>
 </html>
