@@ -1,700 +1,502 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>🏠 Home Sound Controller Pro · full access</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      background: radial-gradient(circle at 30% 30%, #1a2a3a, #0a1118);
-      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 12px;
-      margin: 0;
-      color: #eaf0fa;
-    }
-    .app-shell {
-      max-width: 820px;
-      width: 100%;
-      background: rgba(18, 30, 48, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 42px;
-      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
-      padding: 24px 20px 30px;
-    }
-    h1 {
-      font-size: 2rem;
-      font-weight: 650;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 6px;
-      color: #ffffff;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-    .subtitle {
-      font-size: 0.9rem;
-      color: #9db4d0;
-      margin-bottom: 20px;
-      background: rgba(255,255,255,0.05);
-      display: inline-block;
-      border-radius: 40px;
-      padding: 6px 18px;
-      font-weight: 400;
-    }
-    .privacy-note {
-      background: rgba(34, 197, 94, 0.15);
-      border-left: 4px solid #22c55e;
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-bottom: 18px;
-      font-size: 0.85rem;
-      color: #bbf7d0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .permission-badge {
-      background: #22c55e;
-      color: #0a1e3c;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      margin-left: 8px;
-    }
-    .scan-panel {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 30px;
-      padding: 18px 18px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 14px;
-      justify-content: space-between;
-    }
-    .scan-btn {
-      background: #1d4ed8;
-      border: none;
-      color: white;
-      font-weight: 700;
-      padding: 14px 26px;
-      border-radius: 40px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.4);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      letter-spacing: 0.3px;
-      border: 1px solid #ffffff40;
-    }
-    .scan-btn:hover {
-      background: #2563eb;
-      transform: scale(1.02);
-    }
-    .scan-btn:disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    .status-badge {
-      background: #0f1b2d;
-      padding: 10px 18px;
-      border-radius: 30px;
-      font-size: 0.9rem;
-      color: #cbd5e1;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .pulse-dot {
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 50%;
-      display: inline-block;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.3); }
-    }
-    .device-list {
-      margin: 18px 0 12px;
-      max-height: 500px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-    .device-list::-webkit-scrollbar {
-      width: 6px;
-    }
-    .device-list::-webkit-scrollbar-thumb {
-      background: #3b4f6b;
-      border-radius: 10px;
-    }
-    .device-card {
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 28px;
-      padding: 16px 18px;
-      margin-bottom: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(6px);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      justify-content: space-between;
-      transition: 0.15s;
-    }
-    .device-card:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: #3b5f8a;
-    }
-    .device-card.disabled {
-      opacity: 0.6;
-      background: rgba(0, 0, 0, 0.3);
-    }
-    .device-card.connected {
-      border-left: 4px solid #22c55e;
-    }
-    .device-icon {
-      font-size: 2.2rem;
-      background: #0c1929;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 40px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-      position: relative;
-    }
-    .connected-badge {
-      position: absolute;
-      bottom: -2px;
-      right: -2px;
-      background: #22c55e;
-      color: white;
-      font-size: 0.6rem;
-      padding: 3px 6px;
-      border-radius: 10px;
-      font-weight: 700;
-    }
-    .device-info {
-      flex: 2;
-      min-width: 140px;
-    }
-    .device-name {
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: #f1f5f9;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .device-details {
-      font-size: 0.8rem;
-      color: #a3b8d4;
-      margin-top: 4px;
-    }
-    .device-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .btn-small {
-      background: #1f3a5f;
-      border: none;
-      color: white;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: 0.1s;
-      border: 1px solid #ffffff30;
-      font-size: 0.85rem;
-    }
-    .btn-small:hover {
-      background: #2c4f7a;
-    }
-    .btn-mute {
-      background: #b91c1c;
-    }
-    .btn-mute:hover {
-      background: #dc2626;
-    }
-    .btn-off {
-      background: #4b5563;
-    }
-    .btn-off:hover {
-      background: #6b7280;
-    }
-    .volume-slider {
-      width: 90px;
-      accent-color: #facc15;
-      cursor: pointer;
-    }
-    .muted-indicator {
-      background: #ef4444;
-      color: white;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-    }
-    .power-off-indicator {
-      background: #6b7280;
-      color: white;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-    }
-    .empty-msg {
-      color: #7c8fa5;
-      text-align: center;
-      padding: 24px;
-      font-style: italic;
-    }
-    .control-summary {
-      background: #0c1a2e;
-      border-radius: 24px;
-      padding: 14px 16px;
-      margin: 16px 0 8px;
-      border: 1px solid #2c405b;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .btn-kill-all {
-      background: #7f1d1d;
-      border: none;
-      color: white;
-      font-weight: 700;
-      padding: 14px 24px;
-      border-radius: 40px;
-      cursor: pointer;
-      transition: 0.2s;
-      border: 1px solid #ef4444a0;
-      box-shadow: 0 6px 18px rgba(185, 28, 28, 0.5);
-      letter-spacing: 0.5px;
-    }
-    .btn-kill-all:hover {
-      background: #b91c1c;
-    }
-    .btn-restore {
-      background: #14532d;
-      border: none;
-      color: white;
-      font-weight: 600;
-      padding: 12px 20px;
-      border-radius: 40px;
-      cursor: pointer;
-      border: 1px solid #4ade80a0;
-    }
-    .btn-restore:hover {
-      background: #166534;
-    }
-    hr {
-      border: 0.5px solid #253b55;
-      margin: 18px 0 6px;
-    }
-    .connection-info {
-      font-size: 0.75rem;
-      color: #64748b;
-      margin-top: 10px;
-      text-align: center;
-    }
-    .bluetooth-btn {
-      background: #1e3a5f;
-      border: 1px solid #3b82f6;
-    }
-    .bluetooth-btn:hover {
-      background: #2563eb;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR & Barcode Reader · Product Lookup</title>
+    <!-- Include QuaggaJS for barcode scanning (supports QR, EAN, UPC, etc.) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #0b1a2f;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+        .card {
+            max-width: 640px;
+            width: 100%;
+            background: #f8faff;
+            border-radius: 40px;
+            padding: 24px 24px 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            transition: 0.25s;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0a1e32;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #2a4b6e;
+            margin-left: auto;
+            background: #dce6f2;
+            padding: 4px 14px;
+            border-radius: 40px;
+        }
+        .scanner-box {
+            background: #111d2b;
+            border-radius: 28px;
+            padding: 12px;
+            margin: 12px 0 16px;
+            position: relative;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+        }
+        #scanner-container {
+            width: 100%;
+            aspect-ratio: 1/0.9;
+            background: #1a2a3a;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            min-height: 240px;
+        }
+        #scanner-container video, 
+        #scanner-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+        #scanner-container .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8aa3c0;
+            height: 100%;
+            font-weight: 400;
+            background: #142433;
+            text-align: center;
+            padding: 20px;
+        }
+        .placeholder span {
+            font-size: 3.2rem;
+            margin-bottom: 8px;
+            opacity: 0.6;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 16px 0 8px;
+        }
+        .btn {
+            background: #eef3fc;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #0b1a2f;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            flex: 1 1 auto;
+            justify-content: center;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background: #1e4b6e;
+            color: white;
+            box-shadow: 0 6px 12px rgba(20, 60, 100, 0.3);
+        }
+        .btn-primary:hover { background: #123a57; }
+        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2d4b6b;
+            color: #1e3b57;
+        }
+        .btn-outline:hover { background: #dce6f2; }
+        .result-panel {
+            margin-top: 22px;
+            background: #eaf1fb;
+            border-radius: 28px;
+            padding: 20px 22px;
+            border-left: 6px solid #1f6390;
+        }
+        .result-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2f577b;
+            font-weight: 600;
+        }
+        #product-name {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #03101e;
+            line-height: 1.2;
+            margin: 6px 0 4px;
+            word-break: break-word;
+        }
+        #product-details {
+            color: #1b3855;
+            font-size: 1rem;
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 14px;
+        }
+        .detail-badge {
+            background: #d2e1f5;
+            padding: 4px 14px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #07273f;
+        }
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            border-top: 1px solid #c8d9ee;
+            padding-top: 14px;
+            font-size: 0.9rem;
+            color: #1f3f5a;
+        }
+        .code-value {
+            background: #ffffffb0;
+            padding: 4px 14px;
+            border-radius: 60px;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            font-size: 0.9rem;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .status-badge {
+            background: #1f6390;
+            color: white;
+            padding: 2px 16px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .footnote {
+            margin-top: 14px;
+            color: #3d5f7e;
+            font-size: 0.85rem;
+            text-align: center;
+            border-top: 1px solid #cddef2;
+            padding-top: 14px;
+        }
+        #short-answer {
+            background: #0b1a2f10;
+            border-radius: 60px;
+            padding: 8px 18px;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 6px;
+            color: #04243b;
+            border: 1px dashed #1f639080;
+        }
+        @media (max-width: 480px) {
+            .card { padding: 16px; }
+            #product-name { font-size: 1.5rem; }
+        }
+    </style>
 </head>
 <body>
-<div class="app-shell">
-  <h1>🏠 Home Sound Controller Pro</h1>
-  <div class="subtitle">📡 real device discovery · full control</div>
+    <div class="card">
+        <h1>
+            📷 Scan & Identify
+            <small>QR · Barcode</small>
+        </h1>
 
-  <!-- Ethical use & permissions -->
-  <div class="privacy-note">
-    <span>🔒</span>
-    <span><strong>Full access enabled:</strong> Web Bluetooth & Network APIs ready. For controlling your own devices only.</span>
-    <span class="permission-badge">✓ PERMISSIONS GRANTED</span>
-  </div>
-
-  <!-- Scan panel -->
-  <div class="scan-panel">
-    <button class="scan-btn" id="scanBtn">📡 SCAN MY DEVICES</button>
-    <button class="scan-btn bluetooth-btn" id="bluetoothBtn" style="background:#1e3a5f;">🔵 BLUETOOTH SCAN</button>
-    <span class="status-badge" id="scanStatus"><span class="pulse-dot"></span> auto‑scanning...</span>
-  </div>
-
-  <!-- Device list -->
-  <div class="device-list" id="deviceListContainer">
-    <div class="empty-msg">Scanning for your home devices...</div>
-  </div>
-
-  <!-- Global controls -->
-  <div class="control-summary" id="globalControlPanel" style="display:none;">
-    <span style="font-weight:600; color:#b7c9e0;">🎛️ Global action:</span>
-    <button class="btn-kill-all" id="killAllBtn">🔇 MUTE ALL</button>
-    <button class="btn-restore" id="restoreAllBtn">🔊 RESTORE ALL</button>
-  </div>
-
-  <hr />
-  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; justify-content:space-between;">
-    <button class="btn-small" id="rescanBtn" style="background:#334155;">🔄 Rescan</button>
-    <button class="btn-small" id="vibrateTestBtn" style="background:#1e3a5f;">📳 Test Vibration</button>
-    <span style="font-size:0.75rem; color:#94a3b8;">⚡ v3.0 · full access</span>
-  </div>
-  <div class="connection-info" id="connectionInfo">
-    Initializing Web APIs... (Bluetooth, Network, Vibration, Audio)
-  </div>
-</div>
-
-<script>
-  (function() {
-    // ---------- HOME DEVICE DATABASE (Simulated for demo - real devices would use actual protocols) ----------
-    const HOME_DEVICES = [
-      { id: 'living_tv', name: 'Living Room TV', type: 'Smart TV', icon: '📺', brand: 'Samsung', defaultVolume: 40, isOn: true, isMuted: false, protocol: 'HDMI-CEC' },
-      { id: 'kitchen_echo', name: 'Kitchen Echo Dot', type: 'Smart Speaker', icon: '🔊', brand: 'Amazon', defaultVolume: 55, isOn: true, isMuted: false, protocol: 'Wi-Fi' },
-      { id: 'soundbar', name: 'Bose Soundbar 700', type: 'Soundbar', icon: '🎵', brand: 'Bose', defaultVolume: 60, isOn: true, isMuted: false, protocol: 'Bluetooth' },
-      { id: 'bedroom_homepod', name: 'Bedroom HomePod Mini', type: 'Smart Speaker', icon: '🍎', brand: 'Apple', defaultVolume: 45, isOn: true, isMuted: false, protocol: 'AirPlay' },
-      { id: 'sony_speaker', name: 'Sony SRS-XB33', type: 'Portable Speaker', icon: '🔉', brand: 'Sony', defaultVolume: 50, isOn: true, isMuted: false, protocol: 'Bluetooth' },
-      { id: 'nest_display', name: 'Office Nest Hub', type: 'Smart Display', icon: '🖥️', brand: 'Google', defaultVolume: 35, isOn: true, isMuted: false, protocol: 'Wi-Fi' },
-      { id: 'garage_radio', name: 'Garage Radio', type: 'Radio', icon: '📻', brand: 'Sony', defaultVolume: 45, isOn: true, isMuted: false, protocol: 'Bluetooth' },
-    ];
-
-    // State
-    let discoveredDevices = [];
-    let scanInProgress = false;
-    let bluetoothSupported = false;
-    let networkInfo = null;
-
-    // DOM elements
-    const scanBtn = document.getElementById('scanBtn');
-    const bluetoothBtn = document.getElementById('bluetoothBtn');
-    const scanStatus = document.getElementById('scanStatus');
-    const deviceListContainer = document.getElementById('deviceListContainer');
-    const globalControlPanel = document.getElementById('globalControlPanel');
-    const killAllBtn = document.getElementById('killAllBtn');
-    const restoreAllBtn = document.getElementById('restoreAllBtn');
-    const rescanBtn = document.getElementById('rescanBtn');
-    const vibrateTestBtn = document.getElementById('vibrateTestBtn');
-    const connectionInfo = document.getElementById('connectionInfo');
-
-    // ---------- Check Web API availability ----------
-    function checkAPIs() {
-      // Check Bluetooth
-      if (navigator.bluetooth) {
-        bluetoothSupported = true;
-        bluetoothBtn.style.display = 'inline-flex';
-        bluetoothBtn.textContent = '🔵 BLUETOOTH SCAN (Available)';
-      } else {
-        bluetoothBtn.style.display = 'none';
-      }
-
-      // Check Network Information API
-      if (navigator.connection) {
-        networkInfo = navigator.connection;
-        connectionInfo.textContent = `📶 Network: ${networkInfo.effectiveType || 'unknown'} | Downlink: ${networkInfo.downlink || 'N/A'} Mbps | RTT: ${networkInfo.rtt || 'N/A'}ms`;
-      } else {
-        connectionInfo.textContent = '📶 Network Information API not available. Using standard discovery.';
-      }
-
-      // Check Vibration API
-      if (!navigator.vibrate) {
-        vibrateTestBtn.style.display = 'none';
-      }
-
-      // Check Audio Context
-      if (window.AudioContext || window.webkitAudioContext) {
-        connectionInfo.textContent += ' | 🎵 Audio API ready';
-      }
-    }
-
-    // ---------- Device discovery ----------
-    function performScan() {
-      if (scanInProgress) return;
-      scanInProgress = true;
-      scanBtn.disabled = true;
-      scanStatus.innerHTML = '<span class="pulse-dot"></span> scanning network... (mDNS, Bluetooth, HDMI-CEC, AirPlay)';
-      
-      // Vibrate on scan start
-      if (navigator.vibrate) navigator.vibrate(50);
-      
-      setTimeout(() => {
-        const shuffled = [...HOME_DEVICES].sort(() => 0.5 - Math.random());
-        const count = Math.floor(Math.random() * 4) + 4; // 4-7 devices
-        const selected = shuffled.slice(0, count);
-        
-        discoveredDevices = selected.map(dev => ({
-          ...dev,
-          uniqueId: 'dev_' + Math.random().toString(36).substr(2, 9),
-          isOn: true,
-          isMuted: false,
-          volume: dev.defaultVolume,
-          connected: Math.random() > 0.3, // simulate connection status
-        }));
-        
-        scanInProgress = false;
-        scanBtn.disabled = false;
-        scanStatus.innerHTML = `<span class="pulse-dot" style="background:#22c55e;"></span> ✅ ${discoveredDevices.length} devices found & connected`;
-        renderDeviceList();
-        globalControlPanel.style.display = 'flex';
-        
-        // Vibrate on success
-        if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-      }, 1500);
-    }
-
-    // Bluetooth specific scan
-    function performBluetoothScan() {
-      if (!navigator.bluetooth) {
-        alert('Bluetooth API not supported on this device/browser');
-        return;
-      }
-      
-      scanStatus.innerHTML = '<span class="pulse-dot"></span> 🟦 Bluetooth scan active... looking for nearby devices';
-      
-      // Attempt to request Bluetooth device (user gesture required)
-      navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
-        optionalServices: ['battery_service', 'device_information']
-      }).then(device => {
-        scanStatus.innerHTML = `🟦 Found: ${device.name || 'Unknown Device'} (connecting...)`;
-        device.gatt.connect().then(server => {
-          const bluetoothDevice = {
-            id: 'bt_' + Date.now(),
-            name: device.name || 'Bluetooth Device',
-            type: 'Bluetooth Device',
-            icon: '🔵',
-            brand: 'Bluetooth',
-            defaultVolume: 50,
-            isOn: true,
-            isMuted: false,
-            protocol: 'Bluetooth GATT',
-            uniqueId: 'bt_' + Math.random().toString(36).substr(2, 9),
-            connected: true,
-          };
-          discoveredDevices.push(bluetoothDevice);
-          renderDeviceList();
-          globalControlPanel.style.display = 'flex';
-          scanStatus.innerHTML = `✅ Bluetooth device connected: ${device.name || 'Unknown'}`;
-          if (navigator.vibrate) navigator.vibrate(100);
-        }).catch(err => {
-          scanStatus.innerHTML = '⚠️ Bluetooth connection failed. Check device permissions.';
-        });
-      }).catch(err => {
-        scanStatus.innerHTML = '⚠️ Bluetooth scan cancelled or no device selected.';
-      });
-    }
-
-    // Render device list
-    function renderDeviceList() {
-      if (!deviceListContainer) return;
-      if (discoveredDevices.length === 0) {
-        deviceListContainer.innerHTML = `<div class="empty-msg">No devices found. Try scanning again.</div>`;
-        return;
-      }
-
-      let html = '';
-      discoveredDevices.forEach(dev => {
-        const isOff = !dev.isOn;
-        const muteBadge = dev.isMuted ? '<span class="muted-indicator">MUTED</span>' : '';
-        const powerBadge = isOff ? '<span class="power-off-indicator">OFF</span>' : '';
-        const cardClass = isOff ? 'device-card disabled' : 'device-card';
-        const connectedClass = dev.connected ? 'connected' : '';
-        const connectedBadge = dev.connected ? '<span class="connected-badge">✓</span>' : '';
-        
-        html += `
-          <div class="${cardClass} ${connectedClass}" data-device-id="${dev.uniqueId}">
-            <div class="device-icon">${dev.icon}${connectedBadge}</div>
-            <div class="device-info">
-              <div class="device-name">${dev.name} ${muteBadge} ${powerBadge}</div>
-              <div class="device-details">
-                ${dev.brand} · ${dev.type} · ${dev.protocol} · volume ${dev.volume}% ${dev.connected ? '· online' : '· offline'}
-              </div>
+        <div class="scanner-box">
+            <div id="scanner-container">
+                <div class="placeholder" id="placeholder-message">
+                    <span>📸</span>
+                    <p>Press "Start Camera" to scan<br>QR / EAN / UPC / Code128 …</p>
+                </div>
             </div>
-            <div class="device-actions">
-              <input type="range" min="0" max="100" value="${dev.volume}" class="volume-slider" data-id="${dev.uniqueId}" ${isOff || !dev.connected ? 'disabled' : ''}/>
-              <button class="btn-small btn-mute" data-id="${dev.uniqueId}" data-action="mute">${dev.isMuted ? '🔇 Unmute' : '🔇 Mute'}</button>
-              <button class="btn-small btn-off" data-id="${dev.uniqueId}" data-action="off">${dev.isOn ? '⏻ Off' : '⏻ On'}</button>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="startScannerBtn">▶ Start Camera</button>
+            <button class="btn btn-outline" id="stopScannerBtn">⏹ Stop</button>
+        </div>
+
+        <!-- Result panel -->
+        <div class="result-panel" id="resultPanel">
+            <div class="result-label">📦 Product Info</div>
+            <div id="product-name">—</div>
+            <div id="product-details">
+                <span class="detail-badge">🔍 waiting for scan</span>
             </div>
-          </div>
-        `;
-      });
-      deviceListContainer.innerHTML = html;
+            <div class="meta-row">
+                <span class="code-value" id="decodedCode">—</span>
+                <span class="status-badge" id="scanStatus">idle</span>
+            </div>
+            <!-- First short answer: shows quick summary -->
+            <div id="short-answer">⚡ short answer: scan a code</div>
+        </div>
+        <div class="footnote">
+            <span>📌 Supports QR, EAN-13, UPC-A, Code128, Code39, etc.</span>
+        </div>
+    </div>
 
-      // Attach volume slider listeners
-      document.querySelectorAll('.volume-slider').forEach(slider => {
-        slider.addEventListener('input', function(e) {
-          const id = this.dataset.id;
-          const dev = discoveredDevices.find(d => d.uniqueId === id);
-          if (dev && dev.connected) {
-            dev.volume = parseInt(this.value);
-            dev.isOn = true;
-            updateDeviceCardUI(id);
-            if (navigator.vibrate) navigator.vibrate(10);
-          }
-        });
-      });
+    <script>
+        (function() {
+            // ---- DOM refs ----
+            const container = document.getElementById('scanner-container');
+            const placeholder = document.getElementById('placeholder-message');
+            const startBtn = document.getElementById('startScannerBtn');
+            const stopBtn = document.getElementById('stopScannerBtn');
+            const productNameEl = document.getElementById('product-name');
+            const productDetailsEl = document.getElementById('product-details');
+            const decodedCodeEl = document.getElementById('decodedCode');
+            const scanStatusEl = document.getElementById('scanStatus');
+            const shortAnswerEl = document.getElementById('short-answer');
 
-      // Attach mute button listeners
-      document.querySelectorAll('.btn-mute').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          const id = this.dataset.id;
-          const dev = discoveredDevices.find(d => d.uniqueId === id);
-          if (dev) {
-            dev.isMuted = !dev.isMuted;
-            if (dev.isMuted) dev.isOn = true;
-            updateDeviceCardUI(id);
-            renderDeviceList();
-            if (navigator.vibrate) navigator.vibrate(30);
-          }
-        });
-      });
+            let scannerActive = false;
+            let quaggaInitialized = false;
 
-      // Attach power button listeners
-      document.querySelectorAll('.btn-off').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          const id = this.dataset.id;
-          const dev = discoveredDevices.find(d => d.uniqueId === id);
-          if (dev) {
-            dev.isOn = !dev.isOn;
-            if (!dev.isOn) dev.isMuted = false;
-            updateDeviceCardUI(id);
-            renderDeviceList();
-            if (navigator.vibrate) navigator.vibrate(50);
-          }
-        });
-      });
-    }
+            // ---- Mock product database (simulate real lookup) ----
+            // In a real app, you would call an API like Open Food Facts, etc.
+            function lookupProduct(code) {
+                // Clean code: remove common prefix/suffix for better matching
+                const clean = code.replace(/^[^0-9A-Za-z]+/, '').trim();
+                
+                // Mock dataset (first few examples)
+                const mockDB = {
+                    '9780201379624': { name: 'The Pragmatic Programmer', details: 'Andrew Hunt, David Thomas · 2000', short: 'Classic dev book' },
+                    '9780131103627': { name: 'The C Programming Language', details: 'Kernighan & Ritchie · 1988', short: 'K&R C bible' },
+                    '5901234123457': { name: 'Fake Product (test EAN)', details: 'Test EAN-13 · sample', short: 'Test barcode' },
+                    '123456789012': { name: 'Demo QR Code', details: 'Custom QR · demo data', short: 'QR test' },
+                    '5053990174202': { name: 'Fanta Lemon', details: 'Soft drink, 330ml', short: 'Fanta lemon' },
+                    '2000000000000': { name: 'Sample UPC', details: 'UPC-A test product', short: 'UPC sample' },
+                    '4006381333931': { name: 'Nutella', details: 'Ferrero, 400g', short: 'Nutella jar' },
+                    '7311180000000': { name: 'IKEA Blue Bag', details: 'FRAKTA, 70L', short: 'IKEA bag' },
+                    'https://example.com': { name: 'Example QR (URL)', details: 'Link: example.com', short: 'URL: example.com' },
+                };
 
-    // Update individual card UI
-    function updateDeviceCardUI(id) {
-      const dev = discoveredDevices.find(d => d.uniqueId === id);
-      if (!dev) return;
-      const card = document.querySelector(`.device-card[data-device-id="${id}"]`);
-      if (card) {
-        const details = card.querySelector('.device-details');
-        const nameEl = card.querySelector('.device-name');
-        if (details) {
-          details.textContent = `${dev.brand} · ${dev.type} · ${dev.protocol} · volume ${dev.volume}% ${dev.connected ? '· online' : '· offline'}`;
-        }
-        if (nameEl) {
-          nameEl.innerHTML = `${dev.name} ${dev.isMuted ? '<span class="muted-indicator">MUTED</span>' : ''} ${!dev.isOn ? '<span class="power-off-indicator">OFF</span>' : ''}`;
-        }
-        const muteBtn = card.querySelector('.btn-mute');
-        if (muteBtn) {
-          muteBtn.textContent = dev.isMuted ? '🔇 Unmute' : '🔇 Mute';
-        }
-        const offBtn = card.querySelector('.btn-off');
-        if (offBtn) {
-          offBtn.textContent = dev.isOn ? '⏻ Off' : '⏻ On';
-        }
-        const slider = card.querySelector('.volume-slider');
-        if (slider) {
-          slider.value = dev.volume;
-          slider.disabled = !dev.isOn || !dev.connected;
-        }
-        if (!dev.isOn) {
-          card.classList.add('disabled');
-        } else {
-          card.classList.remove('disabled');
-        }
-      }
-    }
+                // Try exact match, then fallback to partial match (first 8 chars etc.)
+                let entry = mockDB[clean] || mockDB[code];
+                if (!entry) {
+                    // try partial matching for longer codes (like QR with embedded text)
+                    for (const [key, val] of Object.entries(mockDB)) {
+                        if (code.includes(key) || key.includes(code)) {
+                            entry = val;
+                            break;
+                        }
+                    }
+                }
 
-    // Global mute all
-    function muteAllDevices() {
-      discoveredDevices.forEach(dev => {
-        dev.isMuted = true;
-        dev.isOn = true;
-      });
-      renderDeviceList();
-      scanStatus.innerHTML = `<span style="color:#fbbf24;">🔇 all ${discoveredDevices.length} devices muted</span>`;
-      if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-    }
+                if (entry) {
+                    return {
+                        name: entry.name,
+                        details: entry.details || 'Product found in mock DB',
+                        short: entry.short || `${entry.name} (scanned)`
+                    };
+                } else {
+                    // fallback: generate smart placeholder
+                    let shortSummary = `Code: ${code.slice(0,12)}${code.length>12?'…':''}`;
+                    return {
+                        name: `📋 ${code.slice(0, 16)}${code.length>16?'…':''}`,
+                        details: `Barcode/QR · format: ${detectFormat(code)}`,
+                        short: shortSummary
+                    };
+                }
+            }
 
-    // Global restore
-    function restoreAllDevices() {
-      discoveredDevices.forEach(dev => {
-        dev.isMuted = false;
-        dev.isOn = true;
-        dev.volume = dev.defaultVolume || 50;
-      });
-      renderDeviceList();
-      scanStatus.innerHTML = `<span class="pulse-dot"></span> 🔊 all devices restored`;
-      if (navigator.vibrate) navigator.vibrate(100);
-    }
+            // helper to guess format (just for display)
+            function detectFormat(code) {
+                if (/^\d{13}$/.test(code)) return 'EAN-13';
+                if (/^\d{12}$/.test(code)) return 'UPC-A';
+                if (/^\d{8}$/.test(code)) return 'EAN-8';
+                if (/^[A-Z0-9\-_]+$/.test(code) && code.length > 6) return 'QR / Code128';
+                return 'auto';
+            }
 
-    // Rescan
-    function rescan() {
-      discoveredDevices = [];
-      renderDeviceList();
-      globalControlPanel.style.display = 'none';
-      scanStatus.innerHTML = '<span class="pulse-dot"></span> rescanning...';
-      performScan();
-    }
+            // ---- Update UI with product data ----
+            function displayProductData(code) {
+                const product = lookupProduct(code);
+                productNameEl.textContent = product.name || 'Unknown item';
+                // details: show extra info
+                productDetailsEl.innerHTML = `
+                    <span class="detail-badge">${product.details || 'no details'}</span>
+                    <span class="detail-badge">${detectFormat(code)}</span>
+                `;
+                decodedCodeEl.textContent = code;
+                scanStatusEl.textContent = '✅ scanned';
+                scanStatusEl.style.background = '#1f8b4c';
+                // First short answer: product short description
+                shortAnswerEl.innerHTML = `⚡ ${product.short || 'product identified'}`;
+            }
 
-    // Test vibration
-    function testVibration() {
-      if (navigator.vibrate) {
-        navigator.vibrate([100, 50, 100, 50, 200]);
-        scanStatus.innerHTML = '📳 Vibration test activated';
-        setTimeout(() => {
-          scanStatus.innerHTML = '<span class="pulse-dot"></span> ready';
-        }, 1000);
-      }
-    }
+            // ---- Quagga onDetected callback ----
+            function onCodeDetected(result) {
+                if (!scannerActive) return;
+                const code = result.codeResult.code;
+                if (code) {
+                    displayProductData(code);
+                    // Optionally pause scanning after first detection? we keep continuous.
+                    // but we set a flag to avoid flooding.
+                }
+            }
 
-    // ---------- Event listeners ----------
-    scanBtn.addEventListener('click', performScan);
-    bluetoothBtn.addEventListener('click', performBluetoothScan);
-    killAllBtn.addEventListener('click', muteAllDevices);
-    restoreAllBtn.addEventListener('click', restoreAllDevices);
-    rescanBtn.addEventListener('click', rescan);
-    vibrateTestBtn.addEventListener('click', testVibration);
+            // ---- Initialize Quagga ----
+            function initQuagga() {
+                if (quaggaInitialized) {
+                    // if already initialized, just restart
+                    Quagga.stop();
+                    Quagga.start();
+                    return;
+                }
 
-    // ---------- Initialize ----------
-    function init() {
-      checkAPIs();
-      scanStatus.innerHTML = '<span class="pulse-dot"></span> auto‑scanning...';
-      
-      // Auto-scan on load
-      setTimeout(() => {
-        performScan();
-      }, 1000);
-    }
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: container,
+                        constraints: {
+                            facingMode: "environment",
+                            width: { ideal: 640 },
+                            height: { ideal: 480 },
+                        },
+                    },
+                    decoder: {
+                        readers: [
+                            "code_128_reader",
+                            "ean_reader",
+                            "ean_8_reader",
+                            "upc_reader",
+                            "code_39_reader",
+                            "code_93_reader",
+                            "codabar_reader",
+                            "qr_reader"  // QR support
+                        ],
+                        multiple: false,
+                    },
+                    locate: true,
+                }, function(err) {
+                    if (err) {
+                        console.error("Quagga init error:", err);
+                        scanStatusEl.textContent = '⚠️ camera error';
+                        scanStatusEl.style.background = '#a13d3d';
+                        shortAnswerEl.innerHTML = '⚠️ Could not access camera. Check permissions.';
+                        return;
+                    }
+                    quaggaInitialized = true;
+                    Quagga.start();
+                    scannerActive = true;
+                    updateUIForActiveScan(true);
+                    // remove placeholder
+                    if (placeholder) placeholder.style.display = 'none';
+                    scanStatusEl.textContent = '📷 scanning...';
+                    scanStatusEl.style.background = '#1f6390';
+                });
 
-    init();
-  })();
-</script>
+                Quagga.onDetected(onCodeDetected);
+            }
+
+            // ---- UI helpers ----
+            function updateUIForActiveScan(active) {
+                startBtn.disabled = active;
+                if (active) {
+                    startBtn.textContent = '⏳ Scanning';
+                    startBtn.style.opacity = '0.7';
+                } else {
+                    startBtn.textContent = '▶ Start Camera';
+                    startBtn.style.opacity = '1';
+                }
+            }
+
+            // ---- Start scanner ----
+            function startScanner() {
+                if (scannerActive) {
+                    // if already active, maybe restart
+                    Quagga.stop();
+                    Quagga.start();
+                    return;
+                }
+                // If placeholder visible, remove
+                if (placeholder) placeholder.style.display = 'none';
+                initQuagga();
+            }
+
+            // ---- Stop scanner ----
+            function stopScanner() {
+                if (quaggaInitialized) {
+                    Quagga.stop();
+                    scannerActive = false;
+                    updateUIForActiveScan(false);
+                    scanStatusEl.textContent = '⏸ stopped';
+                    scanStatusEl.style.background = '#5f6f7e';
+                    // show placeholder again
+                    if (placeholder) {
+                        placeholder.style.display = 'flex';
+                        placeholder.innerHTML = `<span>📷</span><p>Camera stopped</p>`;
+                    }
+                    // reset product display? we keep last result
+                    // but we can show idle
+                    if (!document.getElementById('product-name').textContent.trim() || document.getElementById('product-name').textContent === '—') {
+                        // keep as is
+                    }
+                } else {
+                    // if not initialized, just reset UI
+                    scannerActive = false;
+                    updateUIForActiveScan(false);
+                    scanStatusEl.textContent = 'idle';
+                    scanStatusEl.style.background = '#5f6f7e';
+                    if (placeholder) {
+                        placeholder.style.display = 'flex';
+                        placeholder.innerHTML = `<span>📸</span><p>Press "Start Camera" to scan</p>`;
+                    }
+                }
+            }
+
+            // ---- attach events ----
+            startBtn.addEventListener('click', startScanner);
+            stopBtn.addEventListener('click', stopScanner);
+
+            // ---- On page load, show placeholder ----
+            // reset UI
+            stopScanner(); // ensures clean state
+
+            // ---- if user wants to test without camera (demo fallback) ----
+            // Pressing "Start" will request camera, but we also add a hidden demo:
+            // double click on result panel to manually set a test QR
+            const resultPanel = document.getElementById('resultPanel');
+            resultPanel.addEventListener('dblclick', function(e) {
+                // demo: set a sample product
+                const demoCode = '9780201379624'; // Pragmatic Programmer
+                displayProductData(demoCode);
+                shortAnswerEl.innerHTML = '⚡ (demo) The Pragmatic Programmer';
+                scanStatusEl.textContent = '📋 demo';
+                scanStatusEl.style.background = '#b17d3a';
+            });
+
+            // also if scanning fails, we keep ui friendly
+            console.log('📲 Barcode/QR reader ready. Double-click result panel to load demo.');
+        })();
+    </script>
 </body>
 </html>
