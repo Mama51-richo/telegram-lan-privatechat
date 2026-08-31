@@ -1,503 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QR & Barcode Reader · Product Lookup</title>
-    <!-- Use html5-qrcode for better QR detection -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background: #0b1a2f;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 16px;
-        }
-        .card {
-            max-width: 640px;
-            width: 100%;
-            background: #f8faff;
-            border-radius: 40px;
-            padding: 24px 24px 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        }
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #0a1e32;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        h1 small {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: #2a4b6e;
-            margin-left: auto;
-            background: #dce6f2;
-            padding: 4px 14px;
-            border-radius: 40px;
-        }
-        .scanner-box {
-            background: #111d2b;
-            border-radius: 28px;
-            padding: 12px;
-            margin: 12px 0 16px;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
-        }
-        #reader {
-            width: 100%;
-            aspect-ratio: 1/0.9;
-            background: #1a2a3a;
-            border-radius: 20px;
-            overflow: hidden;
-            min-height: 240px;
-        }
-        #reader video {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-        }
-        .controls {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 16px 0 8px;
-        }
-        .btn {
-            background: #eef3fc;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #0b1a2f;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            flex: 1 1 auto;
-            justify-content: center;
-            border: 1px solid transparent;
-        }
-        .btn-primary {
-            background: #1e4b6e;
-            color: white;
-            box-shadow: 0 6px 12px rgba(20, 60, 100, 0.3);
-        }
-        .btn-primary:hover { background: #123a57; }
-        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #2d4b6b;
-            color: #1e3b57;
-        }
-        .btn-outline:hover { background: #dce6f2; }
-        .btn-danger {
-            background: #a13d3d;
-            color: white;
-        }
-        .btn-danger:hover { background: #7a2e2e; }
-        .result-panel {
-            margin-top: 22px;
-            background: #eaf1fb;
-            border-radius: 28px;
-            padding: 20px 22px;
-            border-left: 6px solid #1f6390;
-        }
-        .result-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #2f577b;
-            font-weight: 600;
-        }
-        #product-name {
-            font-size: 1.9rem;
-            font-weight: 700;
-            color: #03101e;
-            line-height: 1.2;
-            margin: 6px 0 4px;
-            word-break: break-word;
-        }
-        #product-details {
-            color: #1b3855;
-            font-size: 1rem;
-            margin-top: 6px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 14px;
-        }
-        .detail-badge {
-            background: #d2e1f5;
-            padding: 4px 14px;
-            border-radius: 60px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #07273f;
-        }
-        .meta-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 14px;
-            border-top: 1px solid #c8d9ee;
-            padding-top: 14px;
-            font-size: 0.9rem;
-            color: #1f3f5a;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .code-value {
-            background: #ffffffb0;
-            padding: 4px 14px;
-            border-radius: 60px;
-            font-family: 'Courier New', monospace;
-            font-weight: 500;
-            font-size: 0.85rem;
-            max-width: 220px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .status-badge {
-            padding: 2px 16px;
-            border-radius: 60px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            background: #5f6f7e;
-        }
-        .status-badge.scanning { background: #1f6390; }
-        .status-badge.success { background: #1f8b4c; }
-        .status-badge.error { background: #a13d3d; }
-        .footnote {
-            margin-top: 14px;
-            color: #3d5f7e;
-            font-size: 0.85rem;
-            text-align: center;
-            border-top: 1px solid #cddef2;
-            padding-top: 14px;
-        }
-        #short-answer {
-            background: #0b1a2f10;
-            border-radius: 60px;
-            padding: 8px 18px;
-            font-weight: 500;
-            display: inline-block;
-            margin-top: 6px;
-            color: #04243b;
-            border: 1px dashed #1f639080;
-            width: 100%;
-        }
-        .error-msg {
-            color: #a13d3d;
-            background: #fde8e8;
-            padding: 8px 16px;
-            border-radius: 12px;
-            margin: 8px 0;
-            display: none;
-        }
-        .debug-info {
-            font-size: 0.75rem;
-            color: #5f7a94;
-            margin-top: 6px;
-            word-break: break-all;
-        }
-        @media (max-width: 480px) {
-            .card { padding: 16px; }
-            #product-name { font-size: 1.5rem; }
-            .code-value { max-width: 140px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>
-            📷 QR Scanner
-            <small>Product Lookup</small>
-        </h1>
+// api/webhook.js
 
-        <div class="scanner-box">
-            <div id="reader"></div>
-        </div>
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
 
-        <div class="controls">
-            <button class="btn btn-primary" id="startBtn">▶ Start Camera</button>
-            <button class="btn btn-danger" id="stopBtn">⏹ Stop</button>
-        </div>
+  try {
+    const body = req.body;
 
-        <div id="error-msg" class="error-msg">⚠️ Camera error: Please check permissions</div>
+    const message = body?.message;
+    const chatId = message?.chat?.id;
+    const userMessage = message?.text;
 
-        <div class="result-panel">
-            <div class="result-label">📦 Product Info</div>
-            <div id="product-name">—</div>
-            <div id="product-details">
-                <span class="detail-badge">🔍 waiting for scan</span>
-            </div>
-            <div class="meta-row">
-                <span class="code-value" id="decodedCode">—</span>
-                <span class="status-badge" id="scanStatus">idle</span>
-            </div>
-            <div id="short-answer">⚡ short answer: scan a QR code</div>
-            <div id="debug-info" class="debug-info"></div>
-        </div>
-        <div class="footnote">
-            <span>📌 Works best with QR codes. Also supports EAN, UPC, Code128, etc.</span>
-        </div>
-    </div>
+    if (!chatId || !userMessage) {
+      return res.status(200).json({ ok: true });
+    }
 
-    <script>
-        (function() {
-            // ---- DOM refs ----
-            const readerElement = document.getElementById('reader');
-            const startBtn = document.getElementById('startBtn');
-            const stopBtn = document.getElementById('stopBtn');
-            const errorMsg = document.getElementById('error-msg');
-            const productNameEl = document.getElementById('product-name');
-            const productDetailsEl = document.getElementById('product-details');
-            const decodedCodeEl = document.getElementById('decodedCode');
-            const scanStatusEl = document.getElementById('scanStatus');
-            const shortAnswerEl = document.getElementById('short-answer');
-            const debugInfoEl = document.getElementById('debug-info');
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+    const openaiApiKey = process.env.OPENAI_API_KEY;
 
-            let html5QrCode = null;
-            let isScanning = false;
+    if (!telegramToken || !openaiApiKey) {
+      console.error("Missing environment variables");
+      return res.status(500).json({
+        error: "Server configuration error"
+      });
+    }
 
-            // ---- Mock Product Database ----
-            const productDB = {
-                // QR codes (URLs, text, etc.)
-                'https://example.com': { name: 'Example Website', details: 'QR points to example.com', short: 'Example URL' },
-                'https://github.com': { name: 'GitHub', details: 'Code hosting platform', short: 'GitHub' },
-                'https://stackoverflow.com': { name: 'Stack Overflow', details: 'Developer Q&A', short: 'Stack Overflow' },
-                'Hello World': { name: 'Hello QR', details: 'Text: Hello World', short: 'Hello World text' },
-                
-                // Barcodes (EAN, UPC, etc.)
-                '9780201379624': { name: 'The Pragmatic Programmer', details: 'Andrew Hunt, David Thomas · 2000', short: 'Classic dev book' },
-                '9780131103627': { name: 'The C Programming Language', details: 'Kernighan & Ritchie · 1988', short: 'K&R C bible' },
-                '5901234123457': { name: 'Test Product (EAN)', details: 'Test EAN-13 barcode', short: 'Test barcode' },
-                '5053990174202': { name: 'Fanta Lemon', details: 'Soft drink, 330ml', short: 'Fanta lemon' },
-                '4006381333931': { name: 'Nutella', details: 'Ferrero, 400g', short: 'Nutella jar' },
-                '7311180000000': { name: 'IKEA Blue Bag', details: 'FRAKTA, 70L', short: 'IKEA bag' },
-                '123456789012': { name: 'Demo QR Code', details: 'Custom QR · demo data', short: 'QR test' },
-                '2000000000000': { name: 'Sample UPC', details: 'UPC-A test product', short: 'UPC sample' },
-            };
-
-            function lookupProduct(code) {
-                // Clean the code
-                const clean = code.trim();
-                
-                // Check for exact match
-                let entry = productDB[clean];
-                
-                // If not found, try case-insensitive
-                if (!entry) {
-                    const lowerClean = clean.toLowerCase();
-                    for (const [key, val] of Object.entries(productDB)) {
-                        if (key.toLowerCase() === lowerClean) {
-                            entry = val;
-                            break;
-                        }
-                    }
-                }
-                
-                // If still not found, try partial match
-                if (!entry) {
-                    for (const [key, val] of Object.entries(productDB)) {
-                        if (clean.includes(key) || key.includes(clean)) {
-                            entry = val;
-                            break;
-                        }
-                    }
-                }
-
-                if (entry) {
-                    return {
-                        name: entry.name,
-                        details: entry.details || 'Product found in database',
-                        short: entry.short || `${entry.name} (scanned)`
-                    };
-                } else {
-                    // Generate fallback
-                    const shortCode = clean.length > 16 ? clean.slice(0, 16) + '…' : clean;
-                    const format = detectFormat(clean);
-                    return {
-                        name: `📋 ${shortCode}`,
-                        details: `Format: ${format}`,
-                        short: `Code: ${shortCode}`
-                    };
-                }
+    // Send message to OpenAI
+    const openaiResponse = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${openaiApiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are a helpful Telegram AI assistant."
+            },
+            {
+              role: "user",
+              content: userMessage
             }
+          ]
+        })
+      }
+    );
 
-            function detectFormat(code) {
-                if (/^\d{13}$/.test(code)) return 'EAN-13';
-                if (/^\d{12}$/.test(code)) return 'UPC-A';
-                if (/^\d{8}$/.test(code)) return 'EAN-8';
-                if (/^https?:\/\//.test(code)) return 'QR (URL)';
-                if (code.length > 10) return 'QR Code';
-                return 'Barcode';
-            }
+    if (!openaiResponse.ok) {
+      const errorText = await openaiResponse.text();
+      console.error("OpenAI error:", errorText);
 
-            function displayProductData(code) {
-                const product = lookupProduct(code);
-                productNameEl.textContent = product.name || 'Unknown';
-                productDetailsEl.innerHTML = `
-                    <span class="detail-badge">${product.details || 'No details'}</span>
-                    <span class="detail-badge">${detectFormat(code)}</span>
-                `;
-                decodedCodeEl.textContent = code;
-                scanStatusEl.textContent = '✅ scanned';
-                scanStatusEl.className = 'status-badge success';
-                shortAnswerEl.innerHTML = `⚡ ${product.short || 'product identified'}`;
-                debugInfoEl.textContent = `Last scanned: ${new Date().toLocaleTimeString()}`;
-            }
+      return res.status(200).json({
+        ok: true
+      });
+    }
 
-            // ---- QR Scanner ----
-            function onScanSuccess(decodedText, decodedResult) {
-                console.log('✅ Scanned:', decodedText);
-                if (!isScanning) return;
-                
-                // Vibrate on scan if supported
-                if (navigator.vibrate) navigator.vibrate(100);
-                
-                displayProductData(decodedText);
-                
-                // Optional: Auto-stop after 3 successful scans? No, keep scanning.
-            }
+    const openaiData = await openaiResponse.json();
 
-            function onScanError(errorMessage) {
-                // Ignore errors (they happen frequently during scanning)
-                // console.warn('Scan error:', errorMessage);
-            }
+    const reply =
+      openaiData.choices?.[0]?.message?.content ||
+      "Sorry, I could not generate a response.";
 
-            async function startScanner() {
-                if (isScanning) {
-                    console.log('Already scanning');
-                    return;
-                }
+    // Send response back to Telegram
+    const telegramResponse = await fetch(
+      `https://api.telegram.org/bot${telegramToken}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: reply
+        })
+      }
+    );
 
-                try {
-                    errorMsg.style.display = 'none';
-                    
-                    // Check if camera is available
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    const cameras = devices.filter(device => device.kind === 'videoinput');
-                    
-                    if (cameras.length === 0) {
-                        throw new Error('No camera found on this device');
-                    }
+    if (!telegramResponse.ok) {
+      console.error(
+        "Telegram error:",
+        await telegramResponse.text()
+      );
+    }
 
-                    // Initialize the scanner
-                    html5QrCode = new Html5Qrcode("reader");
-                    
-                    const config = {
-                        fps: 15,
-                        qrbox: { width: 250, height: 250 },
-                        aspectRatio: 1.0,
-                        formatsToSupport: [
-                            Html5QrcodeSupportedFormats.QR_CODE,
-                            Html5QrcodeSupportedFormats.EAN_13,
-                            Html5QrcodeSupportedFormats.EAN_8,
-                            Html5QrcodeSupportedFormats.UPC_A,
-                            Html5QrcodeSupportedFormats.CODE_128,
-                            Html5QrcodeSupportedFormats.CODE_39,
-                        ]
-                    };
+    return res.status(200).json({
+      ok: true
+    });
 
-                    await html5QrCode.start(
-                        { facingMode: "environment" },
-                        config,
-                        onScanSuccess,
-                        onScanError
-                    );
+  } catch (error) {
+    console.error("Webhook error:", error);
 
-                    isScanning = true;
-                    startBtn.disabled = true;
-                    startBtn.textContent = '🔄 Scanning...';
-                    scanStatusEl.textContent = '📷 scanning...';
-                    scanStatusEl.className = 'status-badge scanning';
-                    debugInfoEl.textContent = `Camera started at ${new Date().toLocaleTimeString()}`;
-                    
-                    console.log('✅ Scanner started successfully');
-
-                } catch (err) {
-                    console.error('❌ Error starting scanner:', err);
-                    errorMsg.style.display = 'block';
-                    errorMsg.textContent = `⚠️ ${err.message || 'Could not start camera'}`;
-                    scanStatusEl.textContent = '❌ error';
-                    scanStatusEl.className = 'status-badge error';
-                    startBtn.disabled = false;
-                    startBtn.textContent = '▶ Start Camera';
-                }
-            }
-
-            async function stopScanner() {
-                if (html5QrCode && isScanning) {
-                    try {
-                        await html5QrCode.stop();
-                        await html5QrCode.clear();
-                        isScanning = false;
-                        startBtn.disabled = false;
-                        startBtn.textContent = '▶ Start Camera';
-                        scanStatusEl.textContent = '⏸ stopped';
-                        scanStatusEl.className = 'status-badge';
-                        debugInfoEl.textContent = `Stopped at ${new Date().toLocaleTimeString()}`;
-                        console.log('⏹ Scanner stopped');
-                    } catch (err) {
-                        console.warn('Error stopping:', err);
-                    }
-                } else {
-                    isScanning = false;
-                    startBtn.disabled = false;
-                    startBtn.textContent = '▶ Start Camera';
-                    scanStatusEl.textContent = 'idle';
-                    scanStatusEl.className = 'status-badge';
-                }
-            }
-
-            // ---- Event listeners ----
-            startBtn.addEventListener('click', startScanner);
-            stopBtn.addEventListener('click', stopScanner);
-
-            // ---- Keyboard shortcut: Space to start/stop ----
-            document.addEventListener('keydown', (e) => {
-                if (e.key === ' ' && e.target === document.body) {
-                    e.preventDefault();
-                    if (isScanning) {
-                        stopScanner();
-                    } else {
-                        startScanner();
-                    }
-                }
-            });
-
-            // ---- Demo: Double-click result panel to load sample ----
-            document.querySelector('.result-panel').addEventListener('dblclick', function() {
-                const demoCode = 'https://github.com';
-                displayProductData(demoCode);
-                shortAnswerEl.innerHTML = '⚡ (demo) GitHub';
-                scanStatusEl.textContent = '📋 demo';
-                scanStatusEl.className = 'status-badge';
-                debugInfoEl.textContent = `Demo loaded at ${new Date().toLocaleTimeString()}`;
-            });
-
-            // ---- Initial state ----
-            console.log('📲 QR Scanner ready! Double-click result panel for demo.');
-            console.log('💡 Press SPACE to start/stop camera.');
-        })();
-    </script>
-</body>
-</html>
+    return res.status(200).json({
+      ok: false
+    });
+  }
+}
