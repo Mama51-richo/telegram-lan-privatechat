@@ -15,25 +15,18 @@
         }
 
         :root {
-            /* Customer Storefront Colors */
             --customer-bg: #F8F5F0;
             --customer-card: #FFFFFF;
             --customer-accent: #2B1A13;
             --customer-gold: #C7A45A;
-            
-            /* Retail Hub Colors */
             --retail-bg: #F4F6F8;
             --retail-card: rgba(255, 255, 255, 0.95);
             --retail-accent: #1F2A1E;
             --retail-emerald: #198754;
-            
-            /* Executive Center Colors */
             --exec-bg: #1A0F08;
             --exec-card: #24150F;
             --exec-gold: #C7A45A;
             --exec-ruby: #A62B35;
-            
-            /* Common */
             --shadow: 0 2px 8px rgba(0,0,0,0.08);
             --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
             --radius: 12px;
@@ -48,7 +41,6 @@
             padding-bottom: 80px;
         }
 
-        /* Portal Transitions */
         .portal {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -63,7 +55,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header Styles */
         .header {
             background: linear-gradient(135deg, #2B1A13 0%, #3d2519 100%);
             color: white;
@@ -130,6 +121,7 @@
             font-size: 12px;
             position: relative;
             z-index: 1;
+            flex-wrap: wrap;
         }
 
         .contact-strip a {
@@ -140,7 +132,6 @@
             gap: 4px;
         }
 
-        /* Language Selector */
         .lang-selector {
             display: flex;
             justify-content: center;
@@ -148,6 +139,7 @@
             padding: 12px;
             background: white;
             border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
         }
 
         .lang-chip {
@@ -164,7 +156,6 @@
             color: white;
         }
 
-        /* Portal Selector */
         .portal-selector {
             padding: 20px;
             display: none;
@@ -207,7 +198,6 @@
             color: #666;
         }
 
-        /* Metric Grid */
         .metric-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -260,7 +250,6 @@
         .metric-change.positive { color: var(--retail-emerald); }
         .metric-change.negative { color: var(--exec-ruby); }
 
-        /* Action Grid */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -292,7 +281,6 @@
             font-weight: 500;
         }
 
-        /* Product Grid */
         .section-title {
             padding: 16px 16px 8px;
             font-size: 18px;
@@ -403,7 +391,6 @@
             transform: scale(1.1);
         }
 
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -454,7 +441,6 @@
             text-align: center;
         }
 
-        /* Loyalty Section */
         .loyalty-card {
             background: linear-gradient(135deg, var(--customer-gold) 0%, #d4b36a 100%);
             color: white;
@@ -505,7 +491,6 @@
             opacity: 0.9;
         }
 
-        /* Cart Section */
         .cart-item {
             background: white;
             border-radius: var(--radius);
@@ -617,7 +602,6 @@
             transform: translateY(-2px);
         }
 
-        /* Executive Center Styles */
         .exec-portal {
             background: var(--exec-bg);
             color: white;
@@ -659,7 +643,6 @@
             color: var(--exec-gold);
         }
 
-        /* Retail Hub Styles */
         .retail-portal {
             background: var(--retail-bg);
         }
@@ -693,7 +676,6 @@
             50% { opacity: 0.3; }
         }
 
-        /* AI Insights */
         .ai-insight-card {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
@@ -728,9 +710,8 @@
             border-bottom: none;
         }
 
-        /* Tables */
         .data-table {
-            width: 100%;
+            width: calc(100% - 32px);
             background: white;
             border-radius: var(--radius);
             overflow: hidden;
@@ -772,7 +753,6 @@
         .stock-badge.medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
         .stock-badge.low { background: rgba(166, 43, 53, 0.15); color: var(--exec-ruby); }
 
-        /* Floating Action Button */
         .fab {
             position: fixed;
             bottom: 100px;
@@ -797,7 +777,6 @@
             transform: scale(1.1);
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -911,7 +890,6 @@
             flex: 1;
         }
 
-        /* Top Performer Card */
         .performer-card {
             background: linear-gradient(135deg, var(--customer-gold) 0%, #d4b36a 100%);
             color: white;
@@ -956,7 +934,6 @@
             font-weight: 700;
         }
 
-        /* Delivery Tracking */
         .delivery-card {
             background: white;
             border-radius: var(--radius);
@@ -1005,7 +982,6 @@
             font-weight: 600;
         }
 
-        /* Order List */
         .order-item {
             background: white;
             border-radius: var(--radius);
@@ -1054,13 +1030,14 @@
             font-size: 12px;
         }
 
-        /* Utility Classes */
-        .text-center { text-align: center; }
-        .mb-16 { margin-bottom: 16px; }
-        .mt-16 { margin-top: 16px; }
-        .p-16 { padding: 16px; }
+        .tab-content {
+            display: none;
+        }
 
-        /* Responsive */
+        .tab-content.active {
+            display: block;
+        }
+
         @media (max-width: 380px) {
             .metric-grid { grid-template-columns: 1fr; }
             .action-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1124,158 +1101,218 @@
             <div class="lang-chip">Soomaali</div>
         </div>
 
-        <!-- Loyalty Card -->
-        <div class="loyalty-card">
-            <div class="loyalty-header">
-                <div class="loyalty-badge">
-                    <i class="fas fa-star"></i>
-                    <span>Gold Member</span>
+        <!-- Customer Tabs -->
+        <div id="customerHome" class="tab-content active">
+            <div class="loyalty-card">
+                <div class="loyalty-header">
+                    <div class="loyalty-badge">
+                        <i class="fas fa-star"></i>
+                        <span id="loyaltyTier">Gold Member</span>
+                    </div>
+                    <i class="fas fa-gift"></i>
                 </div>
-                <i class="fas fa-gift"></i>
+                <div class="loyalty-points"><span id="loyaltyPoints">2,450</span> pts</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="loyaltyProgress" style="width: 82%"></div>
+                </div>
+                <div class="progress-text" id="loyaltyProgressText">550 pts until next reward (3,000 pts)</div>
             </div>
-            <div class="loyalty-points">2,450 pts</div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: 82%"></div>
+
+            <div class="action-grid">
+                <div class="action-card" onclick="showModal('rewardsModal')">
+                    <div class="action-icon">🎁</div>
+                    <div class="action-label">Rewards</div>
+                </div>
+                <div class="action-card" onclick="showModal('tutorialsModal')">
+                    <div class="action-icon">📚</div>
+                    <div class="action-label">Tutorials</div>
+                </div>
+                <div class="action-card" onclick="showModal('referModal')">
+                    <div class="action-icon">🔗</div>
+                    <div class="action-label">Refer & Earn</div>
+                </div>
             </div>
-            <div class="progress-text">550 pts until next reward (3,000 pts)</div>
+
+            <div class="section-title">Today Overview</div>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-icon amber">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="metric-value">28</div>
+                    <div class="metric-label">Orders</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +18% vs yesterday
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon gold">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="metric-value">42.3K</div>
+                    <div class="metric-label">Revenue (Br)</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +12% vs yesterday
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon green">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-value">32 min</div>
+                    <div class="metric-label">Avg. Fulfillment</div>
+                    <div class="metric-change negative">
+                        <i class="fas fa-arrow-up"></i> +8% vs yesterday
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon blue">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="metric-value">4.8</div>
+                    <div class="metric-label">Customer Rating</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +0.3 vs yesterday
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Out for Delivery</div>
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">3 Active Deliveries</div>
+                        <div style="font-size: 12px; color: #666;">View Map</div>
+                    </div>
+                    <div class="delivery-status active">
+                        <i class="fas fa-truck"></i> On the way
+                    </div>
+                </div>
+                <div class="driver-info">
+                    <div class="driver-avatar">A</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">Driver Alemu</div>
+                        <div style="font-size: 12px; color: #666;">ETA: 15 minutes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Top Performer</div>
+            <div class="performer-card">
+                <div class="performer-avatar">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="performer-info">
+                    <div class="performer-name">Hewot M.</div>
+                    <div class="performer-role">Sales Associate</div>
+                    <div class="performer-stats">58.4K Br <span style="font-size: 12px; opacity: 0.9;">↑ 18%</span></div>
+                </div>
+            </div>
+
+            <div class="section-title">Shop Products</div>
+            <div class="category-pills">
+                <div class="category-pill active" onclick="filterProducts('All')">All</div>
+                <div class="category-pill" onclick="filterProducts('Skincare')">Skincare</div>
+                <div class="category-pill" onclick="filterProducts('Makeup')">Makeup</div>
+                <div class="category-pill" onclick="filterProducts('Fragrance')">Fragrance</div>
+                <div class="category-pill" onclick="filterProducts('Haircare')">Haircare</div>
+                <div class="category-pill" onclick="filterProducts('Detergent')">Detergent</div>
+            </div>
+
+            <div class="product-grid" id="productGrid"></div>
+
+            <div style="padding: 16px; text-align: center;">
+                <button class="btn btn-secondary" onclick="showModal('customOrderModal')">
+                    <i class="fas fa-camera"></i> Can't find a product? Upload photo
+                </button>
+            </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="action-grid">
-            <div class="action-card" onclick="showModal('rewardsModal')">
-                <div class="action-icon">🎁</div>
-                <div class="action-label">Rewards</div>
-            </div>
-            <div class="action-card" onclick="showModal('tutorialsModal')">
-                <div class="action-icon">📚</div>
-                <div class="action-label">Tutorials</div>
-            </div>
-            <div class="action-card" onclick="showModal('referModal')">
-                <div class="action-icon">🔗</div>
-                <div class="action-label">Refer & Earn</div>
-            </div>
+        <div id="customerOrders" class="tab-content">
+            <div class="section-title">My Orders</div>
+            <div id="customerOrdersList"></div>
         </div>
 
-        <!-- Today Overview -->
-        <div class="section-title">Today Overview</div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-icon amber">
-                    <i class="fas fa-shopping-bag"></i>
+        <div id="customerCart" class="tab-content">
+            <div class="section-title">Shopping Cart</div>
+            <div id="cartItems"></div>
+            <div id="cartSummary"></div>
+        </div>
+
+        <div id="customerLoyalty" class="tab-content">
+            <div class="section-title">Loyalty & Rewards</div>
+            <div class="loyalty-card">
+                <div class="loyalty-header">
+                    <div class="loyalty-badge">
+                        <i class="fas fa-star"></i>
+                        <span id="loyaltyTier2">Gold Member</span>
+                    </div>
+                    <i class="fas fa-gift"></i>
                 </div>
-                <div class="metric-value">28</div>
-                <div class="metric-label">Orders</div>
-                <div class="metric-change positive">
-                    <i class="fas fa-arrow-up"></i> +18% vs yesterday
+                <div class="loyalty-points"><span id="loyaltyPoints2">2,450</span> pts</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="loyaltyProgress2" style="width: 82%"></div>
                 </div>
+                <div class="progress-text" id="loyaltyProgressText2">550 pts until next reward (3,000 pts)</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon gold">
-                    <i class="fas fa-coins"></i>
+
+            <div class="action-grid">
+                <div class="action-card" onclick="showModal('rewardsModal')">
+                    <div class="action-icon">🎁</div>
+                    <div class="action-label">Redeem Rewards</div>
                 </div>
-                <div class="metric-value">42.3K</div>
-                <div class="metric-label">Revenue (Br)</div>
-                <div class="metric-change positive">
-                    <i class="fas fa-arrow-up"></i> +12% vs yesterday
+                <div class="action-card" onclick="showModal('referModal')">
+                    <div class="action-icon">🔗</div>
+                    <div class="action-label">Refer Friends</div>
                 </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon green">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="metric-value">32 min</div>
-                <div class="metric-label">Avg. Fulfillment</div>
-                <div class="metric-change negative">
-                    <i class="fas fa-arrow-up"></i> +8% vs yesterday
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon blue">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="metric-value">4.8</div>
-                <div class="metric-label">Customer Rating</div>
-                <div class="metric-change positive">
-                    <i class="fas fa-arrow-up"></i> +0.3 vs yesterday
+                <div class="action-card" onclick="showModal('historyModal')">
+                    <div class="action-icon">📊</div>
+                    <div class="action-label">Points History</div>
                 </div>
             </div>
         </div>
 
-        <!-- Delivery Tracking -->
-        <div class="section-title">Out for Delivery</div>
-        <div class="delivery-card">
-            <div class="delivery-header">
+        <div id="customerContact" class="tab-content">
+            <div class="section-title">Contact Us</div>
+            <div class="delivery-card">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;"><i class="fas fa-store"></i> SoYam Cosmetics</div>
+                    <div style="font-size: 13px; color: #666;">Betel Building, Ground Floor<br>Addis Ababa, Ethiopia</div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;"><i class="fas fa-phone"></i> Phone</div>
+                    <a href="tel:+251919096451" style="color: var(--customer-gold); text-decoration: none;">+251 91 909 6451</a>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;"><i class="fab fa-whatsapp"></i> WhatsApp</div>
+                    <a href="https://wa.me/251919096451" style="color: var(--customer-gold); text-decoration: none;">Chat with us</a>
+                </div>
                 <div>
-                    <div style="font-weight: 600; margin-bottom: 4px;">3 Active Deliveries</div>
-                    <div style="font-size: 12px; color: #666;">View Map</div>
-                </div>
-                <div class="delivery-status active">
-                    <i class="fas fa-truck"></i> On the way
-                </div>
-            </div>
-            <div class="driver-info">
-                <div class="driver-avatar">A</div>
-                <div>
-                    <div style="font-weight: 600; font-size: 14px;">Driver Alemu</div>
-                    <div style="font-size: 12px; color: #666;">ETA: 15 minutes</div>
+                    <div style="font-weight: 600; margin-bottom: 8px;"><i class="fas fa-map-marker-alt"></i> Location</div>
+                    <a href="https://maps.google.com" target="_blank" style="color: var(--customer-gold); text-decoration: none;">View on Google Maps</a>
                 </div>
             </div>
         </div>
 
-        <!-- Top Performer -->
-        <div class="section-title">Top Performer</div>
-        <div class="performer-card">
-            <div class="performer-avatar">
-                <i class="fas fa-trophy"></i>
-            </div>
-            <div class="performer-info">
-                <div class="performer-name">Hewot M.</div>
-                <div class="performer-role">Sales Associate</div>
-                <div class="performer-stats">58.4K Br <span style="font-size: 12px; opacity: 0.9;">↑ 18%</span></div>
-            </div>
-        </div>
-
-        <!-- Product Discovery -->
-        <div class="section-title">Shop Products</div>
-        <div class="category-pills">
-            <div class="category-pill active">All</div>
-            <div class="category-pill">Skincare</div>
-            <div class="category-pill">Makeup</div>
-            <div class="category-pill">Fragrance</div>
-            <div class="category-pill">Haircare</div>
-            <div class="category-pill">Detergent</div>
-        </div>
-
-        <div class="product-grid" id="productGrid">
-            <!-- Products will be loaded dynamically -->
-        </div>
-
-        <div style="padding: 16px; text-align: center;">
-            <button class="btn btn-secondary" onclick="showModal('customOrderModal')">
-                <i class="fas fa-camera"></i> Can't find a product? Upload photo
-            </button>
-        </div>
-
-        <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('home')">
+            <div class="nav-item active" onclick="switchCustomerTab('home')">
                 <div class="nav-icon"><i class="fas fa-home"></i></div>
                 <div class="nav-label">Home</div>
             </div>
-            <div class="nav-item" onclick="switchTab('orders')">
+            <div class="nav-item" onclick="switchCustomerTab('orders')">
                 <div class="nav-icon"><i class="fas fa-box"></i></div>
                 <div class="nav-label">Orders</div>
             </div>
-            <div class="nav-item" onclick="switchTab('cart')">
+            <div class="nav-item" onclick="switchCustomerTab('cart')">
                 <div class="nav-icon"><i class="fas fa-shopping-bag"></i></div>
                 <div class="nav-label">Cart</div>
                 <div class="nav-badge" id="cartBadge">0</div>
             </div>
-            <div class="nav-item" onclick="switchTab('loyalty')">
+            <div class="nav-item" onclick="switchCustomerTab('loyalty')">
                 <div class="nav-icon"><i class="fas fa-star"></i></div>
                 <div class="nav-label">Loyalty</div>
             </div>
-            <div class="nav-item" onclick="switchTab('contact')">
+            <div class="nav-item" onclick="switchCustomerTab('contact')">
                 <div class="nav-icon"><i class="fas fa-phone"></i></div>
                 <div class="nav-label">Contact</div>
             </div>
@@ -1294,7 +1331,6 @@
             <div class="tagline">Betel Building, Addis Ababa</div>
         </div>
 
-        <!-- Key Metrics -->
         <div class="section-title">This Month</div>
         <div class="metric-grid">
             <div class="metric-card">
@@ -1329,14 +1365,13 @@
             </div>
         </div>
 
-        <!-- Today Overview -->
         <div class="section-title">Today Overview</div>
         <div class="metric-grid">
             <div class="metric-card">
                 <div class="metric-icon amber">
                     <i class="fas fa-shopping-bag"></i>
                 </div>
-                <div class="metric-value">28</div>
+                <div class="metric-value" id="retailTodayOrders">28</div>
                 <div class="metric-label">Orders</div>
                 <div class="metric-change positive">
                     <i class="fas fa-arrow-up"></i> +18%
@@ -1346,7 +1381,7 @@
                 <div class="metric-icon gold">
                     <i class="fas fa-coins"></i>
                 </div>
-                <div class="metric-value">42.3K</div>
+                <div class="metric-value" id="retailTodayRevenue">42.3K</div>
                 <div class="metric-label">Revenue (Br)</div>
                 <div class="metric-change positive">
                     <i class="fas fa-arrow-up"></i> +12%
@@ -1354,7 +1389,6 @@
             </div>
         </div>
 
-        <!-- Top Performer -->
         <div class="section-title">Top Performer</div>
         <div class="performer-card">
             <div class="performer-avatar">
@@ -1367,13 +1401,9 @@
             </div>
         </div>
 
-        <!-- Payment Verification -->
         <div class="section-title">Pending Payment Verification</div>
-        <div id="paymentVerificationList">
-            <!-- Will be loaded dynamically -->
-        </div>
+        <div id="paymentVerificationList"></div>
 
-        <!-- Delivery Orchestration -->
         <div class="section-title">Delivery Orchestration</div>
         <div class="delivery-card">
             <div class="delivery-header">
@@ -1400,7 +1430,6 @@
             </div>
         </div>
 
-        <!-- Quick Actions -->
         <div class="section-title">Quick Actions</div>
         <div class="action-grid">
             <div class="action-card" onclick="showModal('inventoryModal')">
@@ -1411,18 +1440,16 @@
                 <div class="action-icon">📊</div>
                 <div class="action-label">Sales Summary</div>
             </div>
-            <div class="action-card" onclick="showModal('reportsModal')">
-                <div class="action-icon">📄</div>
-                <div class="action-label">Reports</div>
+            <div class="action-card" onclick="showPortalSelector()">
+                <div class="action-icon">🔄</div>
+                <div class="action-label">Switch Portal</div>
             </div>
         </div>
 
-        <!-- Floating Scan Button -->
         <button class="fab" onclick="showModal('scanModal')">
             <i class="fas fa-qrcode"></i>
         </button>
 
-        <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item active">
                 <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
@@ -1435,7 +1462,7 @@
             <div class="nav-item">
                 <div class="nav-icon"><i class="fas fa-box"></i></div>
                 <div class="nav-label">Orders</div>
-                <div class="nav-badge">5</div>
+                <div class="nav-badge" id="retailOrdersBadge">5</div>
             </div>
             <div class="nav-item">
                 <div class="nav-icon"><i class="fas fa-truck"></i></div>
@@ -1459,7 +1486,6 @@
             </div>
         </div>
 
-        <!-- Business Performance -->
         <div class="section-title" style="color: white;">Business Performance</div>
         <div class="metric-grid">
             <div class="exec-metric-card">
@@ -1492,7 +1518,6 @@
             </div>
         </div>
 
-        <!-- Top Performer -->
         <div class="section-title" style="color: white;">Top Performer</div>
         <div class="performer-card">
             <div class="performer-avatar">
@@ -1505,7 +1530,6 @@
             </div>
         </div>
 
-        <!-- AI Insights -->
         <div class="ai-insight-card">
             <div class="ai-insight-header">
                 <i class="fas fa-robot"></i>
@@ -1531,7 +1555,6 @@
             </ul>
         </div>
 
-        <!-- Quick Actions -->
         <div class="section-title" style="color: white;">Quick Actions</div>
         <div class="action-grid">
             <div class="exec-action-card" onclick="showModal('addStockModal')">
@@ -1552,7 +1575,6 @@
             </div>
         </div>
 
-        <!-- Inventory Table -->
         <div class="section-title" style="color: white;">Inventory Overview</div>
         <div class="data-table" style="background: var(--exec-card); border: 1px solid rgba(199, 164, 90, 0.2);">
             <div class="table-header" style="background: rgba(199, 164, 90, 0.1); color: var(--exec-gold);">
@@ -1561,12 +1583,9 @@
                 <div>Stock</div>
                 <div>Price</div>
             </div>
-            <div id="inventoryTableBody">
-                <!-- Will be loaded dynamically -->
-            </div>
+            <div id="inventoryTableBody"></div>
         </div>
 
-        <!-- Staff Registry -->
         <div class="section-title" style="color: white;">Staff Registry</div>
         <div class="data-table" style="background: var(--exec-card); border: 1px solid rgba(199, 164, 90, 0.2);">
             <div class="table-header" style="background: rgba(199, 164, 90, 0.1); color: var(--exec-gold);">
@@ -1575,34 +1594,31 @@
                 <div>Status</div>
                 <div>Actions</div>
             </div>
-            <div id="staffTableBody">
-                <!-- Will be loaded dynamically -->
-            </div>
+            <div id="staffTableBody"></div>
         </div>
 
-        <!-- Financial Lock -->
         <div class="section-title" style="color: white;">Daily Financial Lock</div>
         <div class="exec-metric-card" style="margin: 16px;">
             <div style="margin-bottom: 16px;">
                 <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 4px;">Date</div>
-                <div style="font-size: 16px; font-weight: 600; color: var(--exec-gold);">September 2, 2026</div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--exec-gold);" id="currentDate">September 2, 2026</div>
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
                 <div>
                     <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Total Units Sold</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">142</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);" id="dailyUnitsSold">142</div>
                 </div>
                 <div>
                     <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Cash in Hand</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">18.4K Br</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);" id="dailyCash">18.4K Br</div>
                 </div>
                 <div>
                     <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Mobile Banking</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">23.9K Br</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);" id="dailyMobile">23.9K Br</div>
                 </div>
                 <div>
                     <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Expected Revenue</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">42.3K Br</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);" id="dailyExpected">42.3K Br</div>
                 </div>
             </div>
             <button class="btn btn-danger" style="width: 100%;" onclick="showModal('financialLockModal')">
@@ -1610,7 +1626,6 @@
             </button>
         </div>
 
-        <!-- Bottom Navigation -->
         <div class="bottom-nav" style="background: rgba(26, 15, 8, 0.95);">
             <div class="nav-item active" style="color: var(--exec-gold);">
                 <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
@@ -1647,11 +1662,8 @@
         </div>
 
         <div class="section-title">Assigned Deliveries</div>
-        <div id="driverDeliveriesList">
-            <!-- Will be loaded dynamically -->
-        </div>
+        <div id="driverDeliveriesList"></div>
 
-        <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item active">
                 <div class="nav-icon"><i class="fas fa-route"></i></div>
@@ -1674,7 +1686,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- Rewards Modal -->
     <div id="rewardsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">🎁 Your Rewards</div>
@@ -1699,7 +1710,6 @@
         </div>
     </div>
 
-    <!-- Refer Modal -->
     <div id="referModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">🔗 Refer & Earn</div>
@@ -1721,13 +1731,12 @@
         </div>
     </div>
 
-    <!-- Custom Order Modal -->
     <div id="customOrderModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">📷 Request Custom Product</div>
             <div class="form-group">
                 <label class="form-label">Product Name or Description</label>
-                <input type="text" class="form-input" placeholder="e.g., Rose water toner">
+                <input type="text" class="form-input" id="customProductName" placeholder="e.g., Rose water toner">
             </div>
             <div class="form-group">
                 <label class="form-label">Upload Photo (Optional)</label>
@@ -1735,7 +1744,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Your Phone Number</label>
-                <input type="tel" class="form-input" placeholder="+251...">
+                <input type="tel" class="form-input" id="customProductPhone" placeholder="+251...">
             </div>
             <div class="btn-group">
                 <button class="btn btn-primary" onclick="submitCustomOrder()">Submit Request</button>
@@ -1744,7 +1753,6 @@
         </div>
     </div>
 
-    <!-- Scan Modal -->
     <div id="scanModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">📷 Scan Product QR/Barcode</div>
@@ -1755,7 +1763,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Or enter product code manually:</label>
-                <input type="text" class="form-input" placeholder="Product code">
+                <input type="text" class="form-input" id="manualProductCode" placeholder="Product code">
             </div>
             <div class="btn-group">
                 <button class="btn btn-primary" onclick="scanProduct()">Scan</button>
@@ -1764,17 +1772,16 @@
         </div>
     </div>
 
-    <!-- Add Stock Modal -->
     <div id="addStockModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">📦 Add New Stock</div>
             <div class="form-group">
                 <label class="form-label">Product Name</label>
-                <input type="text" class="form-input" placeholder="Enter product name">
+                <input type="text" class="form-input" id="newProductName" placeholder="Enter product name">
             </div>
             <div class="form-group">
                 <label class="form-label">Category</label>
-                <select class="form-select">
+                <select class="form-select" id="newProductCategory">
                     <option>Skincare</option>
                     <option>Makeup</option>
                     <option>Fragrance</option>
@@ -1784,15 +1791,15 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Buying Price (Br)</label>
-                <input type="number" class="form-input" placeholder="0.00">
+                <input type="number" class="form-input" id="newProductBuyingPrice" placeholder="0.00">
             </div>
             <div class="form-group">
                 <label class="form-label">Selling Price (Br)</label>
-                <input type="number" class="form-input" placeholder="0.00">
+                <input type="number" class="form-input" id="newProductSellingPrice" placeholder="0.00">
             </div>
             <div class="form-group">
                 <label class="form-label">Quantity</label>
-                <input type="number" class="form-input" placeholder="0">
+                <input type="number" class="form-input" id="newProductQuantity" placeholder="0">
             </div>
             <div class="form-group">
                 <label class="form-label">Product Image</label>
@@ -1805,25 +1812,24 @@
         </div>
     </div>
 
-    <!-- Staff Management Modal -->
     <div id="staffManagementModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">👥 Add New Staff Member</div>
             <div class="form-group">
                 <label class="form-label">Full Name</label>
-                <input type="text" class="form-input" placeholder="Enter full name">
+                <input type="text" class="form-input" id="newStaffName" placeholder="Enter full name">
             </div>
             <div class="form-group">
                 <label class="form-label">Telegram Username</label>
-                <input type="text" class="form-input" placeholder="@username">
+                <input type="text" class="form-input" id="newStaffTelegram" placeholder="@username">
             </div>
             <div class="form-group">
                 <label class="form-label">Phone Number</label>
-                <input type="tel" class="form-input" placeholder="+251...">
+                <input type="tel" class="form-input" id="newStaffPhone" placeholder="+251...">
             </div>
             <div class="form-group">
                 <label class="form-label">Role</label>
-                <select class="form-select">
+                <select class="form-select" id="newStaffRole">
                     <option>Sales Associate</option>
                     <option>Store Manager</option>
                     <option>Driver</option>
@@ -1836,7 +1842,6 @@
         </div>
     </div>
 
-    <!-- Financial Lock Modal -->
     <div id="financialLockModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">🔒 Close Daily Transactions</div>
@@ -1851,19 +1856,19 @@
                 <div style="display: grid; gap: 8px;">
                     <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
                         <span>Total Revenue:</span>
-                        <span style="font-weight: 600;">42,300 Br</span>
+                        <span style="font-weight: 600;" id="lockTotalRevenue">42,300 Br</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
                         <span>Cash Received:</span>
-                        <span style="font-weight: 600;">18,400 Br</span>
+                        <span style="font-weight: 600;" id="lockCashReceived">18,400 Br</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
                         <span>Mobile Banking:</span>
-                        <span style="font-weight: 600;">23,900 Br</span>
+                        <span style="font-weight: 600;" id="lockMobileBanking">23,900 Br</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 8px; background: #d4edda; border-radius: 4px; font-weight: 600;">
                         <span>Variance:</span>
-                        <span>0 Br ✓</span>
+                        <span id="lockVariance">0 Br ✓</span>
                     </div>
                 </div>
             </div>
@@ -1876,21 +1881,16 @@
         </div>
     </div>
 
-    <!-- Assign Driver Modal -->
     <div id="assignDriverModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">🚚 Assign Driver</div>
             <div class="form-group">
                 <label class="form-label">Select Order</label>
-                <select class="form-select">
-                    <option>Order #1234 - Abebe K.</option>
-                    <option>Order #1235 - Sara M.</option>
-                    <option>Order #1236 - Dawit T.</option>
-                </select>
+                <select class="form-select" id="assignDriverOrder"></select>
             </div>
             <div class="form-group">
                 <label class="form-label">Select Driver</label>
-                <select class="form-select">
+                <select class="form-select" id="assignDriverDriver">
                     <option>Driver Alemu (3 deliveries)</option>
                     <option>Driver Tigist (2 deliveries)</option>
                 </select>
@@ -1902,13 +1902,128 @@
         </div>
     </div>
 
-    <!-- Generic Modal for other actions -->
-    <div id="genericModal" class="modal">
+    <div id="inventoryModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header" id="genericModalTitle">Action</div>
-            <div id="genericModalContent"></div>
+            <div class="modal-header">📦 Inventory Management</div>
+            <div id="inventoryModalContent" style="max-height: 400px; overflow-y: auto;"></div>
             <div class="btn-group">
-                <button class="btn btn-secondary" onclick="closeModal('genericModal')">Close</button>
+                <button class="btn btn-primary" onclick="showModal('addStockModal'); closeModal('inventoryModal');">Add New Product</button>
+                <button class="btn btn-secondary" onclick="closeModal('inventoryModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="salesSummaryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📊 Sales Summary</div>
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Today's Sales:</div>
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Total Orders:</span>
+                        <span style="font-weight: 600;" id="summaryOrders">28</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Total Revenue:</span>
+                        <span style="font-weight: 600;" id="summaryRevenue">42,300 Br</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Average Order Value:</span>
+                        <span style="font-weight: 600;" id="summaryAOV">1,511 Br</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Items Sold:</span>
+                        <span style="font-weight: 600;" id="summaryItems">142</span>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('salesSummaryModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📊 Reports</div>
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Generate Reports:</div>
+                <div style="display: grid; gap: 8px;">
+                    <button class="btn btn-primary" onclick="generateReport('daily')">Daily Sales Report</button>
+                    <button class="btn btn-primary" onclick="generateReport('weekly')">Weekly Summary</button>
+                    <button class="btn btn-primary" onclick="generateReport('monthly')">Monthly Analytics</button>
+                    <button class="btn btn-primary" onclick="generateReport('inventory')">Inventory Report</button>
+                    <button class="btn btn-primary" onclick="generateReport('staff')">Staff Performance</button>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('reportsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editPricesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">💰 Edit Prices</div>
+            <div id="editPricesContent" style="max-height: 400px; overflow-y: auto;"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="savePrices()">Save Changes</button>
+                <button class="btn btn-secondary" onclick="closeModal('editPricesModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📊 Points History</div>
+            <div style="margin-bottom: 16px;">
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Purchase - Order #1234</span>
+                        <span style="color: var(--retail-emerald); font-weight: 600;">+125 pts</span>
+                    </div>
+                    <div style="font-size: 11px; color: #999; margin-top: 4px;">Today, 2:30 PM</div>
+                </div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Referral Bonus</span>
+                        <span style="color: var(--retail-emerald); font-weight: 600;">+100 pts</span>
+                    </div>
+                    <div style="font-size: 11px; color: #999; margin-top: 4px;">Yesterday, 5:15 PM</div>
+                </div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Purchase - Order #1233</span>
+                        <span style="color: var(--retail-emerald); font-weight: 600;">+89 pts</span>
+                    </div>
+                    <div style="font-size: 11px; color: #999; margin-top: 4px;">2 days ago, 11:20 AM</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorialsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📚 Beauty Tutorials</div>
+            <div style="margin-bottom: 16px;">
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; cursor: pointer;">
+                    <div style="font-weight: 600;">Skincare Routine for Beginners</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">Learn the basics of a proper skincare routine</div>
+                </div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; cursor: pointer;">
+                    <div style="font-weight: 600;">Makeup Application Tips</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">Professional techniques for flawless makeup</div>
+                </div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; cursor: pointer;">
+                    <div style="font-weight: 600;">Hair Care Secrets</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">Maintain healthy, beautiful hair</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('tutorialsModal')">Close</button>
             </div>
         </div>
     </div>
@@ -1919,59 +2034,76 @@
         tg.expand();
         tg.ready();
 
+        // Database (localStorage)
+        const DB = {
+            get(key) {
+                const data = localStorage.getItem(`soyam_${key}`);
+                return data ? JSON.parse(data) : null;
+            },
+            set(key, value) {
+                localStorage.setItem(`soyam_${key}`, JSON.stringify(value));
+            },
+            init() {
+                if (!this.get('products')) {
+                    this.set('products', [
+                        { id: 1, name: 'Rose Water Toner', category: 'Skincare', price: 450, buyingPrice: 280, emoji: '🌹', stock: 24 },
+                        { id: 2, name: 'Matte Lipstick', category: 'Makeup', price: 320, buyingPrice: 200, emoji: '💄', stock: 18 },
+                        { id: 3, name: 'Perfume - Oud', category: 'Fragrance', price: 1200, buyingPrice: 800, emoji: '🌸', stock: 8 },
+                        { id: 4, name: 'Shampoo - Argan', category: 'Haircare', price: 280, buyingPrice: 180, emoji: '🧴', stock: 32 },
+                        { id: 5, name: 'Laundry Detergent', category: 'Detergent', price: 180, buyingPrice: 120, emoji: '🧼', stock: 45 },
+                        { id: 6, name: 'Face Cream', category: 'Skincare', price: 650, buyingPrice: 420, emoji: '🧴', stock: 15 },
+                        { id: 7, name: 'Foundation', category: 'Makeup', price: 580, buyingPrice: 380, emoji: '💄', stock: 12 },
+                        { id: 8, name: 'Body Lotion', category: 'Skincare', price: 420, buyingPrice: 270, emoji: '🧴', stock: 28 }
+                    ]);
+                }
+                if (!this.get('orders')) {
+                    this.set('orders', []);
+                }
+                if (!this.get('staff')) {
+                    this.set('staff', [
+                        { id: 1, name: 'Hewot M.', role: 'Sales Associate', status: 'active', telegram: '@hewot_m', phone: '+251912345678' },
+                        { id: 2, name: 'Meron A.', role: 'Sales Associate', status: 'active', telegram: '@meron_a', phone: '+251912345679' },
+                        { id: 3, name: 'Yonas B.', role: 'Store Manager', status: 'active', telegram: '@yonas_b', phone: '+251912345680' }
+                    ]);
+                }
+                if (!this.get('cart')) {
+                    this.set('cart', []);
+                }
+                if (!this.get('loyaltyPoints')) {
+                    this.set('loyaltyPoints', 2450);
+                }
+                if (!this.get('dailyStats')) {
+                    this.set('dailyStats', {
+                        date: new Date().toISOString().split('T')[0],
+                        orders: 28,
+                        revenue: 42300,
+                        unitsSold: 142,
+                        cash: 18400,
+                        mobile: 23900
+                    });
+                }
+            }
+        };
+
         // Application State
         const state = {
             currentPortal: null,
-            user: null,
-            cart: [],
-            products: [],
-            orders: [],
-            staff: [],
-            inventory: [],
-            loyaltyPoints: 2450
+            currentCustomerTab: 'home',
+            user: null
         };
-
-        // Mock Data
-        const mockProducts = [
-            { id: 1, name: 'Rose Water Toner', category: 'Skincare', price: 450, emoji: '🌹', stock: 24 },
-            { id: 2, name: 'Matte Lipstick', category: 'Makeup', price: 320, emoji: '💄', stock: 18 },
-            { id: 3, name: 'Perfume - Oud', category: 'Fragrance', price: 1200, emoji: '🌸', stock: 8 },
-            { id: 4, name: 'Shampoo - Argan', category: 'Haircare', price: 280, emoji: '🧴', stock: 32 },
-            { id: 5, name: 'Laundry Detergent', category: 'Detergent', price: 180, emoji: '🧼', stock: 45 },
-            { id: 6, name: 'Face Cream', category: 'Skincare', price: 650, emoji: '🧴', stock: 15 },
-            { id: 7, name: 'Foundation', category: 'Makeup', price: 580, emoji: '💄', stock: 12 },
-            { id: 8, name: 'Body Lotion', category: 'Skincare', price: 420, emoji: '🧴', stock: 28 }
-        ];
-
-        const mockOrders = [
-            { id: 'ORD-1234', customer: 'Abebe K.', amount: 1250, status: 'pending', items: 3 },
-            { id: 'ORD-1235', customer: 'Sara M.', amount: 890, status: 'verified', items: 2 },
-            { id: 'ORD-1236', customer: 'Dawit T.', amount: 2100, status: 'delivered', items: 5 }
-        ];
-
-        const mockStaff = [
-            { id: 1, name: 'Hewot M.', role: 'Sales Associate', status: 'active', telegram: '@hewot_m' },
-            { id: 2, name: 'Meron A.', role: 'Sales Associate', status: 'active', telegram: '@meron_a' },
-            { id: 3, name: 'Yonas B.', role: 'Store Manager', status: 'active', telegram: '@yonas_b' }
-        ];
 
         // Initialize App
         function initApp() {
-            state.products = mockProducts;
-            state.orders = mockOrders;
-            state.staff = mockStaff;
-            
-            // Check if user has multiple roles (for demo, show portal selector)
-            // In production, this would be determined by backend
+            DB.init();
             showPortalSelector();
-            
-            // Load products
             renderProducts();
+            updateCartBadge();
+            updateLoyaltyDisplay();
             renderInventory();
             renderStaff();
             renderOrders();
             renderDriverDeliveries();
-            renderPaymentVerification();
+            updateDailyStats();
         }
 
         // Portal Management
@@ -1989,6 +2121,7 @@
                 case 'customer':
                     document.getElementById('customerPortal').classList.add('active');
                     state.currentPortal = 'customer';
+                    switchCustomerTab('home');
                     break;
                 case 'retail':
                     document.getElementById('retailPortal').classList.add('active');
@@ -2004,14 +2137,37 @@
                     break;
             }
             
-            // Notify Telegram
             tg.HapticFeedback.impactOccurred('medium');
         }
 
+        // Customer Tab Management
+        function switchCustomerTab(tab) {
+            document.querySelectorAll('#customerPortal .tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#customerPortal .nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(`customer${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            state.currentCustomerTab = tab;
+            
+            if (tab === 'cart') {
+                renderCart();
+            } else if (tab === 'orders') {
+                renderCustomerOrders();
+            } else if (tab === 'loyalty') {
+                updateLoyaltyDisplay();
+            }
+            
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
         // Product Rendering
-        function renderProducts() {
+        function renderProducts(category = 'All') {
+            const products = DB.get('products');
+            const filtered = category === 'All' ? products : products.filter(p => p.category === category);
+            
             const grid = document.getElementById('productGrid');
-            grid.innerHTML = state.products.map(product => `
+            grid.innerHTML = filtered.map(product => `
                 <div class="product-card">
                     <div class="product-image">${product.emoji}</div>
                     <div class="product-info">
@@ -2028,37 +2184,49 @@
             `).join('');
         }
 
+        function filterProducts(category) {
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            renderProducts(category);
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
         // Cart Management
         function addToCart(productId) {
-            const product = state.products.find(p => p.id === productId);
-            const existingItem = state.cart.find(item => item.id === productId);
+            const products = DB.get('products');
+            const cart = DB.get('cart');
+            const product = products.find(p => p.id === productId);
             
+            const existingItem = cart.find(item => item.id === productId);
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                state.cart.push({ ...product, quantity: 1 });
+                cart.push({ ...product, quantity: 1 });
             }
             
+            DB.set('cart', cart);
             updateCartBadge();
             tg.HapticFeedback.notificationOccurred('success');
             showNotification('Added to cart!');
         }
 
         function updateCartBadge() {
-            const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cart = DB.get('cart');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('cartBadge').textContent = totalItems;
         }
 
         function renderCart() {
+            const cart = DB.get('cart');
             const cartContainer = document.getElementById('cartItems');
-            if (!cartContainer) return;
             
-            if (state.cart.length === 0) {
+            if (cart.length === 0) {
                 cartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">Your cart is empty</div>';
+                document.getElementById('cartSummary').innerHTML = '';
                 return;
             }
             
-            cartContainer.innerHTML = state.cart.map(item => `
+            cartContainer.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div class="cart-item-image">${item.emoji}</div>
                     <div class="cart-item-info">
@@ -2081,25 +2249,29 @@
         }
 
         function updateQuantity(productId, change) {
-            const item = state.cart.find(i => i.id === productId);
+            const cart = DB.get('cart');
+            const item = cart.find(i => i.id === productId);
+            
             if (item) {
                 item.quantity += change;
                 if (item.quantity <= 0) {
-                    state.cart = state.cart.filter(i => i.id !== productId);
+                    const index = cart.indexOf(item);
+                    cart.splice(index, 1);
                 }
+                DB.set('cart', cart);
                 updateCartBadge();
                 renderCart();
             }
         }
 
         function updateCartSummary() {
-            const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const cart = DB.get('cart');
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const delivery = subtotal > 0 ? 50 : 0;
             const total = subtotal + delivery;
             
-            const summaryContainer = document.getElementById('cartSummary');
-            if (summaryContainer) {
-                summaryContainer.innerHTML = `
+            document.getElementById('cartSummary').innerHTML = `
+                <div class="cart-summary">
                     <div class="summary-row">
                         <span>Subtotal:</span>
                         <span>${subtotal} Br</span>
@@ -2115,33 +2287,118 @@
                     <button class="checkout-btn" onclick="checkout()">
                         Proceed to Checkout
                     </button>
-                `;
-            }
+                </div>
+            `;
         }
 
         function checkout() {
-            if (state.cart.length === 0) {
+            const cart = DB.get('cart');
+            if (cart.length === 0) {
                 showNotification('Cart is empty!');
                 return;
             }
             
-            const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 50;
-            showNotification(`Order placed! Total: ${total} Br`);
-            state.cart = [];
-            updateCartBadge();
-            renderCart();
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + 50;
+            
+            // Create order
+            const orders = DB.get('orders');
+            const newOrder = {
+                id: 'ORD-' + Date.now(),
+                customer: 'Customer',
+                items: cart,
+                subtotal: subtotal,
+                delivery: 50,
+                total: total,
+                status: 'pending',
+                date: new Date().toISOString(),
+                paymentMethod: 'Bank Transfer'
+            };
+            
+            orders.push(newOrder);
+            DB.set('orders', orders);
+            
+            // Update stock
+            const products = DB.get('products');
+            cart.forEach(cartItem => {
+                const product = products.find(p => p.id === cartItem.id);
+                if (product) {
+                    product.stock -= cartItem.quantity;
+                }
+            });
+            DB.set('products', products);
             
             // Add loyalty points
-            state.loyaltyPoints += Math.floor(total / 10);
+            const points = DB.get('loyaltyPoints');
+            DB.set('loyaltyPoints', points + Math.floor(total / 10));
+            
+            // Clear cart
+            DB.set('cart', []);
+            updateCartBadge();
+            renderCart();
+            updateLoyaltyDisplay();
+            renderInventory();
+            
+            showNotification(`Order placed! Total: ${total} Br`);
             tg.HapticFeedback.notificationOccurred('success');
+            
+            setTimeout(() => {
+                switchCustomerTab('orders');
+                document.querySelectorAll('#customerPortal .nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('#customerPortal .nav-item')[1].classList.add('active');
+            }, 1500);
+        }
+
+        // Customer Orders
+        function renderCustomerOrders() {
+            const orders = DB.get('orders');
+            const container = document.getElementById('customerOrdersList');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">No orders yet</div>';
+                return;
+            }
+            
+            container.innerHTML = orders.slice().reverse().map(order => `
+                <div class="order-item">
+                    <div class="order-header">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-status ${order.status}">${order.status}</div>
+                    </div>
+                    <div class="order-details">
+                        <div>Date: ${new Date(order.date).toLocaleDateString()}</div>
+                        <div>Items: ${order.items.length}</div>
+                        <div>Total: ${order.total} Br</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Loyalty System
+        function updateLoyaltyDisplay() {
+            const points = DB.get('loyaltyPoints');
+            const tier = points >= 3000 ? 'Platinum' : points >= 2000 ? 'Gold' : points >= 1000 ? 'Silver' : 'Bronze';
+            const nextTier = points >= 3000 ? 5000 : points >= 2000 ? 3000 : points >= 1000 ? 2000 : 1000;
+            const progress = ((points % 1000) / 1000) * 100;
+            const remaining = nextTier - points;
+            
+            document.getElementById('loyaltyTier').textContent = `${tier} Member`;
+            document.getElementById('loyaltyPoints').textContent = points.toLocaleString();
+            document.getElementById('loyaltyProgress').style.width = `${progress}%`;
+            document.getElementById('loyaltyProgressText').textContent = `${remaining} pts until next reward (${nextTier.toLocaleString()} pts)`;
+            
+            document.getElementById('loyaltyTier2').textContent = `${tier} Member`;
+            document.getElementById('loyaltyPoints2').textContent = points.toLocaleString();
+            document.getElementById('loyaltyProgress2').style.width = `${progress}%`;
+            document.getElementById('loyaltyProgressText2').textContent = `${remaining} pts until next reward (${nextTier.toLocaleString()} pts)`;
         }
 
         // Inventory Management
         function renderInventory() {
+            const products = DB.get('products');
             const tbody = document.getElementById('inventoryTableBody');
-            if (!tbody) return;
             
-            tbody.innerHTML = state.products.map(product => {
+            tbody.innerHTML = products.map(product => {
                 const stockClass = product.stock > 20 ? 'high' : product.stock > 10 ? 'medium' : 'low';
                 return `
                     <div class="table-row" style="color: white;">
@@ -2156,10 +2413,10 @@
 
         // Staff Management
         function renderStaff() {
+            const staff = DB.get('staff');
             const tbody = document.getElementById('staffTableBody');
-            if (!tbody) return;
             
-            tbody.innerHTML = state.staff.map(member => `
+            tbody.innerHTML = staff.map(member => `
                 <div class="table-row" style="color: white;">
                     <div>${member.name}</div>
                     <div>${member.role}</div>
@@ -2175,15 +2432,18 @@
 
         // Orders Management
         function renderOrders() {
+            const orders = DB.get('orders');
             const list = document.getElementById('paymentVerificationList');
-            if (!list) return;
             
-            const pendingOrders = state.orders.filter(o => o.status === 'pending');
+            const pendingOrders = orders.filter(o => o.status === 'pending');
             
             if (pendingOrders.length === 0) {
                 list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No pending orders</div>';
+                document.getElementById('retailOrdersBadge').textContent = '0';
                 return;
             }
+            
+            document.getElementById('retailOrdersBadge').textContent = pendingOrders.length;
             
             list.innerHTML = pendingOrders.map(order => `
                 <div class="order-item">
@@ -2193,27 +2453,30 @@
                     </div>
                     <div class="order-details">
                         <div>Customer: ${order.customer}</div>
-                        <div>Amount: ${order.amount} Br</div>
-                        <div>Items: ${order.items}</div>
+                        <div>Amount: ${order.total} Br</div>
+                        <div>Items: ${order.items.length}</div>
                     </div>
                     <div class="order-actions">
                         <button class="btn btn-primary" onclick="verifyPayment('${order.id}')">
                             <i class="fas fa-check"></i> Verify Payment
                         </button>
-                        <button class="btn btn-secondary" onclick="viewOrderDetails('${order.id}')">
-                            View Details
-                        </button>
                     </div>
                 </div>
             `).join('');
+            
+            // Update assign driver dropdown
+            const select = document.getElementById('assignDriverOrder');
+            select.innerHTML = pendingOrders.map(order => 
+                `<option value="${order.id}">${order.id} - ${order.customer}</option>`
+            ).join('');
         }
 
         // Driver Deliveries
         function renderDriverDeliveries() {
+            const orders = DB.get('orders');
             const list = document.getElementById('driverDeliveriesList');
-            if (!list) return;
             
-            const deliveries = state.orders.filter(o => o.status === 'verified');
+            const deliveries = orders.filter(o => o.status === 'verified');
             
             if (deliveries.length === 0) {
                 list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No deliveries assigned</div>';
@@ -2228,7 +2491,7 @@
                     </div>
                     <div class="order-details">
                         <div>Customer: ${order.customer}</div>
-                        <div>Amount: ${order.amount} Br</div>
+                        <div>Amount: ${order.total} Br</div>
                         <div>Address: Betel Building, Addis Ababa</div>
                     </div>
                     <div class="order-actions">
@@ -2243,20 +2506,54 @@
             `).join('');
         }
 
-        function renderPaymentVerification() {
-            renderOrders(); // Reuse orders rendering
-        }
-
-        // Tab Switching
-        function switchTab(tab) {
-            tg.HapticFeedback.impactOccurred('light');
-            showNotification(`Switched to ${tab}`);
+        // Daily Stats
+        function updateDailyStats() {
+            const stats = DB.get('dailyStats');
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (stats.date !== today) {
+                // Reset daily stats
+                DB.set('dailyStats', {
+                    date: today,
+                    orders: 0,
+                    revenue: 0,
+                    unitsSold: 0,
+                    cash: 0,
+                    mobile: 0
+                });
+            }
+            
+            const currentStats = DB.get('dailyStats');
+            document.getElementById('retailTodayOrders').textContent = currentStats.orders;
+            document.getElementById('retailTodayRevenue').textContent = (currentStats.revenue / 1000).toFixed(1) + 'K';
+            document.getElementById('dailyUnitsSold').textContent = currentStats.unitsSold;
+            document.getElementById('dailyCash').textContent = (currentStats.cash / 1000).toFixed(1) + 'K Br';
+            document.getElementById('dailyMobile').textContent = (currentStats.mobile / 1000).toFixed(1) + 'K Br';
+            document.getElementById('dailyExpected').textContent = (currentStats.revenue / 1000).toFixed(1) + 'K Br';
+            
+            document.getElementById('lockTotalRevenue').textContent = currentStats.revenue.toLocaleString() + ' Br';
+            document.getElementById('lockCashReceived').textContent = currentStats.cash.toLocaleString() + ' Br';
+            document.getElementById('lockMobileBanking').textContent = currentStats.mobile.toLocaleString() + ' Br';
+            
+            const variance = currentStats.revenue - (currentStats.cash + currentStats.mobile);
+            document.getElementById('lockVariance').textContent = variance.toLocaleString() + ' Br' + (variance === 0 ? ' ✓' : ' ⚠️');
+            
+            document.getElementById('summaryOrders').textContent = currentStats.orders;
+            document.getElementById('summaryRevenue').textContent = currentStats.revenue.toLocaleString() + ' Br';
+            document.getElementById('summaryAOV').textContent = currentStats.orders > 0 ? Math.round(currentStats.revenue / currentStats.orders).toLocaleString() + ' Br' : '0 Br';
+            document.getElementById('summaryItems').textContent = currentStats.unitsSold;
         }
 
         // Modal Management
         function showModal(modalId) {
             document.getElementById(modalId).classList.add('active');
             tg.HapticFeedback.impactOccurred('light');
+            
+            if (modalId === 'inventoryModal') {
+                renderInventoryModal();
+            } else if (modalId === 'editPricesModal') {
+                renderEditPricesModal();
+            }
         }
 
         function closeModal(modalId) {
@@ -2265,20 +2562,35 @@
 
         // Action Handlers
         function verifyPayment(orderId) {
-            const order = state.orders.find(o => o.id === orderId);
+            const orders = DB.get('orders');
+            const order = orders.find(o => o.id === orderId);
+            
             if (order) {
                 order.status = 'verified';
+                DB.set('orders', orders);
+                
+                // Update daily stats
+                const stats = DB.get('dailyStats');
+                stats.orders++;
+                stats.revenue += order.total;
+                stats.unitsSold += order.items.reduce((sum, item) => sum + item.quantity, 0);
+                DB.set('dailyStats', stats);
+                
                 renderOrders();
                 renderDriverDeliveries();
+                updateDailyStats();
                 showNotification('Payment verified!');
                 tg.HapticFeedback.notificationOccurred('success');
             }
         }
 
         function markDelivered(orderId) {
-            const order = state.orders.find(o => o.id === orderId);
+            const orders = DB.get('orders');
+            const order = orders.find(o => o.id === orderId);
+            
             if (order) {
                 order.status = 'delivered';
+                DB.set('orders', orders);
                 renderDriverDeliveries();
                 showNotification('Delivery marked as complete!');
                 tg.HapticFeedback.notificationOccurred('success');
@@ -2290,48 +2602,169 @@
         }
 
         function addStock() {
-            showNotification('Stock added successfully!');
+            const name = document.getElementById('newProductName').value;
+            const category = document.getElementById('newProductCategory').value;
+            const buyingPrice = parseFloat(document.getElementById('newProductBuyingPrice').value);
+            const sellingPrice = parseFloat(document.getElementById('newProductSellingPrice').value);
+            const quantity = parseInt(document.getElementById('newProductQuantity').value);
+            
+            if (!name || !buyingPrice || !sellingPrice || !quantity) {
+                showNotification('Please fill all fields!');
+                return;
+            }
+            
+            const products = DB.get('products');
+            const emojis = ['🌹', '💄', '🌸', '🧴', '🧼', '✨', '💅', '🎀'];
+            const newProduct = {
+                id: Date.now(),
+                name: name,
+                category: category,
+                price: sellingPrice,
+                buyingPrice: buyingPrice,
+                emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                stock: quantity
+            };
+            
+            products.push(newProduct);
+            DB.set('products', products);
+            
+            renderProducts();
+            renderInventory();
             closeModal('addStockModal');
+            showNotification('Stock added successfully!');
             tg.HapticFeedback.notificationOccurred('success');
+            
+            // Clear form
+            document.getElementById('newProductName').value = '';
+            document.getElementById('newProductBuyingPrice').value = '';
+            document.getElementById('newProductSellingPrice').value = '';
+            document.getElementById('newProductQuantity').value = '';
         }
 
         function addStaff() {
-            showNotification('Staff member added!');
+            const name = document.getElementById('newStaffName').value;
+            const telegram = document.getElementById('newStaffTelegram').value;
+            const phone = document.getElementById('newStaffPhone').value;
+            const role = document.getElementById('newStaffRole').value;
+            
+            if (!name || !telegram || !phone) {
+                showNotification('Please fill all fields!');
+                return;
+            }
+            
+            const staff = DB.get('staff');
+            const newStaff = {
+                id: Date.now(),
+                name: name,
+                role: role,
+                status: 'active',
+                telegram: telegram,
+                phone: phone
+            };
+            
+            staff.push(newStaff);
+            DB.set('staff', staff);
+            
+            renderStaff();
             closeModal('staffManagementModal');
+            showNotification('Staff member added!');
             tg.HapticFeedback.notificationOccurred('success');
+            
+            // Clear form
+            document.getElementById('newStaffName').value = '';
+            document.getElementById('newStaffTelegram').value = '';
+            document.getElementById('newStaffPhone').value = '';
         }
 
         function revokeStaff(staffId) {
             if (confirm('Are you sure you want to revoke this staff member?')) {
-                state.staff = state.staff.filter(s => s.id !== staffId);
-                renderStaff();
-                showNotification('Staff member revoked');
-                tg.HapticFeedback.notificationOccurred('warning');
+                const staff = DB.get('staff');
+                const index = staff.findIndex(s => s.id === staffId);
+                
+                if (index !== -1) {
+                    staff[index].status = 'suspended';
+                    DB.set('staff', staff);
+                    renderStaff();
+                    showNotification('Staff member revoked');
+                    tg.HapticFeedback.notificationOccurred('warning');
+                }
             }
         }
 
         function closeDailyTransactions() {
+            const stats = DB.get('dailyStats');
+            const variance = stats.revenue - (stats.cash + stats.mobile);
+            
+            if (variance !== 0) {
+                if (!confirm(`Warning: There is a variance of ${variance} Br. Do you still want to close?`)) {
+                    return;
+                }
+            }
+            
             showNotification('Daily transactions locked successfully!');
             closeModal('financialLockModal');
             tg.HapticFeedback.notificationOccurred('success');
+            
+            // Reset for next day
+            setTimeout(() => {
+                DB.set('dailyStats', {
+                    date: new Date().toISOString().split('T')[0],
+                    orders: 0,
+                    revenue: 0,
+                    unitsSold: 0,
+                    cash: 0,
+                    mobile: 0
+                });
+                updateDailyStats();
+            }, 2000);
         }
 
         function assignDriver() {
-            showNotification('Driver assigned successfully!');
+            const orderId = document.getElementById('assignDriverOrder').value;
+            const driver = document.getElementById('assignDriverDriver').value;
+            
+            showNotification(`Driver assigned: ${driver}`);
             closeModal('assignDriverModal');
             tg.HapticFeedback.notificationOccurred('success');
         }
 
         function scanProduct() {
-            showNotification('Product scanned!');
+            const code = document.getElementById('manualProductCode').value;
+            
+            if (code) {
+                const products = DB.get('products');
+                const product = products.find(p => p.id == code || p.name.toLowerCase().includes(code.toLowerCase()));
+                
+                if (product) {
+                    showNotification(`Product found: ${product.name}`);
+                    addToCart(product.id);
+                } else {
+                    showNotification('Product not found');
+                }
+            } else {
+                showNotification('Please enter a product code');
+            }
+            
             closeModal('scanModal');
+            document.getElementById('manualProductCode').value = '';
             tg.HapticFeedback.notificationOccurred('success');
         }
 
         function submitCustomOrder() {
+            const name = document.getElementById('customProductName').value;
+            const phone = document.getElementById('customProductPhone').value;
+            
+            if (!name || !phone) {
+                showNotification('Please fill all fields!');
+                return;
+            }
+            
             showNotification('Custom order request submitted!');
             closeModal('customOrderModal');
             tg.HapticFeedback.notificationOccurred('success');
+            
+            document.getElementById('customProductName').value = '';
+            document.getElementById('customProductPhone').value = '';
         }
 
         function copyReferralLink() {
@@ -2342,42 +2775,65 @@
             });
         }
 
-        function viewOrderDetails(orderId) {
-            showNotification(`Viewing order ${orderId}`);
+        function renderInventoryModal() {
+            const products = DB.get('products');
+            const container = document.getElementById('inventoryModalContent');
+            
+            container.innerHTML = products.map(product => `
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600;">${product.emoji} ${product.name}</div>
+                            <div style="font-size: 12px; color: #666;">${product.category} • Stock: ${product.stock}</div>
+                        </div>
+                        <div style="font-weight: 600;">${product.price} Br</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Category Filtering
-        document.querySelectorAll('.category-pill').forEach(pill => {
-            pill.addEventListener('click', function() {
-                document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                
-                const category = this.textContent;
-                if (category === 'All') {
-                    renderProducts();
-                } else {
-                    const filtered = state.products.filter(p => p.category === category);
-                    const grid = document.getElementById('productGrid');
-                    grid.innerHTML = filtered.map(product => `
-                        <div class="product-card">
-                            <div class="product-image">${product.emoji}</div>
-                            <div class="product-info">
-                                <div class="product-name">${product.name}</div>
-                                <div class="product-category">${product.category}</div>
-                                <div class="product-footer">
-                                    <div class="product-price">${product.price} Br</div>
-                                    <button class="add-to-cart" onclick="addToCart(${product.id})">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
+        function renderEditPricesModal() {
+            const products = DB.get('products');
+            const container = document.getElementById('editPricesContent');
+            
+            container.innerHTML = products.map(product => `
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">${product.emoji} ${product.name}</div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="number" class="form-input" id="price_${product.id}" value="${product.price}" style="flex: 1;">
+                        <span style="display: flex; align-items: center;">Br</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function savePrices() {
+            const products = DB.get('products');
+            
+            products.forEach(product => {
+                const input = document.getElementById(`price_${product.id}`);
+                if (input) {
+                    product.price = parseFloat(input.value);
                 }
-                
-                tg.HapticFeedback.impactOccurred('light');
             });
-        });
+            
+            DB.set('products', products);
+            renderProducts();
+            renderInventory();
+            closeModal('editPricesModal');
+            showNotification('Prices updated successfully!');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function generateReport(type) {
+            showNotification(`Generating ${type} report...`);
+            closeModal('reportsModal');
+            
+            setTimeout(() => {
+                showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} report ready!`);
+                tg.HapticFeedback.notificationOccurred('success');
+            }, 1500);
+        }
 
         // Language Selector
         document.querySelectorAll('.lang-chip').forEach(chip => {
@@ -2419,13 +2875,4 @@
         style.textContent = `
             @keyframes slideDown {
                 from { transform: translateX(-50%) translateY(-50px); opacity: 0; }
-                to { transform: translateX(-50%) translateY(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Initialize on load
-        window.addEventListener('load', initApp);
-
-        // Handle Telegram back button
-        tg.BackButton.onClick(()
+                to { transform:
