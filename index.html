@@ -1,18 +1,2431 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07101d"><title>MyBirr — Digital Wallet</title><style>
-:root{--bg:#07101d;--card:#101b2d;--card2:#16243a;--text:#f5f7fb;--muted:#9eabc0;--brand:#20c997;--purple:#7c5cff;--danger:#ff647c;--line:#26344b}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#06101e,#0c1527 55%,#10142a);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:85px}.top{padding:22px 18px 8px;display:flex;justify-content:space-between;align-items:center}.logo{font-weight:900;font-size:25px}.logo span{color:var(--brand)}button,input,select{font:inherit}button{cursor:pointer}.icon{width:42px;height:42px;border-radius:14px;background:#ffffff10;color:white;border:1px solid #ffffff14}.screen{display:none;padding:10px 18px}.screen.active{display:block}.hero{background:linear-gradient(135deg,#153b47,#1a2446);border:1px solid #ffffff15;border-radius:26px;padding:22px;margin:10px 0 18px}.small{font-size:13px;color:var(--muted)}.balance{font-size:34px;font-weight:850;margin:8px 0}.pill{padding:7px 10px;border-radius:99px;background:#ffffff10;color:#cbd6e7;border:0;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.action{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px 5px;color:var(--text);min-height:78px}.action b{display:block;font-size:12px;margin-top:8px}.emoji{font-size:23px}.section{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.section h3{margin:0;font-size:16px}.link{color:var(--brand);background:none;border:0}.tx{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.txicon{width:43px;height:43px;border-radius:14px;background:#ffffff0d;display:grid;place-items:center}.txmain{flex:1}.txmain b{display:block;font-size:14px}.txmain span{font-size:12px;color:var(--muted)}.amount{font-weight:750}.in{color:var(--brand)}.out{color:#ff9aa8}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:17px;margin:12px 0}.form label{display:block;font-size:12px;color:var(--muted);margin:14px 0 6px}.form input,.form select{width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#091321;color:var(--text);outline:none}.primary{width:100%;padding:15px;border-radius:15px;background:linear-gradient(90deg,var(--brand),#4bd7b0);color:#061018;font-weight:850;margin-top:18px;border:0}.secondary{width:100%;padding:14px;border-radius:15px;background:#ffffff0d;color:var(--text);border:1px solid var(--line);margin-top:10px}.back{background:none;color:var(--muted);border:0;padding:8px 0}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#091221ee;backdrop-filter:blur(18px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:5}.nav button{background:none;color:var(--muted);font-size:11px;padding:7px;border:0}.nav button.active{color:var(--brand)}.nav i{font-style:normal;font-size:19px;display:block}.toast{position:fixed;top:18px;left:50%;transform:translate(-50%,-130px);background:#18273b;padding:13px 16px;border-radius:14px;transition:.25s;z-index:20;width:min(90%,430px);text-align:center}.toast.show{transform:translate(-50%,0)}.modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:10}.modal.show{display:flex}.sheet{background:#0d1727;width:min(520px,100%);margin:auto 0 0;border-radius:26px 26px 0 0;padding:22px;border:1px solid var(--line)}.qr{width:190px;height:190px;margin:18px auto;background:repeating-linear-gradient(0deg,#fff 0 5px,#111 5px 10px),repeating-linear-gradient(90deg,#fff 0 5px,#111 5px 10px);border:12px solid white}@media(min-width:700px){body{padding:20px}.app{border:1px solid var(--line);border-radius:30px;overflow:hidden;background:#07101d}}
-</style></head><body><div id="toast" class="toast"></div><div class="app"><header class="top"><div class="logo">MY<span>BIRR</span></div><button class="icon" onclick="show('notifications')">🔔</button></header>
-<section id="home" class="screen active"><div class="hero"><div class="small">Available balance</div><div id="balance" class="balance">ETB 12,450.00</div><button class="pill" onclick="toggleBalance()">👁 Hide balance</button></div><div class="grid"><button class="action" onclick="show('send')">↗️<b>Send</b></button><button class="action" onclick="show('receive')">↙️<b>Receive</b></button><button class="action" onclick="show('scan')">▦<b>Scan</b></button><button class="action" onclick="show('request')">🤲<b>Request</b></button><button class="action" onclick="show('airtime')">📱<b>Airtime</b></button><button class="action" onclick="show('data')">🌐<b>Data</b></button><button class="action" onclick="show('bills')">🧾<b>Bills</b></button><button class="action" onclick="show('more')">•••<b>More</b></button></div><div class="section"><h3>Recent transactions</h3><button class="link" onclick="show('transactions')">See all</button></div><div id="recent"></div><div class="card small">Standalone HTML mode stores sample wallet state in this browser only. For real customer funds, connect this UI to the authorized MyBirr backend; never use browser storage as the financial ledger.</div></section>
-<section id="send" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Send money</h2><div class="card form"><label>Recipient phone or MyBirr ID</label><input id="sendTo" placeholder="09XXXXXXXX"><label>Amount (ETB)</label><input id="sendAmount" type="number" min="1"><label>Description</label><input id="sendDesc" placeholder="Optional"><button class="primary" onclick="sendMoney()">Continue</button></div></section>
-<section id="receive" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Receive money</h2><div class="card" style="text-align:center"><div class="small">MyBirr ID</div><h2>MB-100001</h2><div class="qr"></div><button class="primary" onclick="copyText('MB-100001')">Copy MyBirr ID</button><button class="secondary" onclick="toast('Share action ready')">Share</button></div></section>
-<section id="request" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Request money</h2><div class="card form"><label>From</label><input id="reqTo" placeholder="09XXXXXXXX"><label>Amount (ETB)</label><input id="reqAmount" type="number" min="1"><label>Message</label><input id="reqMsg" placeholder="What is this for?"><button class="primary" onclick="requestMoney()">Send request</button></div></section>
-<section id="scan" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Scan QR</h2><div class="card" style="text-align:center"><div style="font-size:80px">▦</div><p class="small">A real mobile scanner should use the Flutter camera/QR module and validate the QR with the backend before payment.</p><button class="primary" onclick="toast('Connect the production QR scanner module')">Start scanner</button></div></section>
-<section id="airtime" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Airtime</h2><div class="card form"><label>Phone</label><input id="airPhone" placeholder="09XXXXXXXX"><label>Amount (ETB)</label><input id="airAmount" type="number" min="1"><button class="primary" onclick="serviceTx('Airtime','airAmount')">Pay airtime</button></div></section>
-<section id="data" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Data package</h2><div class="card form"><label>Phone</label><input placeholder="09XXXXXXXX"><label>Package</label><select><option>1 GB — ETB 50</option><option>3 GB — ETB 120</option><option>10 GB — ETB 300</option></select><button class="primary" onclick="toast('Configure an authorized data provider')">Continue</button></div></section>
-<section id="bills" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Bill payments</h2><div class="card form"><label>Biller</label><select><option>Electricity</option><option>Water</option><option>Internet</option><option>TV</option></select><label>Customer number</label><input><label>Amount (ETB)</label><input id="billAmount" type="number" min="1"><button class="primary" onclick="serviceTx('Bill payment','billAmount')">Pay bill</button></div></section>
-<section id="transactions" class="screen"><h2>Transactions</h2><div class="card"><input id="search" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#091321;color:white" placeholder="Search..." oninput="renderTx()"></div><div id="allTx"></div></section>
-<section id="notifications" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Notifications</h2><div class="card"><b>Welcome to MyBirr</b><p class="small">Transaction and security notifications appear here.</p></div><div class="card"><b>Security reminder</b><p class="small">Never share your PIN or OTP.</p></div></section>
-<section id="profile" class="screen"><h2>Profile</h2><div class="card"><b>MyBirr Customer</b><p class="small">MB-100001 · Customer</p></div><div class="card"><div class="section"><b>KYC status</b><span class="pill">Pending</span></div><div class="section"><b>Language</b><button class="link" onclick="toggleLang()">English / አማርኛ</button></div><div class="section"><b>Security</b><span class="small">PIN ••••</span></div></div></section>
-<section id="more" class="screen"><button class="back" onclick="show('home')">← Back</button><h2>Services</h2><div class="card"><div class="section"><b>Beneficiaries</b><span>›</span></div><div class="section"><b>Cash in / Cash out</b><span>›</span></div><div class="section"><b>Merchant payments</b><span>›</span></div><div class="section"><b>Support</b><span>›</span></div></div></section>
-<nav class="nav"><button onclick="show('home')" data-s="home"><i>⌂</i>Home</button><button onclick="show('transactions')" data-s="transactions"><i>↔</i>Activity</button><button onclick="show('receive')" data-s="receive"><i>▦</i>My QR</button><button onclick="show('notifications')" data-s="notifications"><i>♡</i>Alerts</button><button onclick="show('profile')" data-s="profile"><i>●</i>Profile</button></nav></div>
-<div id="confirm" class="modal"><div class="sheet"><h2 id="ct">Confirm</h2><p id="cx" class="small"></p><button class="primary" id="cb">Confirm</button><button class="secondary" onclick="closeModal()">Cancel</button></div></div>
-<script>const K='mybirr_html_state_v1';let s=JSON.parse(localStorage.getItem(K)||'null')||{balance:12450,tx:[],lang:'en',hidden:false};function save(){localStorage.setItem(K,JSON.stringify(s));render()}function toast(x){let t=document.getElementById('toast');t.textContent=x;t.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>t.classList.remove('show'),2400)}function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.s===id));render()}function money(n){return'ETB '+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}function toggleBalance(){s.hidden=!s.hidden;save()}function add(type,party,a,dir='out',desc=''){s.tx.unshift({id:'MYB-'+Date.now().toString(36).toUpperCase(),type,party,amount:+a,dir,desc,date:new Date().toLocaleString()});save()}function confirmBox(title,text,fn){ct.textContent=title;cx.textContent=text;confirm.classList.add('show');cb.onclick=()=>{closeModal();fn()}}function closeModal(){confirm.classList.remove('show')}function sendMoney(){let to=sendTo.value.trim(),a=+sendAmount.value;if(!to||!a||a<=0)return toast('Enter recipient and amount');if(a>s.balance)return toast('Insufficient available balance');confirmBox('Confirm transfer',`Send ${money(a)} to ${to}?`,()=>{s.balance-=a;add('Transfer',to,a,'out',sendDesc.value);toast('Transaction recorded locally')})}function requestMoney(){let to=reqTo.value.trim(),a=+reqAmount.value;if(!to||!a)return toast('Enter recipient and amount');add('Money request',to,a,'in',reqMsg.value);toast('Request created locally')}function serviceTx(type,id){let a=+document.getElementById(id).value;if(!a||a<=0)return toast('Enter a valid amount');if(a>s.balance)return toast('Insufficient available balance');confirmBox('Confirm payment',`Pay ${money(a)} for ${type}?`,()=>{s.balance-=a;add(type,'Service provider',a);toast('Payment recorded locally')})}function txhtml(x){return`<div class="tx"><div class="txicon">${x.dir==='in'?'↙️':'↗️'}</div><div class="txmain"><b>${esc(x.type)}</b><span>${esc(x.party)} · ${esc(x.date)}</span></div><div class="amount ${x.dir}">${x.dir==='in'?'+':'-'}${money(x.amount)}</div></div>`}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function renderTx(){let q=(document.getElementById('search')?.value||'').toLowerCase(),a=s.tx.filter(x=>JSON.stringify(x).toLowerCase().includes(q));document.getElementById('allTx').innerHTML=a.length?a.map(txhtml).join(''):'<div class="card small">No transactions found.</div>'}function renderRecent(){document.getElementById('recent').innerHTML=s.tx.slice(0,4).map(txhtml).join('')||'<div class="card small">No transactions yet.</div>'}function render(){balance.textContent=s.hidden?'ETB ••••••':money(s.balance);document.querySelector('.pill').textContent=s.hidden?'👁 Show balance':'👁 Hide balance';renderTx();renderRecent()}function copyText(x){navigator.clipboard?.writeText(x);toast('Copied: '+x)}function toggleLang(){s.lang=s.lang==='en'?'am':'en';save();toast(s.lang==='am'?'አማርኛ ተመርጧል':'English selected')}render();</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>soYam cosmo - Premium Beauty & Cosmetics</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* Customer Storefront Colors */
+            --customer-bg: #F8F5F0;
+            --customer-card: #FFFFFF;
+            --customer-accent: #2B1A13;
+            --customer-gold: #C7A45A;
+            
+            /* Retail Hub Colors */
+            --retail-bg: #F4F6F8;
+            --retail-card: rgba(255, 255, 255, 0.95);
+            --retail-accent: #1F2A1E;
+            --retail-emerald: #198754;
+            
+            /* Executive Center Colors */
+            --exec-bg: #1A0F08;
+            --exec-card: #24150F;
+            --exec-gold: #C7A45A;
+            --exec-ruby: #A62B35;
+            
+            /* Common */
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--customer-bg);
+            color: #333;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        /* Portal Transitions */
+        .portal {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .portal.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #2B1A13 0%, #3d2519 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(199, 164, 90, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--customer-gold);
+            text-shadow: 0 0 20px rgba(199, 164, 90, 0.5);
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-name {
+            font-family: 'Georgia', serif;
+            font-size: 24px;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-amharic {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-strip {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-strip a {
+            color: var(--customer-gold);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Language Selector */
+        .lang-selector {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .lang-chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lang-chip.active {
+            background: var(--customer-gold);
+            color: white;
+        }
+
+        /* Portal Selector */
+        .portal-selector {
+            padding: 20px;
+            display: none;
+        }
+
+        .portal-selector.active {
+            display: block;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--customer-gold);
+        }
+
+        .portal-card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .portal-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .portal-card-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Metric Grid */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .metric-icon.gold { background: rgba(199, 164, 90, 0.15); color: var(--customer-gold); }
+        .metric-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .metric-icon.green { background: rgba(25, 135, 84, 0.15); color: var(--retail-emerald); }
+        .metric-icon.amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .metric-change {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .metric-change.positive { color: var(--retail-emerald); }
+        .metric-change.negative { color: var(--exec-ruby); }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-card:hover {
+            transform: scale(1.05);
+        }
+
+        .action-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .action-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Product Grid */
+        .section-title {
+            padding: 16px 16px 8px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .category-pills::-webkit-scrollbar { display: none; }
+
+        .category-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: white;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e5e5e5;
+        }
+
+        .category-pill.active {
+            background: var(--customer-accent);
+            color: white;
+            border-color: var(--customer-accent);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 16px 16px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .product-info {
+            padding: 12px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .product-category {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--customer-accent);
+        }
+
+        .add-to-cart {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--customer-gold);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            transform: scale(1.1);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--customer-gold);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: 0;
+            right: 8px;
+            background: var(--exec-ruby);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Loyalty Section */
+        .loyalty-card {
+            background: linear-gradient(135deg, var(--customer-gold) 0%, #d4b36a 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .loyalty-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .loyalty-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .loyalty-points {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Cart Section */
+        .cart-item {
+            background: white;
+            border-radius: var(--radius);
+            padding: 12px;
+            margin: 0 16px 12px;
+            display: flex;
+            gap: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--customer-accent);
+            margin-bottom: 8px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .qty-btn:hover {
+            background: var(--customer-gold);
+            color: white;
+            border-color: var(--customer-gold);
+        }
+
+        .qty-value {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            font-size: 18px;
+            font-weight: 700;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            margin-top: 12px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--customer-accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #1a0f08;
+            transform: translateY(-2px);
+        }
+
+        /* Executive Center Styles */
+        .exec-portal {
+            background: var(--exec-bg);
+            color: white;
+        }
+
+        .exec-header {
+            background: linear-gradient(135deg, #1A0F08 0%, #2d1a10 100%);
+            padding: 20px;
+            border-bottom: 1px solid rgba(199, 164, 90, 0.2);
+        }
+
+        .exec-metric-card {
+            background: var(--exec-card);
+            border: 1px solid rgba(199, 164, 90, 0.2);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .exec-metric-card .metric-value {
+            color: var(--exec-gold);
+        }
+
+        .exec-action-card {
+            background: var(--exec-card);
+            border: 1px solid rgba(199, 164, 90, 0.2);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .exec-action-card:hover {
+            border-color: var(--exec-gold);
+            transform: translateY(-2px);
+        }
+
+        .exec-action-card .action-icon {
+            color: var(--exec-gold);
+        }
+
+        /* Retail Hub Styles */
+        .retail-portal {
+            background: var(--retail-bg);
+        }
+
+        .retail-header {
+            background: linear-gradient(135deg, #1F2A1E 0%, #2d3a2c 100%);
+            padding: 20px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(25, 135, 84, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--retail-emerald);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* AI Insights */
+        .ai-insight-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .ai-insight-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .ai-insight-list {
+            list-style: none;
+        }
+
+        .ai-insight-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-insight-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin: 16px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 12px;
+            background: #f5f5f5;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .stock-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .stock-badge.high { background: rgba(25, 135, 84, 0.15); color: var(--retail-emerald); }
+        .stock-badge.medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .stock-badge.low { background: rgba(166, 43, 53, 0.15); color: var(--exec-ruby); }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--customer-gold);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--customer-gold);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: white;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--customer-accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a0f08;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: var(--exec-ruby);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* Top Performer Card */
+        .performer-card {
+            background: linear-gradient(135deg, var(--customer-gold) 0%, #d4b36a 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .performer-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .performer-info {
+            flex: 1;
+        }
+
+        .performer-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .performer-role {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .performer-stats {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Delivery Tracking */
+        .delivery-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .delivery-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .delivery-status.active {
+            background: rgba(25, 135, 84, 0.15);
+            color: var(--retail-emerald);
+        }
+
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: var(--radius-sm);
+        }
+
+        .driver-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--customer-gold);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Order List */
+        .order-item {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 0 16px 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .order-id {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .order-status.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .order-status.verified { background: rgba(25, 135, 84, 0.15); color: var(--retail-emerald); }
+        .order-status.delivered { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+
+        .order-details {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .order-actions .btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mb-16 { margin-bottom: 16px; }
+        .mt-16 { margin-top: 16px; }
+        .p-16 { padding: 16px; }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .metric-grid { grid-template-columns: 1fr; }
+            .action-grid { grid-template-columns: repeat(2, 1fr); }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Portal Selector -->
+    <div id="portalSelector" class="portal-selector">
+        <div class="header">
+            <div class="logo">SY</div>
+            <div class="brand-name">SoYam Cosmetics</div>
+            <div class="brand-amharic">ሶያም ኮስሞቲክስ</div>
+            <div class="tagline">Choose your workspace</div>
+        </div>
+        <div style="padding: 20px;">
+            <div class="portal-card" onclick="selectPortal('customer')">
+                <div class="portal-card-icon">🛍️</div>
+                <div class="portal-card-title">Customer Storefront</div>
+                <div class="portal-card-desc">Shop products, track orders, earn rewards</div>
+            </div>
+            <div class="portal-card" onclick="selectPortal('retail')">
+                <div class="portal-card-icon">🏪</div>
+                <div class="portal-card-title">Retail Operations Hub</div>
+                <div class="portal-card-desc">Manage sales, verify payments, handle deliveries</div>
+            </div>
+            <div class="portal-card" onclick="selectPortal('executive')">
+                <div class="portal-card-icon">👑</div>
+                <div class="portal-card-title">Executive Command Center</div>
+                <div class="portal-card-desc">Business analytics, staff management, financial control</div>
+            </div>
+            <div class="portal-card" onclick="selectPortal('driver')">
+                <div class="portal-card-icon">🚚</div>
+                <div class="portal-card-title">Logistics Dispatch Console</div>
+                <div class="portal-card-desc">Manage deliveries and routes</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Storefront Portal -->
+    <div id="customerPortal" class="portal">
+        <div class="header">
+            <div class="logo">SY</div>
+            <div class="brand-name">SoYam Cosmetics</div>
+            <div class="brand-amharic">ሶያም ኮስሞቲክስ</div>
+            <div class="tagline">Premium Beauty Essentials — Authentic cosmetics, detergents & beauty products</div>
+            <div class="contact-strip">
+                <a href="tel:+251919096451"><i class="fas fa-phone"></i> Call</a>
+                <a href="https://maps.google.com" target="_blank"><i class="fas fa-map-marker-alt"></i> Betel Building</a>
+                <a href="https://wa.me/251919096451"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="lang-selector">
+            <div class="lang-chip active">English</div>
+            <div class="lang-chip">አማርኛ</div>
+            <div class="lang-chip">ትግርኛ</div>
+            <div class="lang-chip">Oromiffa</div>
+            <div class="lang-chip">Gurage</div>
+            <div class="lang-chip">Soomaali</div>
+        </div>
+
+        <!-- Loyalty Card -->
+        <div class="loyalty-card">
+            <div class="loyalty-header">
+                <div class="loyalty-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Gold Member</span>
+                </div>
+                <i class="fas fa-gift"></i>
+            </div>
+            <div class="loyalty-points">2,450 pts</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 82%"></div>
+            </div>
+            <div class="progress-text">550 pts until next reward (3,000 pts)</div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="action-grid">
+            <div class="action-card" onclick="showModal('rewardsModal')">
+                <div class="action-icon">🎁</div>
+                <div class="action-label">Rewards</div>
+            </div>
+            <div class="action-card" onclick="showModal('tutorialsModal')">
+                <div class="action-icon">📚</div>
+                <div class="action-label">Tutorials</div>
+            </div>
+            <div class="action-card" onclick="showModal('referModal')">
+                <div class="action-icon">🔗</div>
+                <div class="action-label">Refer & Earn</div>
+            </div>
+        </div>
+
+        <!-- Today Overview -->
+        <div class="section-title">Today Overview</div>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-icon amber">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="metric-value">28</div>
+                <div class="metric-label">Orders</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> +18% vs yesterday
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon gold">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="metric-value">42.3K</div>
+                <div class="metric-label">Revenue (Br)</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> +12% vs yesterday
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon green">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="metric-value">32 min</div>
+                <div class="metric-label">Avg. Fulfillment</div>
+                <div class="metric-change negative">
+                    <i class="fas fa-arrow-up"></i> +8% vs yesterday
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon blue">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="metric-value">4.8</div>
+                <div class="metric-label">Customer Rating</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> +0.3 vs yesterday
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Tracking -->
+        <div class="section-title">Out for Delivery</div>
+        <div class="delivery-card">
+            <div class="delivery-header">
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">3 Active Deliveries</div>
+                    <div style="font-size: 12px; color: #666;">View Map</div>
+                </div>
+                <div class="delivery-status active">
+                    <i class="fas fa-truck"></i> On the way
+                </div>
+            </div>
+            <div class="driver-info">
+                <div class="driver-avatar">A</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;">Driver Alemu</div>
+                    <div style="font-size: 12px; color: #666;">ETA: 15 minutes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Performer -->
+        <div class="section-title">Top Performer</div>
+        <div class="performer-card">
+            <div class="performer-avatar">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="performer-info">
+                <div class="performer-name">Hewot M.</div>
+                <div class="performer-role">Sales Associate</div>
+                <div class="performer-stats">58.4K Br <span style="font-size: 12px; opacity: 0.9;">↑ 18%</span></div>
+            </div>
+        </div>
+
+        <!-- Product Discovery -->
+        <div class="section-title">Shop Products</div>
+        <div class="category-pills">
+            <div class="category-pill active">All</div>
+            <div class="category-pill">Skincare</div>
+            <div class="category-pill">Makeup</div>
+            <div class="category-pill">Fragrance</div>
+            <div class="category-pill">Haircare</div>
+            <div class="category-pill">Detergent</div>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be loaded dynamically -->
+        </div>
+
+        <div style="padding: 16px; text-align: center;">
+            <button class="btn btn-secondary" onclick="showModal('customOrderModal')">
+                <i class="fas fa-camera"></i> Can't find a product? Upload photo
+            </button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home')">
+                <div class="nav-icon"><i class="fas fa-home"></i></div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('orders')">
+                <div class="nav-icon"><i class="fas fa-box"></i></div>
+                <div class="nav-label">Orders</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('cart')">
+                <div class="nav-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="nav-label">Cart</div>
+                <div class="nav-badge" id="cartBadge">0</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('loyalty')">
+                <div class="nav-icon"><i class="fas fa-star"></i></div>
+                <div class="nav-label">Loyalty</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('contact')">
+                <div class="nav-icon"><i class="fas fa-phone"></i></div>
+                <div class="nav-label">Contact</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retail Operations Hub Portal -->
+    <div id="retailPortal" class="portal retail-portal">
+        <div class="header retail-header">
+            <div class="logo">🏪</div>
+            <div class="brand-name">SoYam Cosmetics & Beauty</div>
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span>LIVE</span>
+            </div>
+            <div class="tagline">Betel Building, Addis Ababa</div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="section-title">This Month</div>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-icon gold">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="metric-value">284.7K</div>
+                <div class="metric-label">Total Revenue (Br)</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> ↑ 18% vs last month
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon blue">
+                    <i class="fas fa-boxes-stacked"></i>
+                </div>
+                <div class="metric-value">142.3K</div>
+                <div class="metric-label">Stock Capital (Br)</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> ↑ 12% vs last month
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon green">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="metric-value">68.2K</div>
+                <div class="metric-label">Gross Profit (Br)</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> ↑ 15% vs last month
+                </div>
+            </div>
+        </div>
+
+        <!-- Today Overview -->
+        <div class="section-title">Today Overview</div>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-icon amber">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="metric-value">28</div>
+                <div class="metric-label">Orders</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> +18%
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon gold">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="metric-value">42.3K</div>
+                <div class="metric-label">Revenue (Br)</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up"></i> +12%
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Performer -->
+        <div class="section-title">Top Performer</div>
+        <div class="performer-card">
+            <div class="performer-avatar">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="performer-info">
+                <div class="performer-name">Hewot M.</div>
+                <div class="performer-role">Sales Associate</div>
+                <div class="performer-stats">58.4K Br <span style="font-size: 12px; opacity: 0.9;">↑ 18%</span></div>
+            </div>
+        </div>
+
+        <!-- Payment Verification -->
+        <div class="section-title">Pending Payment Verification</div>
+        <div id="paymentVerificationList">
+            <!-- Will be loaded dynamically -->
+        </div>
+
+        <!-- Delivery Orchestration -->
+        <div class="section-title">Delivery Orchestration</div>
+        <div class="delivery-card">
+            <div class="delivery-header">
+                <div style="font-weight: 600;">Active Drivers</div>
+                <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="showModal('assignDriverModal')">
+                    <i class="fas fa-plus"></i> Dispatch
+                </button>
+            </div>
+            <div class="driver-info" style="margin-bottom: 8px;">
+                <div class="driver-avatar">A</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 14px;">Driver Alemu</div>
+                    <div style="font-size: 12px; color: #666;">3 deliveries assigned</div>
+                </div>
+                <div class="delivery-status active">Active</div>
+            </div>
+            <div class="driver-info">
+                <div class="driver-avatar">T</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 14px;">Driver Tigist</div>
+                    <div style="font-size: 12px; color: #666;">2 deliveries assigned</div>
+                </div>
+                <div class="delivery-status active">Active</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-title">Quick Actions</div>
+        <div class="action-grid">
+            <div class="action-card" onclick="showModal('inventoryModal')">
+                <div class="action-icon">📦</div>
+                <div class="action-label">Inventory</div>
+            </div>
+            <div class="action-card" onclick="showModal('salesSummaryModal')">
+                <div class="action-icon">📊</div>
+                <div class="action-label">Sales Summary</div>
+            </div>
+            <div class="action-card" onclick="showModal('reportsModal')">
+                <div class="action-icon">📄</div>
+                <div class="action-label">Reports</div>
+            </div>
+        </div>
+
+        <!-- Floating Scan Button -->
+        <button class="fab" onclick="showModal('scanModal')">
+            <i class="fas fa-qrcode"></i>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="nav-label">Dashboard</div>
+            </div>
+            <div class="nav-item" onclick="showModal('scanModal')">
+                <div class="nav-icon"><i class="fas fa-qrcode"></i></div>
+                <div class="nav-label">Scan</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"><i class="fas fa-box"></i></div>
+                <div class="nav-label">Orders</div>
+                <div class="nav-badge">5</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"><i class="fas fa-truck"></i></div>
+                <div class="nav-label">Drivers</div>
+            </div>
+            <div class="nav-item" onclick="showPortalSelector()">
+                <div class="nav-icon"><i class="fas fa-ellipsis-h"></i></div>
+                <div class="nav-label">More</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive Command Center Portal -->
+    <div id="executivePortal" class="portal exec-portal">
+        <div class="exec-header">
+            <div class="logo" style="color: var(--exec-gold);">👑</div>
+            <div class="brand-name">Executive Command Center</div>
+            <div class="brand-amharic">SoYam Cosmetics & Beauty</div>
+            <div class="tagline">
+                <i class="fas fa-user-shield"></i> Rahel Mulatu (Owner)
+            </div>
+        </div>
+
+        <!-- Business Performance -->
+        <div class="section-title" style="color: white;">Business Performance</div>
+        <div class="metric-grid">
+            <div class="exec-metric-card">
+                <div class="metric-icon gold">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="metric-value">23.6%</div>
+                <div class="metric-label" style="color: rgba(255,255,255,0.7);">Profit Margin</div>
+            </div>
+            <div class="exec-metric-card">
+                <div class="metric-icon blue">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="metric-value">6.8 Br</div>
+                <div class="metric-label" style="color: rgba(255,255,255,0.7);">Customer Acquisition Cost</div>
+            </div>
+            <div class="exec-metric-card">
+                <div class="metric-icon green">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="metric-value">560 Br</div>
+                <div class="metric-label" style="color: rgba(255,255,255,0.7);">Average Order Value</div>
+            </div>
+            <div class="exec-metric-card">
+                <div class="metric-icon amber">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="metric-value">7.1%</div>
+                <div class="metric-label" style="color: rgba(255,255,255,0.7);">Growth Rate (CAGR)</div>
+            </div>
+        </div>
+
+        <!-- Top Performer -->
+        <div class="section-title" style="color: white;">Top Performer</div>
+        <div class="performer-card">
+            <div class="performer-avatar">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="performer-info">
+                <div class="performer-name">Hewot M.</div>
+                <div class="performer-role">Sales Associate</div>
+                <div class="performer-stats">58.4K Br <span style="font-size: 12px; opacity: 0.9;">↑ 18%</span></div>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="ai-insight-card">
+            <div class="ai-insight-header">
+                <i class="fas fa-robot"></i>
+                <span>AI Smart Recommendations</span>
+            </div>
+            <ul class="ai-insight-list">
+                <li class="ai-insight-item">
+                    <i class="fas fa-box"></i>
+                    Reorder soon: 12 products running low
+                </li>
+                <li class="ai-insight-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    3 products will expire in 30 days
+                </li>
+                <li class="ai-insight-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Peak sales prediction: Next Friday
+                </li>
+                <li class="ai-insight-item">
+                    <i class="fas fa-tint"></i>
+                    Increase in demand for Skincare (18%)
+                </li>
+            </ul>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-title" style="color: white;">Quick Actions</div>
+        <div class="action-grid">
+            <div class="exec-action-card" onclick="showModal('addStockModal')">
+                <div class="action-icon">📦</div>
+                <div class="action-label" style="color: white;">Add Stock</div>
+            </div>
+            <div class="exec-action-card" onclick="showModal('editPricesModal')">
+                <div class="action-icon">💰</div>
+                <div class="action-label" style="color: white;">Edit Prices</div>
+            </div>
+            <div class="exec-action-card" onclick="showModal('staffManagementModal')">
+                <div class="action-icon">👥</div>
+                <div class="action-label" style="color: white;">Staff Management</div>
+            </div>
+            <div class="exec-action-card" onclick="showModal('reportsModal')">
+                <div class="action-icon">📊</div>
+                <div class="action-label" style="color: white;">Reports</div>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="section-title" style="color: white;">Inventory Overview</div>
+        <div class="data-table" style="background: var(--exec-card); border: 1px solid rgba(199, 164, 90, 0.2);">
+            <div class="table-header" style="background: rgba(199, 164, 90, 0.1); color: var(--exec-gold);">
+                <div>Product</div>
+                <div>Category</div>
+                <div>Stock</div>
+                <div>Price</div>
+            </div>
+            <div id="inventoryTableBody">
+                <!-- Will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Staff Registry -->
+        <div class="section-title" style="color: white;">Staff Registry</div>
+        <div class="data-table" style="background: var(--exec-card); border: 1px solid rgba(199, 164, 90, 0.2);">
+            <div class="table-header" style="background: rgba(199, 164, 90, 0.1); color: var(--exec-gold);">
+                <div>Name</div>
+                <div>Role</div>
+                <div>Status</div>
+                <div>Actions</div>
+            </div>
+            <div id="staffTableBody">
+                <!-- Will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Financial Lock -->
+        <div class="section-title" style="color: white;">Daily Financial Lock</div>
+        <div class="exec-metric-card" style="margin: 16px;">
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 4px;">Date</div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--exec-gold);">September 2, 2026</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                <div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Total Units Sold</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">142</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Cash in Hand</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">18.4K Br</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Mobile Banking</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">23.9K Br</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Expected Revenue</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--exec-gold);">42.3K Br</div>
+                </div>
+            </div>
+            <button class="btn btn-danger" style="width: 100%;" onclick="showModal('financialLockModal')">
+                <i class="fas fa-lock"></i> Close Daily Transactions
+            </button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav" style="background: rgba(26, 15, 8, 0.95);">
+            <div class="nav-item active" style="color: var(--exec-gold);">
+                <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="nav-label">Dashboard</div>
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.6);">
+                <div class="nav-icon"><i class="fas fa-boxes-stacked"></i></div>
+                <div class="nav-label">Inventory</div>
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.6);">
+                <div class="nav-icon"><i class="fas fa-users"></i></div>
+                <div class="nav-label">Staff</div>
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.6);">
+                <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+                <div class="nav-label">Reports</div>
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.6);" onclick="showPortalSelector()">
+                <div class="nav-icon"><i class="fas fa-robot"></i></div>
+                <div class="nav-label">AI Insights</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Driver Portal -->
+    <div id="driverPortal" class="portal">
+        <div class="header" style="background: linear-gradient(135deg, #1F2A1E 0%, #2d3a2c 100%);">
+            <div class="logo">🚚</div>
+            <div class="brand-name">Logistics Dispatch</div>
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span>ONLINE</span>
+            </div>
+        </div>
+
+        <div class="section-title">Assigned Deliveries</div>
+        <div id="driverDeliveriesList">
+            <!-- Will be loaded dynamically -->
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon"><i class="fas fa-route"></i></div>
+                <div class="nav-label">Route</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"><i class="fas fa-box"></i></div>
+                <div class="nav-label">Deliveries</div>
+                <div class="nav-badge">5</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"><i class="fas fa-qrcode"></i></div>
+                <div class="nav-label">Scan</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"><i class="fas fa-phone"></i></div>
+                <div class="nav-label">Contact</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Rewards Modal -->
+    <div id="rewardsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🎁 Your Rewards</div>
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Available Rewards:</div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="font-weight: 600;">10% Off Next Purchase</div>
+                    <div style="font-size: 12px; color: #666;">500 points required</div>
+                </div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="font-weight: 600;">Free Delivery</div>
+                    <div style="font-size: 12px; color: #666;">1,000 points required</div>
+                </div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px;">
+                    <div style="font-weight: 600;">Gift Box Sample</div>
+                    <div style="font-size: 12px; color: #666;">2,000 points required</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('rewardsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refer Modal -->
+    <div id="referModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🔗 Refer & Earn</div>
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Your Referral Link:</div>
+                <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; word-break: break-all; font-size: 13px;">
+                    https://t.me/soYam_cosmo_bot?ref=USER123
+                </div>
+                <div style="margin-top: 12px; font-size: 13px; color: #666;">
+                    Earn 100 points for each friend who makes their first purchase!
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="copyReferralLink()">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('referModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Order Modal -->
+    <div id="customOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📷 Request Custom Product</div>
+            <div class="form-group">
+                <label class="form-label">Product Name or Description</label>
+                <input type="text" class="form-input" placeholder="e.g., Rose water toner">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Upload Photo (Optional)</label>
+                <input type="file" class="form-input" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Your Phone Number</label>
+                <input type="tel" class="form-input" placeholder="+251...">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="submitCustomOrder()">Submit Request</button>
+                <button class="btn btn-secondary" onclick="closeModal('customOrderModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan Modal -->
+    <div id="scanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📷 Scan Product QR/Barcode</div>
+            <div style="text-align: center; padding: 40px 20px; background: #f9f9f9; border-radius: 8px; margin-bottom: 16px;">
+                <i class="fas fa-qrcode" style="font-size: 64px; color: #ccc;"></i>
+                <div style="margin-top: 16px; color: #666;">Camera access required</div>
+                <div style="font-size: 12px; color: #999; margin-top: 8px;">Point camera at product barcode or QR code</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Or enter product code manually:</label>
+                <input type="text" class="form-input" placeholder="Product code">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="scanProduct()">Scan</button>
+                <button class="btn btn-secondary" onclick="closeModal('scanModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Stock Modal -->
+    <div id="addStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📦 Add New Stock</div>
+            <div class="form-group">
+                <label class="form-label">Product Name</label>
+                <input type="text" class="form-input" placeholder="Enter product name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select">
+                    <option>Skincare</option>
+                    <option>Makeup</option>
+                    <option>Fragrance</option>
+                    <option>Haircare</option>
+                    <option>Detergent</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Buying Price (Br)</label>
+                <input type="number" class="form-input" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Selling Price (Br)</label>
+                <input type="number" class="form-input" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantity</label>
+                <input type="number" class="form-input" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Product Image</label>
+                <input type="file" class="form-input" accept="image/*">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addStock()">Save Product</button>
+                <button class="btn btn-secondary" onclick="closeModal('addStockModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Management Modal -->
+    <div id="staffManagementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">👥 Add New Staff Member</div>
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Telegram Username</label>
+                <input type="text" class="form-input" placeholder="@username">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-input" placeholder="+251...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-select">
+                    <option>Sales Associate</option>
+                    <option>Store Manager</option>
+                    <option>Driver</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addStaff()">Add Staff</button>
+                <button class="btn btn-secondary" onclick="closeModal('staffManagementModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Lock Modal -->
+    <div id="financialLockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🔒 Close Daily Transactions</div>
+            <div style="margin-bottom: 16px;">
+                <div style="padding: 16px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">⚠️ Warning</div>
+                    <div style="font-size: 13px;">This action will lock today's ledger and cannot be undone. Please ensure all transactions are verified.</div>
+                </div>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Summary:</div>
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Total Revenue:</span>
+                        <span style="font-weight: 600;">42,300 Br</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Cash Received:</span>
+                        <span style="font-weight: 600;">18,400 Br</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                        <span>Mobile Banking:</span>
+                        <span style="font-weight: 600;">23,900 Br</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #d4edda; border-radius: 4px; font-weight: 600;">
+                        <span>Variance:</span>
+                        <span>0 Br ✓</span>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-danger" onclick="closeDailyTransactions()">
+                    <i class="fas fa-lock"></i> Lock & Close
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('financialLockModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Driver Modal -->
+    <div id="assignDriverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🚚 Assign Driver</div>
+            <div class="form-group">
+                <label class="form-label">Select Order</label>
+                <select class="form-select">
+                    <option>Order #1234 - Abebe K.</option>
+                    <option>Order #1235 - Sara M.</option>
+                    <option>Order #1236 - Dawit T.</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select Driver</label>
+                <select class="form-select">
+                    <option>Driver Alemu (3 deliveries)</option>
+                    <option>Driver Tigist (2 deliveries)</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="assignDriver()">Assign</button>
+                <button class="btn btn-secondary" onclick="closeModal('assignDriverModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Modal for other actions -->
+    <div id="genericModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="genericModalTitle">Action</div>
+            <div id="genericModalContent"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('genericModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Application State
+        const state = {
+            currentPortal: null,
+            user: null,
+            cart: [],
+            products: [],
+            orders: [],
+            staff: [],
+            inventory: [],
+            loyaltyPoints: 2450
+        };
+
+        // Mock Data
+        const mockProducts = [
+            { id: 1, name: 'Rose Water Toner', category: 'Skincare', price: 450, emoji: '🌹', stock: 24 },
+            { id: 2, name: 'Matte Lipstick', category: 'Makeup', price: 320, emoji: '💄', stock: 18 },
+            { id: 3, name: 'Perfume - Oud', category: 'Fragrance', price: 1200, emoji: '🌸', stock: 8 },
+            { id: 4, name: 'Shampoo - Argan', category: 'Haircare', price: 280, emoji: '🧴', stock: 32 },
+            { id: 5, name: 'Laundry Detergent', category: 'Detergent', price: 180, emoji: '🧼', stock: 45 },
+            { id: 6, name: 'Face Cream', category: 'Skincare', price: 650, emoji: '🧴', stock: 15 },
+            { id: 7, name: 'Foundation', category: 'Makeup', price: 580, emoji: '💄', stock: 12 },
+            { id: 8, name: 'Body Lotion', category: 'Skincare', price: 420, emoji: '🧴', stock: 28 }
+        ];
+
+        const mockOrders = [
+            { id: 'ORD-1234', customer: 'Abebe K.', amount: 1250, status: 'pending', items: 3 },
+            { id: 'ORD-1235', customer: 'Sara M.', amount: 890, status: 'verified', items: 2 },
+            { id: 'ORD-1236', customer: 'Dawit T.', amount: 2100, status: 'delivered', items: 5 }
+        ];
+
+        const mockStaff = [
+            { id: 1, name: 'Hewot M.', role: 'Sales Associate', status: 'active', telegram: '@hewot_m' },
+            { id: 2, name: 'Meron A.', role: 'Sales Associate', status: 'active', telegram: '@meron_a' },
+            { id: 3, name: 'Yonas B.', role: 'Store Manager', status: 'active', telegram: '@yonas_b' }
+        ];
+
+        // Initialize App
+        function initApp() {
+            state.products = mockProducts;
+            state.orders = mockOrders;
+            state.staff = mockStaff;
+            
+            // Check if user has multiple roles (for demo, show portal selector)
+            // In production, this would be determined by backend
+            showPortalSelector();
+            
+            // Load products
+            renderProducts();
+            renderInventory();
+            renderStaff();
+            renderOrders();
+            renderDriverDeliveries();
+            renderPaymentVerification();
+        }
+
+        // Portal Management
+        function showPortalSelector() {
+            document.querySelectorAll('.portal').forEach(p => p.classList.remove('active'));
+            document.getElementById('portalSelector').classList.add('active');
+            state.currentPortal = null;
+        }
+
+        function selectPortal(portal) {
+            document.getElementById('portalSelector').classList.remove('active');
+            document.querySelectorAll('.portal').forEach(p => p.classList.remove('active'));
+            
+            switch(portal) {
+                case 'customer':
+                    document.getElementById('customerPortal').classList.add('active');
+                    state.currentPortal = 'customer';
+                    break;
+                case 'retail':
+                    document.getElementById('retailPortal').classList.add('active');
+                    state.currentPortal = 'retail';
+                    break;
+                case 'executive':
+                    document.getElementById('executivePortal').classList.add('active');
+                    state.currentPortal = 'executive';
+                    break;
+                case 'driver':
+                    document.getElementById('driverPortal').classList.add('active');
+                    state.currentPortal = 'driver';
+                    break;
+            }
+            
+            // Notify Telegram
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        // Product Rendering
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = state.products.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-category">${product.category}</div>
+                        <div class="product-footer">
+                            <div class="product-price">${product.price} Br</div>
+                            <button class="add-to-cart" onclick="addToCart(${product.id})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Management
+        function addToCart(productId) {
+            const product = state.products.find(p => p.id === productId);
+            const existingItem = state.cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                state.cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCartBadge();
+            tg.HapticFeedback.notificationOccurred('success');
+            showNotification('Added to cart!');
+        }
+
+        function updateCartBadge() {
+            const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartBadge').textContent = totalItems;
+        }
+
+        function renderCart() {
+            const cartContainer = document.getElementById('cartItems');
+            if (!cartContainer) return;
+            
+            if (state.cart.length === 0) {
+                cartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">Your cart is empty</div>';
+                return;
+            }
+            
+            cartContainer.innerHTML = state.cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-image">${item.emoji}</div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">${item.price} Br</div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="qty-value">${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateCartSummary();
+        }
+
+        function updateQuantity(productId, change) {
+            const item = state.cart.find(i => i.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    state.cart = state.cart.filter(i => i.id !== productId);
+                }
+                updateCartBadge();
+                renderCart();
+            }
+        }
+
+        function updateCartSummary() {
+            const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const delivery = subtotal > 0 ? 50 : 0;
+            const total = subtotal + delivery;
+            
+            const summaryContainer = document.getElementById('cartSummary');
+            if (summaryContainer) {
+                summaryContainer.innerHTML = `
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>${subtotal} Br</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery:</span>
+                        <span>${delivery} Br</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>${total} Br</span>
+                    </div>
+                    <button class="checkout-btn" onclick="checkout()">
+                        Proceed to Checkout
+                    </button>
+                `;
+            }
+        }
+
+        function checkout() {
+            if (state.cart.length === 0) {
+                showNotification('Cart is empty!');
+                return;
+            }
+            
+            const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 50;
+            showNotification(`Order placed! Total: ${total} Br`);
+            state.cart = [];
+            updateCartBadge();
+            renderCart();
+            
+            // Add loyalty points
+            state.loyaltyPoints += Math.floor(total / 10);
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        // Inventory Management
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = state.products.map(product => {
+                const stockClass = product.stock > 20 ? 'high' : product.stock > 10 ? 'medium' : 'low';
+                return `
+                    <div class="table-row" style="color: white;">
+                        <div>${product.emoji} ${product.name}</div>
+                        <div>${product.category}</div>
+                        <div><span class="stock-badge ${stockClass}">${product.stock}</span></div>
+                        <div>${product.price} Br</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Staff Management
+        function renderStaff() {
+            const tbody = document.getElementById('staffTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = state.staff.map(member => `
+                <div class="table-row" style="color: white;">
+                    <div>${member.name}</div>
+                    <div>${member.role}</div>
+                    <div><span class="stock-badge ${member.status === 'active' ? 'high' : 'low'}">${member.status}</span></div>
+                    <div>
+                        <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="revokeStaff(${member.id})">
+                            Revoke
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Orders Management
+        function renderOrders() {
+            const list = document.getElementById('paymentVerificationList');
+            if (!list) return;
+            
+            const pendingOrders = state.orders.filter(o => o.status === 'pending');
+            
+            if (pendingOrders.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No pending orders</div>';
+                return;
+            }
+            
+            list.innerHTML = pendingOrders.map(order => `
+                <div class="order-item">
+                    <div class="order-header">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-status pending">Pending</div>
+                    </div>
+                    <div class="order-details">
+                        <div>Customer: ${order.customer}</div>
+                        <div>Amount: ${order.amount} Br</div>
+                        <div>Items: ${order.items}</div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-primary" onclick="verifyPayment('${order.id}')">
+                            <i class="fas fa-check"></i> Verify Payment
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewOrderDetails('${order.id}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Driver Deliveries
+        function renderDriverDeliveries() {
+            const list = document.getElementById('driverDeliveriesList');
+            if (!list) return;
+            
+            const deliveries = state.orders.filter(o => o.status === 'verified');
+            
+            if (deliveries.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No deliveries assigned</div>';
+                return;
+            }
+            
+            list.innerHTML = deliveries.map(order => `
+                <div class="order-item">
+                    <div class="order-header">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-status verified">Ready</div>
+                    </div>
+                    <div class="order-details">
+                        <div>Customer: ${order.customer}</div>
+                        <div>Amount: ${order.amount} Br</div>
+                        <div>Address: Betel Building, Addis Ababa</div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-primary" onclick="navigateToDelivery('${order.id}')">
+                            <i class="fas fa-map-marker-alt"></i> Navigate
+                        </button>
+                        <button class="btn btn-secondary" onclick="markDelivered('${order.id}')">
+                            <i class="fas fa-check"></i> Mark Delivered
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPaymentVerification() {
+            renderOrders(); // Reuse orders rendering
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            tg.HapticFeedback.impactOccurred('light');
+            showNotification(`Switched to ${tab}`);
+        }
+
+        // Modal Management
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Action Handlers
+        function verifyPayment(orderId) {
+            const order = state.orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'verified';
+                renderOrders();
+                renderDriverDeliveries();
+                showNotification('Payment verified!');
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        function markDelivered(orderId) {
+            const order = state.orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'delivered';
+                renderDriverDeliveries();
+                showNotification('Delivery marked as complete!');
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        function navigateToDelivery(orderId) {
+            window.open('https://maps.google.com', '_blank');
+        }
+
+        function addStock() {
+            showNotification('Stock added successfully!');
+            closeModal('addStockModal');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function addStaff() {
+            showNotification('Staff member added!');
+            closeModal('staffManagementModal');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function revokeStaff(staffId) {
+            if (confirm('Are you sure you want to revoke this staff member?')) {
+                state.staff = state.staff.filter(s => s.id !== staffId);
+                renderStaff();
+                showNotification('Staff member revoked');
+                tg.HapticFeedback.notificationOccurred('warning');
+            }
+        }
+
+        function closeDailyTransactions() {
+            showNotification('Daily transactions locked successfully!');
+            closeModal('financialLockModal');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function assignDriver() {
+            showNotification('Driver assigned successfully!');
+            closeModal('assignDriverModal');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function scanProduct() {
+            showNotification('Product scanned!');
+            closeModal('scanModal');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function submitCustomOrder() {
+            showNotification('Custom order request submitted!');
+            closeModal('customOrderModal');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function copyReferralLink() {
+            const link = 'https://t.me/soYam_cosmo_bot?ref=USER123';
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification('Referral link copied!');
+                tg.HapticFeedback.notificationOccurred('success');
+            });
+        }
+
+        function viewOrderDetails(orderId) {
+            showNotification(`Viewing order ${orderId}`);
+        }
+
+        // Category Filtering
+        document.querySelectorAll('.category-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.textContent;
+                if (category === 'All') {
+                    renderProducts();
+                } else {
+                    const filtered = state.products.filter(p => p.category === category);
+                    const grid = document.getElementById('productGrid');
+                    grid.innerHTML = filtered.map(product => `
+                        <div class="product-card">
+                            <div class="product-image">${product.emoji}</div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-category">${product.category}</div>
+                                <div class="product-footer">
+                                    <div class="product-price">${product.price} Br</div>
+                                    <button class="add-to-cart" onclick="addToCart(${product.id})">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                tg.HapticFeedback.impactOccurred('light');
+            });
+        });
+
+        // Language Selector
+        document.querySelectorAll('.lang-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                showNotification(`Language changed to ${this.textContent}`);
+                tg.HapticFeedback.impactOccurred('light');
+            });
+        });
+
+        // Notification System
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 24px;
+                font-size: 14px;
+                z-index: 3000;
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize on load
+        window.addEventListener('load', initApp);
+
+        // Handle Telegram back button
+        tg.BackButton.onClick(()
