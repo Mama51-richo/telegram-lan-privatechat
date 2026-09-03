@@ -1,0 +1,9 @@
+name = "soyam-cosmo-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+APP_NAME = "soYam Cosmo API"
+JWT_ISSUER = "soyam-cosmo"
+JWT_TTL_SECONDS = "3600"
