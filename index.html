@@ -1,352 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edu Mini App</title>
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--tg-theme-bg-color, #fff);
-      color: var(--tg-theme-text-color, #000);
-      padding: 16px;
-      min-height: 100vh;
-    }
-    .screen { display: none; }
-    .screen.active { display: block; }
-    h2 { margin-bottom: 12px; font-size: 22px; }
-    p, li { line-height: 1.6; margin-bottom: 10px; }
-    input, button {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: 1px solid var(--tg-theme-hint-color, #ccc);
-      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-      color: var(--tg-theme-text-color, #000);
-      margin-top: 8px;
-    }
-    button {
-      background: var(--tg-theme-button-color, #0088cc);
-      color: var(--tg-theme-button-text-color, #fff);
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:active { opacity: 0.7; }
-    .quiz-option {
-      display: block;
-      padding: 10px 14px;
-      margin: 6px 0;
-      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-      border-radius: 10px;
-      cursor: pointer;
-      border: 2px solid transparent;
-    }
-    .quiz-option.selected {
-      border-color: var(--tg-theme-button-color, #0088cc);
-      background: var(--tg-theme-button-color, #0088cc);
-      color: #fff;
-    }
-    .quiz-option input { display: none; }
-    canvas { width: 100%; max-width: 600px; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .cert-actions { display: flex; gap: 10px; margin-top: 16px; }
-    .cert-actions button { flex: 1; }
-    #courseContent { white-space: pre-wrap; }
-    .tag { 
-      display: inline-block; 
-      padding: 4px 12px; 
-      border-radius: 20px; 
-      background: var(--tg-theme-button-color, #0088cc); 
-      color: #fff; 
-      font-size: 14px; 
-      margin-bottom: 12px;
-    }
-    .hidden { display: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>EduPortal</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); padding: 16px; min-height: 100vh; }
+        .hidden { display: none !important; }
+        .card { background: var(--tg-theme-secondary-bg-color, #f5f5f5); padding: 20px; border-radius: 16px; margin-bottom: 16px; }
+        h2 { margin-bottom: 12px; }
+        button { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; }
+        .option { display: block; width: 100%; text-align: left; background: var(--tg-theme-bg-color, #e0e0e0); color: var(--tg-theme-text-color, #000); padding: 12px; margin: 6px 0; border-radius: 10px; border: 2px solid transparent; }
+        .option.selected { border-color: var(--tg-theme-button-color, #2481cc); background: var(--tg-theme-secondary-bg-color, #d0d0d0); }
+        .correct { border-color: #22c55e !important; background: #dcfce7 !important; }
+        .wrong { border-color: #ef4444 !important; background: #fee2e2 !important; }
+        #certCanvas { width: 100%; max-width: 400px; margin: 16px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .flex { display: flex; gap: 10px; }
+        .flex button { flex: 1; }
+    </style>
 </head>
 <body>
-
-  <!-- ========== SCREEN 1: HOME ========== -->
-  <div id="screen-home" class="screen active">
-    <h2>📚 What do you want to learn?</h2>
-    <p style="color: var(--tg-theme-hint-color, #888);">Enter a topic and AI will generate a mini-course with a quiz.</p>
-    <input id="topicInput" type="text" placeholder="e.g., Communication Skills, Python Basics, Public Speaking" />
-    <button id="generateBtn" onclick="generateCourse()">🚀 Enroll & Generate</button>
-  </div>
-
-  <!-- ========== SCREEN 2: COURSE ========== -->
-  <div id="screen-course" class="screen">
-    <span class="tag" id="courseTag">📖 Reading Material</span>
-    <h2 id="courseTitle"></h2>
-    <div id="courseContent"></div>
-    <button onclick="startQuiz()">📝 Take Quiz</button>
-  </div>
-
-  <!-- ========== SCREEN 3: QUIZ ========== -->
-  <div id="screen-quiz" class="screen">
-    <span class="tag">🧠 Quiz (5 Questions)</span>
-    <h2>Test Your Knowledge</h2>
-    <div id="quizContainer"></div>
-    <button onclick="submitQuiz()">✅ Submit Answers</button>
-  </div>
-
-  <!-- ========== SCREEN 4: CERTIFICATE ========== -->
-  <div id="screen-cert" class="screen">
-    <span class="tag">🎉 Congratulations!</span>
-    <h2>You Passed!</h2>
-    <canvas id="certCanvas" width="600" height="400"></canvas>
-    <div class="cert-actions">
-      <button onclick="downloadCert()">⬇️ Download PNG</button>
-      <button onclick="resetApp()">🔄 Learn New Topic</button>
+    <!-- HOME SCREEN -->
+    <div id="home">
+        <div class="card" style="text-align:center;">
+            <h1>📚 EduPortal</h1>
+            <p style="margin:8px 0 16px;">Select a topic to start learning instantly.</p>
+        </div>
+        <div id="topicList"></div>
+        <button onclick="showCert('Demo User')" style="margin-top:10px;background:green;">🎓 Preview Certificate</button>
     </div>
-  </div>
 
-  <!-- ========== SCREEN 5: FAIL ========== -->
-  <div id="screen-fail" class="screen">
-    <span class="tag" style="background: #e74c3c;">😓 Not Quite</span>
-    <h2>Score below 4/5</h2>
-    <p>Review the material and try again.</p>
-    <button onclick="startQuiz()">🔁 Retry Quiz</button>
-    <button onclick="resetApp()" style="margin-top: 8px; background: #666;">📚 Choose New Topic</button>
-  </div>
+    <!-- COURSE SCREEN -->
+    <div id="courseScreen" class="hidden">
+        <button onclick="goHome()" style="background:gray;margin-bottom:12px;">⬅ Back</button>
+        <div class="card"><h2 id="courseTitle"></h2><div id="courseBody" style="line-height:1.6;"></div></div>
+        <button onclick="startQuiz()">📝 Take Quiz</button>
+    </div>
 
-  <script>
-    // ============================================================
-    // 🔑 PASTE YOUR RESTRICTED GEMINI API KEY HERE
-    // ============================================================
-    const GEMINI_KEY = "YOUR_API_KEY_HERE";  // <-- REPLACE THIS
+    <!-- QUIZ SCREEN -->
+    <div id="quizScreen" class="hidden">
+        <button onclick="goHome()" style="background:gray;margin-bottom:12px;">⬅ Quit</button>
+        <div class="card"><h2 id="quizTitle"></h2><div id="questionText" style="font-size:18px;font-weight:500;margin:10px 0;"></div><div id="optionsContainer"></div></div>
+        <div class="flex"><button id="prevBtn" onclick="prevQuestion()">⬅ Prev</button><button id="nextBtn" onclick="nextQuestion()">Next ➡</button></div>
+        <button id="submitBtn" onclick="submitQuiz()" style="margin-top:12px;background:#22c55e;">✅ Submit Answers</button>
+    </div>
 
-    const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=" + GEMINI_KEY;
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" class="hidden">
+        <div class="card" style="text-align:center;"><h2 id="resultText"></h2><p id="resultScore"></p></div>
+        <canvas id="certCanvas" width="800" height="500"></canvas>
+        <button onclick="downloadCert()">⬇ Download Certificate (PNG)</button>
+        <button onclick="goHome()" style="margin-top:10px;background:gray;">🏠 Home</button>
+    </div>
 
-    let courseData = null;
-    let userName = "Student";
+    <script>
+        // ========== PRE-LOADED COURSE LIBRARY (NO API KEY) ==========
+        const COURSES = {
+            communication: {
+                title: "Communication Skills",
+                content: `<p><b>Lesson 1: Active Listening</b><br>Active listening requires full concentration. Avoid interrupting and ask clarifying questions. Paraphrase what the speaker said to confirm understanding.</p>
+                          <p><b>Lesson 2: Clear Messaging</b><br>Use the "Pyramid Principle": Start with your main conclusion, then support it with 3 key arguments. This saves time and keeps audiences engaged.</p>
+                          <p><b>Lesson 3: Non-Verbal Cues</b><br>Body language accounts for 55% of communication. Maintain eye contact, use open gestures, and match your tone to your message.</p>`,
+                questions: [
+                    { q: "What percentage of communication is body language?", opts: ["10%", "55%", "70%", "93%"], ans: 1 },
+                    { q: "What is the first step of active listening?", opts: ["Interrupt", "Paraphrase", "Concentrate fully", "Judge quickly"], ans: 2 },
+                    { q: "What does the Pyramid Principle suggest?", opts: ["Start with details", "Start with the conclusion", "Use long sentences", "Avoid structure"], ans: 1 },
+                    { q: "Which is a non-verbal cue?", opts: ["Volume", "Eye contact", "Vocabulary", "Grammar"], ans: 1 },
+                    { q: "How to show you are listening?", opts: ["Nod and paraphrase", "Look at your phone", "Interrupt often", "Speak loudly"], ans: 0 }
+                ]
+            },
+            time_management: {
+                title: "Time Management",
+                content: `<p><b>Lesson 1: The Eisenhower Matrix</b><br>Categorize tasks into Urgent/Important. Focus on Important + Not Urgent (Quadrant 2) for long-term productivity. Delegate Urgent + Not Important.</p>
+                          <p><b>Lesson 2: Pomodoro Technique</b><br>Work for 25 minutes, then break for 5. After 4 cycles, take a longer 15-30 min break. This boosts focus and prevents burnout.</p>
+                          <p><b>Lesson 3: Saying 'No'</b><br>Protect your calendar. Politely decline tasks that don't align with your priorities. Offer alternatives instead of just refusing.</p>`,
+                questions: [
+                    { q: "What is Quadrant 2 in the Eisenhower Matrix?", opts: ["Urgent & Important", "Important but Not Urgent", "Urgent but Not Important", "Neither"], ans: 1 },
+                    { q: "How long is a standard Pomodoro work session?", opts: ["15 min", "25 min", "45 min", "60 min"], ans: 1 },
+                    { q: "What should you do with Urgent but Not Important tasks?", opts: ["Do them now", "Schedule them", "Delegate them", "Ignore them"], ans: 2 },
+                    { q: "What is a key habit for good time management?", opts: ["Multitasking", "Checking email constantly", "Planning your day", "Working late"], ans: 2 },
+                    { q: "How long is a long break after 4 Pomodoros?", opts: ["5 min", "10 min", "15-30 min", "1 hour"], ans: 2 }
+                ]
+            }
+        };
+        // Add more topics here (e.g., leadership: { title: "...", content: "...", questions: [...] })
 
-    // Get Telegram user name if available
-    try {
-      if (window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name) {
-        userName = Telegram.WebApp.initDataUnsafe.user.first_name;
-      }
-    } catch (_) {}
+        // ========== APP STATE ==========
+        let currentTopic = null;
+        let currentQIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+        let userName = "Student";
 
-    // Expand Telegram Mini App to full height
-    try { Telegram.WebApp.expand(); } catch (_) {}
-
-    // ---------- Utility ----------
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-
-    // ---------- Generate Course via AI ----------
-    async function generateCourse() {
-      const topic = document.getElementById('topicInput').value.trim();
-      if (!topic) { alert("Please enter a topic."); return; }
-
-      document.getElementById('generateBtn').innerText = "⏳ Generating...";
-      document.getElementById('generateBtn').disabled = true;
-
-      const prompt = `
-You are an expert educator. Create a short course on "${topic}".
-Respond ONLY with valid JSON in this exact structure:
-{
-  "title": "Course Title",
-  "content": "At least 600 words of educational content, split into paragraphs with bullet points where relevant.",
-  "questions": [
-    { "question": "MCQ question 1?", "options": ["A", "B", "C", "D"], "answer": 0 },
-    { "question": "MCQ question 2?", "options": ["A", "B", "C", "D"], "answer": 1 },
-    { "question": "MCQ question 3?", "options": ["A", "B", "C", "D"], "answer": 2 },
-    { "question": "MCQ question 4?", "options": ["A", "B", "C", "D"], "answer": 3 },
-    { "question": "MCQ question 5?", "options": ["A", "B", "C", "D"], "answer": 0 }
-  ]
-}
-The "answer" field must be the index (0-3) of the correct option.
-`;
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-          })
-        });
-
-        if (!res.ok) throw new Error("API error: " + res.status);
-
-        const data = await res.json();
-        let rawText = data.candidates[0].content.parts[0].text;
-
-        // Remove markdown code fences
-        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-        courseData = JSON.parse(rawText);
-
-        // Validate
-        if (!courseData.title || !courseData.content || !courseData.questions || courseData.questions.length !== 5) {
-          throw new Error("Invalid JSON structure from AI");
+        // Telegram Init
+        if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            if (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+                userName = Telegram.WebApp.initDataUnsafe.user.first_name || userName;
+            }
         }
 
-        // Save to localStorage
-        localStorage.setItem('edu_course', JSON.stringify(courseData));
-        localStorage.setItem('edu_topic', document.getElementById('topicInput').value);
+        // ========== RENDER HOME ==========
+        function renderHome() {
+            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('home').classList.remove('hidden');
+            const list = document.getElementById('topicList');
+            list.innerHTML = '';
+            Object.keys(COURSES).forEach(key => {
+                const btn = document.createElement('button');
+                btn.textContent = `📖 ${COURSES[key].title}`;
+                btn.style.marginBottom = '10px';
+                btn.onclick = () => openCourse(key);
+                list.appendChild(btn);
+            });
+        }
 
-        renderCourse();
+        // ========== OPEN COURSE ==========
+        function openCourse(key) {
+            currentTopic = key;
+            const data = COURSES[key];
+            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('courseScreen').classList.remove('hidden');
+            document.getElementById('courseTitle').textContent = data.title;
+            document.getElementById('courseBody').innerHTML = data.content;
+            // Reset quiz state
+            currentQIndex = 0;
+            userAnswers = new Array(data.questions.length).fill(-1);
+        }
 
-      } catch (err) {
-        alert("Generation failed: " + err.message + "\nPlease try again.");
-        console.error(err);
-      } finally {
-        document.getElementById('generateBtn').innerText = "🚀 Enroll & Generate";
-        document.getElementById('generateBtn').disabled = false;
-      }
-    }
+        // ========== QUIZ LOGIC ==========
+        function startQuiz() {
+            if (!currentTopic) return;
+            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('quizTitle').textContent = `📝 Quiz: ${COURSES[currentTopic].title}`;
+            userAnswers = new Array(COURSES[currentTopic].questions.length).fill(-1);
+            currentQIndex = 0;
+            renderQuestion();
+        }
 
-    // ---------- Render Course ----------
-    function renderCourse() {
-      if (!courseData) return;
-      document.getElementById('courseTitle').innerText = courseData.title;
-      document.getElementById('courseContent').innerHTML = courseData.content.replace(/\n/g, '<br>');
-      showScreen('screen-course');
-    }
+        function renderQuestion() {
+            const data = COURSES[currentTopic];
+            const q = data.questions[currentQIndex];
+            document.getElementById('questionText').textContent = `${currentQIndex+1}. ${q.q}`;
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                if (userAnswers[currentQIndex] === idx) btn.classList.add('selected');
+                btn.textContent = String.fromCharCode(65 + idx) + ". " + opt; // A, B, C, D
+                btn.onclick = () => selectOption(idx);
+                container.appendChild(btn);
+            });
+            document.getElementById('prevBtn').style.visibility = currentQIndex === 0 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').textContent = currentQIndex === data.questions.length - 1 ? 'Finish' : 'Next ➡';
+        }
 
-    // ---------- Start Quiz ----------
-    function startQuiz() {
-      if (!courseData) return;
-      showScreen('screen-quiz');
-      const container = document.getElementById('quizContainer');
-      container.innerHTML = '';
+        function selectOption(idx) {
+            userAnswers[currentQIndex] = idx;
+            renderQuestion();
+        }
 
-      courseData.questions.forEach((q, idx) => {
-        const div = document.createElement('div');
-        div.style.marginBottom = '20px';
-        div.innerHTML = `<strong>${idx+1}. ${q.question}</strong>`;
+        function nextQuestion() {
+            const data = COURSES[currentTopic];
+            if (currentQIndex === data.questions.length - 1) {
+                submitQuiz();
+            } else {
+                currentQIndex++;
+                renderQuestion();
+            }
+        }
 
-        const optDiv = document.createElement('div');
-        optDiv.style.marginTop = '6px';
+        function prevQuestion() {
+            if (currentQIndex > 0) { currentQIndex--; renderQuestion(); }
+        }
 
-        q.options.forEach((opt, optIdx) => {
-          const label = document.createElement('label');
-          label.className = 'quiz-option';
-          label.innerHTML = `<input type="radio" name="q${idx}" value="${optIdx}"> ${opt}`;
-          // Toggle selected style
-          label.addEventListener('click', function(e) {
-            // Unselect siblings
-            this.parentElement.querySelectorAll('.quiz-option').forEach(l => l.classList.remove('selected'));
-            this.classList.add('selected');
-            this.querySelector('input').checked = true;
-          });
-          optDiv.appendChild(label);
-        });
+        function submitQuiz() {
+            const data = COURSES[currentTopic];
+            // Check if all answered
+            if (userAnswers.includes(-1)) {
+                if (!confirm("You have unanswered questions. Submit anyway?")) return;
+            }
+            score = 0;
+            data.questions.forEach((q, i) => {
+                if (userAnswers[i] === q.ans) score++;
+            });
+            // Show result
+            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('resultScreen').classList.remove('hidden');
+            const passed = score >= 4;
+            document.getElementById('resultText').innerHTML = passed ? '🎉 Congratulations!' : '😅 Keep Learning!';
+            document.getElementById('resultScore').textContent = `You scored ${score}/${data.questions.length}. ${passed ? 'Certificate Earned!' : 'Try another course.'}`;
+            generateCertificate(userName, data.title, passed);
+        }
 
-        div.appendChild(optDiv);
-        container.appendChild(div);
-      });
-    }
+        // ========== CERTIFICATE (CANVAS - NO API) ==========
+        function generateCertificate(name, topic, passed) {
+            const canvas = document.getElementById('certCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 800, 500);
+            if (!passed) {
+                ctx.fillStyle = '#e5e7eb';
+                ctx.fillRect(0, 0, 800, 500);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Complete the quiz to unlock', 400, 250);
+                ctx.fillText('your certificate.', 400, 300);
+                return;
+            }
+            // Border
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 20;
+            ctx.strokeRect(10, 10, 780, 480);
+            // Background
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(20, 20, 760, 460);
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 40px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('📜 Certificate of Completion', 400, 100);
+            ctx.font = '24px sans-serif';
+            ctx.fillStyle = '#334155';
+            ctx.fillText('This certifies that', 400, 170);
+            ctx.font = 'bold 36px sans-serif';
+            ctx.fillStyle = '#2563eb';
+            ctx.fillText(name, 400, 230);
+            ctx.font = '22px sans-serif';
+            ctx.fillStyle = '#334155';
+            ctx.fillText(`has successfully completed the course`, 400, 290);
+            ctx.font = 'bold 28px sans-serif';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(`"${topic}"`, 400, 340);
+            ctx.font = '18px sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`Date: ${new Date().toLocaleDateString()}`, 400, 410);
+            ctx.font = '16px sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Generated by EduPortal • No AI needed', 400, 470);
+        }
 
-    // ---------- Submit Quiz ----------
-    function submitQuiz() {
-      let correct = 0;
-      let allAnswered = true;
+        function downloadCert() {
+            const canvas = document.getElementById('certCanvas');
+            const link = document.createElement('a');
+            link.download = `certificate-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
 
-      courseData.questions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        if (!selected) { allAnswered = false; return; }
-        if (parseInt(selected.value) === q.answer) correct++;
-      });
+        function showCert(name) {
+            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('resultText').innerHTML = '🎓 Preview';
+            document.getElementById('resultScore').textContent = 'Certificate preview (no quiz taken).';
+            generateCertificate(name || 'Demo User', 'Communication Skills', true);
+        }
 
-      if (!allAnswered) {
-        alert("Please answer all 5 questions before submitting.");
-        return;
-      }
+        // ========== NAVIGATION ==========
+        function goHome() { renderHome(); }
 
-      if (correct >= 4) {
-        showCertificate();
-      } else {
-        showScreen('screen-fail');
-        document.querySelector('#screen-fail p').innerHTML = 
-          `You scored <strong>${correct}/5</strong>. Passing score is 4/5. Review the material and try again.`;
-      }
-    }
-
-    // ---------- Show Certificate ----------
-    function showCertificate() {
-      showScreen('screen-cert');
-      const canvas = document.getElementById('certCanvas');
-      const ctx = canvas.getContext('2d');
-
-      // Background
-      ctx.fillStyle = '#1a2634';
-      ctx.fillRect(0, 0, 600, 400);
-
-      // Border
-      ctx.strokeStyle = '#ffd700';
-      ctx.lineWidth = 8;
-      ctx.strokeRect(20, 20, 560, 360);
-
-      ctx.fillStyle = '#ffd700';
-      ctx.font = 'bold 36px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🎓 CERTIFICATE', 300, 90);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '22px Arial';
-      ctx.fillText('This certifies that', 300, 150);
-
-      ctx.fillStyle = '#ffd700';
-      ctx.font = 'bold 32px Arial';
-      ctx.fillText(userName, 300, 205);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '18px Arial';
-      ctx.fillText(`has successfully completed the course:`, 300, 255);
-      ctx.fillStyle = '#ffd700';
-      ctx.font = 'bold 20px Arial';
-      ctx.fillText(`"${courseData.title}"`, 300, 300);
-
-      ctx.fillStyle = '#aaaaaa';
-      ctx.font = '14px Arial';
-      ctx.fillText(`Date: ${new Date().toLocaleDateString()}`, 300, 350);
-    }
-
-    // ---------- Download Certificate ----------
-    function downloadCert() {
-      const canvas = document.getElementById('certCanvas');
-      const link = document.createElement('a');
-      link.download = `${courseData.title.replace(/\s/g,'_')}_certificate.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    }
-
-    // ---------- Reset App ----------
-    function resetApp() {
-      localStorage.removeItem('edu_course');
-      localStorage.removeItem('edu_topic');
-      courseData = null;
-      document.getElementById('topicInput').value = '';
-      showScreen('screen-home');
-    }
-
-    // ---------- Restore on load ----------
-    window.onload = function() {
-      const saved = localStorage.getItem('edu_course');
-      if (saved) {
-        try {
-          courseData = JSON.parse(saved);
-          renderCourse();
-          return;
-        } catch (_) {}
-      }
-      showScreen('screen-home');
-    };
-
-    // Enter key triggers generate
-    document.getElementById('topicInput').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') generateCourse();
-    });
-  </script>
+        // ========== INIT ==========
+        renderHome();
+    </script>
 </body>
 </html>
