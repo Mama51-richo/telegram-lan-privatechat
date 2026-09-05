@@ -1,100 +1,637 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>EduPortal</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Libra Academy</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-        body { background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); padding: 16px; min-height: 100vh; }
-        .hidden { display: none !important; }
-        .card { background: var(--tg-theme-secondary-bg-color, #f5f5f5); padding: 20px; border-radius: 16px; margin-bottom: 16px; }
-        h2 { margin-bottom: 12px; }
-        button { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; }
-        .option { display: block; width: 100%; text-align: left; background: var(--tg-theme-bg-color, #e0e0e0); color: var(--tg-theme-text-color, #000); padding: 12px; margin: 6px 0; border-radius: 10px; border: 2px solid transparent; }
-        .option.selected { border-color: var(--tg-theme-button-color, #2481cc); background: var(--tg-theme-secondary-bg-color, #d0d0d0); }
-        .correct { border-color: #22c55e !important; background: #dcfce7 !important; }
-        .wrong { border-color: #ef4444 !important; background: #fee2e2 !important; }
-        #certCanvas { width: 100%; max-width: 400px; margin: 16px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .flex { display: flex; gap: 10px; }
-        .flex button { flex: 1; }
+        /* ---------- CSS Variables (Telegram Theme Ready) ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: var(--tg-theme-bg-color, #f4f7fb);
+            color: var(--tg-theme-text-color, #0a1e2f);
+            padding: 0 0 80px 0;
+            min-height: 100vh;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* ---------- HEADER / BRAND ---------- */
+        .app-header {
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #d1d9e6);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(4px);
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-icon {
+            font-size: 28px;
+            background: #1a365d;
+            color: #f6c445;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .brand-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--tg-theme-text-color, #1a365d);
+            letter-spacing: -0.5px;
+        }
+        .brand-text span {
+            color: #f6c445;
+        }
+        .user-greeting {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #64748b);
+            font-weight: 500;
+        }
+
+        /* ---------- BOTTOM NAV ---------- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-top: 1px solid var(--tg-theme-hint-color, #d1d9e6);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 env(safe-area-inset-bottom, 8px) 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #64748b);
+            cursor: pointer;
+            padding: 4px 12px;
+            transition: 0.2s;
+            border-radius: 8px;
+            gap: 2px;
+        }
+        .nav-item .nav-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .nav-item.active {
+            color: var(--tg-theme-button-color, #1a365d);
+            font-weight: 600;
+        }
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+
+        /* ---------- CARDS & LAYOUT ---------- */
+        .section {
+            padding: 16px 16px 10px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .course-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .course-card {
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--tg-theme-hint-color, #e2e8f0);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .course-card:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        .course-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+            font-size: 13px;
+            color: var(--tg-theme-hint-color, #475569);
+        }
+        .course-meta .badge {
+            background: var(--tg-theme-button-color, #1a365d);
+            color: var(--tg-theme-button-text-color, #fff);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .course-meta .time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .course-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .course-progress {
+            height: 4px;
+            background: var(--tg-theme-hint-color, #e2e8f0);
+            border-radius: 4px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .course-progress-bar {
+            height: 100%;
+            background: var(--tg-theme-button-color, #22c55e);
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .completed-badge {
+            color: #22c55e;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ---------- CATEGORY FILTER ---------- */
+        .category-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .chip {
+            background: var(--tg-theme-secondary-bg-color, #eef2f6);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--tg-theme-text-color, #1e293b);
+        }
+        .chip.active {
+            border-color: var(--tg-theme-button-color, #1a365d);
+            background: var(--tg-theme-button-color, #1a365d);
+            color: var(--tg-theme-button-text-color, #fff);
+        }
+
+        /* ---------- COURSE DETAIL / QUIZ ---------- */
+        .detail-box {
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--tg-theme-hint-color, #e2e8f0);
+        }
+        .detail-box h2 {
+            margin-bottom: 8px;
+        }
+        .detail-box .content-body {
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .detail-box .content-body p {
+            margin-bottom: 12px;
+        }
+        .detail-box .content-body ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 14px 16px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 2px solid var(--tg-theme-hint-color, #d1d9e6);
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .option-btn.selected {
+            border-color: var(--tg-theme-button-color, #1a365d);
+            background: var(--tg-theme-secondary-bg-color, #e5edf5);
+        }
+        .option-btn.correct {
+            border-color: #22c55e;
+            background: #dcfce7;
+        }
+        .option-btn.wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+        .option-btn:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .btn {
+            background: var(--tg-theme-button-color, #1a365d);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--tg-theme-button-color, #1a365d);
+            color: var(--tg-theme-button-color, #1a365d);
+        }
+        .btn-success {
+            background: #22c55e;
+        }
+        .btn-gray {
+            background: var(--tg-theme-hint-color, #94a3b8);
+            color: #fff;
+        }
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .flex-row .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        /* ---------- CERTIFICATE CANVAS WRAPPER ---------- */
+        #certWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+        #certCanvas {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            aspect-ratio: 800 / 600;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            background: #fff;
+            margin: 12px 0;
+        }
+        .cert-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .cert-actions .btn {
+            flex: 0 1 auto;
+            min-width: 140px;
+        }
+
+        /* ---------- PROGRESS SCREEN ---------- */
+        .stat-card {
+            background: var(--tg-theme-secondary-bg-color, #fff);
+            padding: 16px 20px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--tg-theme-hint-color, #e2e8f0);
+            margin-bottom: 10px;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--tg-theme-button-color, #1a365d);
+        }
+
+        /* ---------- PRINT STYLES ---------- */
+        @media print {
+            body {
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .app-header,
+            .bottom-nav,
+            .no-print {
+                display: none !important;
+            }
+            #resultScreen {
+                display: block !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            #certCanvas {
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            .cert-actions .btn {
+                display: none !important;
+            }
+            .section {
+                padding: 0 !important;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--tg-theme-hint-color, #b0b8c4);
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
-    <!-- HOME SCREEN -->
-    <div id="home">
-        <div class="card" style="text-align:center;">
-            <h1>📚 EduPortal</h1>
-            <p style="margin:8px 0 16px;">Select a topic to start learning instantly.</p>
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-icon">⚖️</div>
+            <div class="brand-text">Libra<span>Academy</span></div>
         </div>
-        <div id="topicList"></div>
-        <button onclick="showCert('Demo User')" style="margin-top:10px;background:green;">🎓 Preview Certificate</button>
+        <div class="user-greeting" id="greeting">Hello, Student</div>
+    </header>
+
+    <!-- ==================== HOME SECTION ==================== -->
+    <div id="homeSection" class="section">
+        <div class="section-title">📚 Featured Courses</div>
+        <div id="featuredGrid" class="course-grid"></div>
+
+        <div style="margin-top:20px;">
+            <div class="section-title">⏱️ Quick Timeframes</div>
+            <div class="category-chips" id="timeFilterChips">
+                <button class="chip active" data-time="all">All</button>
+                <button class="chip" data-time="5">≤ 5 min</button>
+                <button class="chip" data-time="8">≤ 8 min</button>
+                <button class="chip" data-time="10">≤ 10 min</button>
+            </div>
+            <div id="timeFilteredGrid" class="course-grid"></div>
+        </div>
     </div>
 
-    <!-- COURSE SCREEN -->
-    <div id="courseScreen" class="hidden">
-        <button onclick="goHome()" style="background:gray;margin-bottom:12px;">⬅ Back</button>
-        <div class="card"><h2 id="courseTitle"></h2><div id="courseBody" style="line-height:1.6;"></div></div>
-        <button onclick="startQuiz()">📝 Take Quiz</button>
+    <!-- ==================== CATEGORIES SECTION ==================== -->
+    <div id="categoriesSection" class="section hidden">
+        <div class="section-title">📂 Categories</div>
+        <div class="category-chips" id="categoryChips"></div>
+        <div id="categoryGrid" class="course-grid"></div>
     </div>
 
-    <!-- QUIZ SCREEN -->
-    <div id="quizScreen" class="hidden">
-        <button onclick="goHome()" style="background:gray;margin-bottom:12px;">⬅ Quit</button>
-        <div class="card"><h2 id="quizTitle"></h2><div id="questionText" style="font-size:18px;font-weight:500;margin:10px 0;"></div><div id="optionsContainer"></div></div>
-        <div class="flex"><button id="prevBtn" onclick="prevQuestion()">⬅ Prev</button><button id="nextBtn" onclick="nextQuestion()">Next ➡</button></div>
-        <button id="submitBtn" onclick="submitQuiz()" style="margin-top:12px;background:#22c55e;">✅ Submit Answers</button>
+    <!-- ==================== PROGRESS SECTION ==================== -->
+    <div id="progressSection" class="section hidden">
+        <div class="section-title">📊 Your Progress</div>
+        <div class="stat-card"><span>Courses Completed</span><span class="stat-number" id="completedCount">0</span></div>
+        <div class="stat-card"><span>Total Certificates Earned</span><span class="stat-number" id="certCount">0</span></div>
+        <div id="progressList" style="margin-top:16px;"></div>
     </div>
 
-    <!-- RESULT SCREEN -->
-    <div id="resultScreen" class="hidden">
-        <div class="card" style="text-align:center;"><h2 id="resultText"></h2><p id="resultScore"></p></div>
-        <canvas id="certCanvas" width="800" height="500"></canvas>
-        <button onclick="downloadCert()">⬇ Download Certificate (PNG)</button>
-        <button onclick="goHome()" style="margin-top:10px;background:gray;">🏠 Home</button>
+    <!-- ==================== COURSE DETAIL SECTION ==================== -->
+    <div id="courseDetailSection" class="section hidden">
+        <button class="btn btn-gray no-print" onclick="goHome()" style="margin-bottom:12px;">⬅ Back to Dashboard</button>
+        <div class="detail-box">
+            <h2 id="detailTitle"></h2>
+            <div class="course-meta" style="margin-bottom:12px;">
+                <span class="badge" id="detailCategory"></span>
+                <span class="time" id="detailTime">⏱️ 5 min</span>
+            </div>
+            <div id="detailBody" class="content-body"></div>
+        </div>
+        <button class="btn" id="startQuizBtn" onclick="startQuiz()">📝 Start Quiz</button>
     </div>
+
+    <!-- ==================== QUIZ SECTION ==================== -->
+    <div id="quizSection" class="section hidden">
+        <button class="btn btn-gray no-print" onclick="exitQuiz()" style="margin-bottom:12px;">⬅ Quit Quiz</button>
+        <div class="detail-box">
+            <h2 id="quizTitle"></h2>
+            <div style="margin-top:12px;">
+                <div id="questionText" style="font-size:18px;font-weight:600;margin-bottom:12px;"></div>
+                <div id="optionsContainer"></div>
+            </div>
+            <div class="flex-row" style="margin-top:16px;">
+                <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()">Prev</button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+            </div>
+            <button class="btn btn-success" id="submitQuizBtn" onclick="submitQuiz()" style="margin-top:12px;">✅ Submit Answers</button>
+        </div>
+    </div>
+
+    <!-- ==================== RESULT / CERTIFICATE SECTION ==================== -->
+    <div id="resultSection" class="section hidden">
+        <button class="btn btn-gray no-print" onclick="goHome()" style="margin-bottom:12px;">🏠 Home</button>
+        <div class="detail-box" style="text-align:center;">
+            <h2 id="resultHeadline"></h2>
+            <p id="resultScoreText" style="font-size:18px;margin:8px 0;"></p>
+        </div>
+        <div id="certWrapper">
+            <canvas id="certCanvas" width="800" height="600"></canvas>
+            <div class="cert-actions no-print">
+                <button class="btn" onclick="downloadCert()">⬇ Download PNG</button>
+                <button class="btn btn-outline" onclick="printCert()">🖨️ Print / PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== BOTTOM NAVIGATION ==================== -->
+    <nav class="bottom-nav no-print">
+        <button class="nav-item active" data-section="homeSection"><span class="nav-icon">🏠</span>Home</button>
+        <button class="nav-item" data-section="categoriesSection"><span class="nav-icon">📂</span>Categories</button>
+        <button class="nav-item" data-section="progressSection"><span class="nav-icon">📊</span>Progress</button>
+    </nav>
 
     <script>
-        // ========== PRE-LOADED COURSE LIBRARY (NO API KEY) ==========
-        const COURSES = {
-            communication: {
-                title: "Communication Skills",
-                content: `<p><b>Lesson 1: Active Listening</b><br>Active listening requires full concentration. Avoid interrupting and ask clarifying questions. Paraphrase what the speaker said to confirm understanding.</p>
-                          <p><b>Lesson 2: Clear Messaging</b><br>Use the "Pyramid Principle": Start with your main conclusion, then support it with 3 key arguments. This saves time and keeps audiences engaged.</p>
-                          <p><b>Lesson 3: Non-Verbal Cues</b><br>Body language accounts for 55% of communication. Maintain eye contact, use open gestures, and match your tone to your message.</p>`,
-                questions: [
-                    { q: "What percentage of communication is body language?", opts: ["10%", "55%", "70%", "93%"], ans: 1 },
-                    { q: "What is the first step of active listening?", opts: ["Interrupt", "Paraphrase", "Concentrate fully", "Judge quickly"], ans: 2 },
-                    { q: "What does the Pyramid Principle suggest?", opts: ["Start with details", "Start with the conclusion", "Use long sentences", "Avoid structure"], ans: 1 },
-                    { q: "Which is a non-verbal cue?", opts: ["Volume", "Eye contact", "Vocabulary", "Grammar"], ans: 1 },
-                    { q: "How to show you are listening?", opts: ["Nod and paraphrase", "Look at your phone", "Interrupt often", "Speak loudly"], ans: 0 }
-                ]
-            },
-            time_management: {
-                title: "Time Management",
-                content: `<p><b>Lesson 1: The Eisenhower Matrix</b><br>Categorize tasks into Urgent/Important. Focus on Important + Not Urgent (Quadrant 2) for long-term productivity. Delegate Urgent + Not Important.</p>
-                          <p><b>Lesson 2: Pomodoro Technique</b><br>Work for 25 minutes, then break for 5. After 4 cycles, take a longer 15-30 min break. This boosts focus and prevents burnout.</p>
-                          <p><b>Lesson 3: Saying 'No'</b><br>Protect your calendar. Politely decline tasks that don't align with your priorities. Offer alternatives instead of just refusing.</p>`,
-                questions: [
-                    { q: "What is Quadrant 2 in the Eisenhower Matrix?", opts: ["Urgent & Important", "Important but Not Urgent", "Urgent but Not Important", "Neither"], ans: 1 },
-                    { q: "How long is a standard Pomodoro work session?", opts: ["15 min", "25 min", "45 min", "60 min"], ans: 1 },
-                    { q: "What should you do with Urgent but Not Important tasks?", opts: ["Do them now", "Schedule them", "Delegate them", "Ignore them"], ans: 2 },
-                    { q: "What is a key habit for good time management?", opts: ["Multitasking", "Checking email constantly", "Planning your day", "Working late"], ans: 2 },
-                    { q: "How long is a long break after 4 Pomodoros?", opts: ["5 min", "10 min", "15-30 min", "1 hour"], ans: 2 }
-                ]
-            }
-        };
-        // Add more topics here (e.g., leadership: { title: "...", content: "...", questions: [...] })
+        // ====================================================================
+        //  1. COURSE LIBRARY (No API, preloaded with rich content)
+        // ====================================================================
+        const COURSES = [{
+            id: 'comm101',
+            title: 'Communication Skills',
+            category: 'Soft Skills',
+            time: '5 min',
+            content: `<p><strong>Lesson 1: Active Listening</strong><br>Active listening requires full concentration. Avoid interrupting and ask clarifying questions. Paraphrase what the speaker said to confirm understanding.</p>
+                      <p><strong>Lesson 2: Clear Messaging</strong><br>Use the "Pyramid Principle": Start with your main conclusion, then support it with 3 key arguments.</p>
+                      <p><strong>Lesson 3: Non-Verbal Cues</strong><br>Body language accounts for 55% of communication. Maintain eye contact and use open gestures.</p>`,
+            questions: [
+                { q: "What % of communication is body language?", opts: ["10%", "55%", "70%", "93%"], ans: 1 },
+                { q: "First step of active listening?", opts: ["Interrupt", "Paraphrase", "Concentrate fully", "Judge"], ans: 2 },
+                { q: "Pyramid Principle suggests?", opts: ["Start with details", "Start with conclusion", "Long sentences",
+                        "Avoid structure"
+                    ], ans: 1 },
+                { q: "Which is a non-verbal cue?", opts: ["Volume", "Eye contact", "Vocabulary", "Grammar"], ans: 1 },
+                { q: "How to show listening?", opts: ["Nod & paraphrase", "Look at phone", "Interrupt", "Speak loudly"],
+                    ans: 0 }
+            ]
+        }, {
+            id: 'time101',
+            title: 'Time Management',
+            category: 'Productivity',
+            time: '6 min',
+            content: `<p><strong>Lesson 1: Eisenhower Matrix</strong><br>Categorize tasks into Urgent/Important. Focus on Important + Not Urgent (Quadrant 2).</p>
+                      <p><strong>Lesson 2: Pomodoro Technique</strong><br>Work 25 min, break 5 min. After 4 cycles, take a 15-30 min break.</p>
+                      <p><strong>Lesson 3: Saying 'No'</strong><br>Protect your calendar. Politely decline tasks not aligned with priorities.</p>`,
+            questions: [
+                { q: "Quadrant 2 in Eisenhower?", opts: ["Urgent & Important", "Important not Urgent",
+                        "Urgent not Important", "Neither"
+                    ], ans: 1 },
+                { q: "Pomodoro work session length?", opts: ["15 min", "25 min", "45 min", "60 min"], ans: 1 },
+                { q: "What to do with Urgent but Not Important?", opts: ["Do now", "Schedule", "Delegate", "Ignore"],
+                    ans: 2 },
+                { q: "Key habit for time management?", opts: ["Multitasking", "Check email constantly",
+                        "Plan your day", "Work late"
+                    ], ans: 2 },
+                { q: "Long break after 4 Pomodoros?", opts: ["5 min", "10 min", "15-30 min", "1 hour"], ans: 2 }
+            ]
+        }, {
+            id: 'lead101',
+            title: 'Leadership Basics',
+            category: 'Management',
+            time: '8 min',
+            content: `<p><strong>Lesson 1: Vision & Mission</strong><br>Great leaders paint a vivid picture of the future. Align your team around a shared purpose.</p>
+                      <p><strong>Lesson 2: Servant Leadership</strong><br>Prioritize the needs of your team. Empower others to perform at their best.</p>
+                      <p><strong>Lesson 3: Decision Making</strong><br>Use data, but trust your intuition. Make timely decisions and own the outcomes.</p>`,
+            questions: [
+                { q: "What is servant leadership?", opts: ["Boss over team", "Team over boss", "Profit first",
+                        "Avoid decisions"
+                    ], ans: 1 },
+                { q: "What should a leader paint?", opts: ["A picture", "A vision", "A wall", "A report"], ans: 1 },
+                { q: "Good decisions require?", opts: ["Only data", "Only intuition", "Data + intuition",
+                        "Luck"
+                    ], ans: 2 },
+                { q: "Empower means?", opts: ["Control", "Micromanage", "Enable others", "Ignore"], ans: 2 },
+                { q: "Own the outcomes means?", opts: ["Blame others", "Take responsibility", "Hide mistakes",
+                        "Quit"
+                    ], ans: 1 }
+            ]
+        }, {
+            id: 'crit101',
+            title: 'Critical Thinking',
+            category: 'Mindset',
+            time: '7 min',
+            content: `<p><strong>Lesson 1: Question Assumptions</strong><br>Identify underlying beliefs. Challenge the status quo with logical reasoning.</p>
+                      <p><strong>Lesson 2: Logical Fallacies</strong><br>Spot common errors in reasoning like ad hominem, straw man, and false dilemmas.</p>
+                      <p><strong>Lesson 3: Evidence Evaluation</strong><br>Distinguish correlation from causation. Seek peer-reviewed sources.</p>`,
+            questions: [
+                { q: "What is a fallacy?", opts: ["A truth", "An error in reasoning", "A fact", "A statistic"],
+                    ans: 1 },
+                { q: "Correlation implies causation?", opts: ["Always", "Never", "Sometimes", "Only in science"],
+                    ans: 1 },
+                { q: "Ad hominem attacks?", opts: ["The argument", "The person", "The evidence", "The data"],
+                    ans: 1 },
+                { q: "Best source of evidence?", opts: ["Opinion", "Peer-reviewed study", "Social media",
+                        "Anecdote"
+                    ], ans: 1 },
+                { q: "Straw man fallacy is?", opts: ["Misrepresenting argument", "Strong argument", "Logical proof",
+                        "Data analysis"
+                    ], ans: 0 }
+            ]
+        }, {
+            id: 'mind101',
+            title: 'Mindfulness & Focus',
+            category: 'Wellness',
+            time: '5 min',
+            content: `<p><strong>Lesson 1: Present Moment</strong><br>Focus on the 'now'. Practice deep breathing to anchor your attention.</p>
+                      <p><strong>Lesson 2: Meditation Basics</strong><br>Start with 5 minutes daily. Observe thoughts without judgment.</p>
+                      <p><strong>Lesson 3: Digital Detox</strong><br>Schedule screen-free breaks. Protect your cognitive bandwidth.</p>`,
+            questions: [
+                { q: "Mindfulness is about?", opts: ["Past", "Future", "Present", "Sleep"], ans: 2 },
+                { q: "Meditation helps with?", opts: ["Distraction", "Focus", "More screen time", "Anxiety only"],
+                    ans: 1 },
+                { q: "Digital detox means?", opts: ["More apps", "Screen break", "Faster internet", "New phone"],
+                    ans: 1 },
+                { q: "Deep breathing does?", opts: ["Increase stress", "Calm mind", "Cause panic", "Nothing"],
+                    ans: 1 },
+                { q: "Observe thoughts without?", opts: ["Attention", "Judgment", "Awareness", "Clarity"], ans: 1 }
+            ]
+        }, {
+            id: 'proj101',
+            title: 'Project Management',
+            category: 'Management',
+            time: '10 min',
+            content: `<p><strong>Lesson 1: Agile Fundamentals</strong><br>Iterative delivery, daily stand-ups, and adaptive planning.</p>
+                      <p><strong>Lesson 2: Scope & Stakeholders</strong><br>Define clear deliverables. Manage expectations proactively.</p>
+                      <p><strong>Lesson 3: Risk Management</strong><br>Identify, assess, and mitigate risks early in the project.</p>`,
+            questions: [
+                { q: "Agile uses?", opts: ["Waterfall", "Iterative cycles", "Big bang", "Linear"], ans: 1 },
+                { q: "Who are stakeholders?", opts: ["Only team", "Only clients", "All impacted parties",
+                        "Only managers"
+                    ], ans: 2 },
+                { q: "Risk mitigation is?", opts: ["Ignore risks", "Eliminate all risks", "Reduce impact",
+                        "Increase risk"
+                    ], ans: 2 },
+                { q: "Daily stand-up is for?", opts: ["Reporting", "Problem solving", "Sync & alignment",
+                        "Blame game"
+                    ], ans: 2 },
+                { q: "Scope creep means?", opts: ["Good progress", "Adding features without control", "Finishing early",
+                        "Reducing budget"
+                    ], ans: 1 }
+            ]
+        }];
 
-        // ========== APP STATE ==========
-        let currentTopic = null;
+        // ====================================================================
+        //  2. STATE & HELPERS
+        // ====================================================================
+        let currentCourseId = null;
         let currentQIndex = 0;
         let userAnswers = [];
-        let score = 0;
+        let currentScore = 0;
         let userName = "Student";
 
-        // Telegram Init
+        // Telegram init
         if (window.Telegram && Telegram.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
@@ -102,62 +639,213 @@
                 userName = Telegram.WebApp.initDataUnsafe.user.first_name || userName;
             }
         }
+        document.getElementById('greeting').textContent = `👋 ${userName}`;
 
-        // ========== RENDER HOME ==========
+        // Progress storage
+        function getCompleted() {
+            try { return JSON.parse(localStorage.getItem('libra_completed') || '[]'); } catch { return []; }
+        }
+
+        function isCompleted(id) { return getCompleted().includes(id); }
+
+        function markCompleted(id) {
+            let c = getCompleted();
+            if (!c.includes(id)) { c.push(id);
+                localStorage.setItem('libra_completed', JSON.stringify(c)); }
+        }
+
+        function getCourse(id) { return COURSES.find(c => c.id === id); }
+
+        // ====================================================================
+        //  3. NAVIGATION
+        // ====================================================================
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.nav-item[data-section="${id}"]`)?.classList.add('active');
+            if (id === 'homeSection') renderHome();
+            if (id === 'categoriesSection') renderCategories();
+            if (id === 'progressSection') renderProgress();
+        }
+
+        function goHome() {
+            showSection('homeSection');
+            document.getElementById('courseDetailSection').classList.add('hidden');
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const target = item.dataset.section;
+                if (target) {
+                    // hide detail/quiz/result if open
+                    document.getElementById('courseDetailSection').classList.add('hidden');
+                    document.getElementById('quizSection').classList.add('hidden');
+                    document.getElementById('resultSection').classList.add('hidden');
+                    showSection(target);
+                }
+            });
+        });
+
+        // Time filter chips
+        document.querySelectorAll('#timeFilterChips .chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('#timeFilterChips .chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                renderTimeFiltered(this.dataset.time);
+            });
+        });
+
+        // ====================================================================
+        //  4. RENDER FUNCTIONS
+        // ====================================================================
         function renderHome() {
-            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('home').classList.remove('hidden');
-            const list = document.getElementById('topicList');
-            list.innerHTML = '';
-            Object.keys(COURSES).forEach(key => {
-                const btn = document.createElement('button');
-                btn.textContent = `📖 ${COURSES[key].title}`;
-                btn.style.marginBottom = '10px';
-                btn.onclick = () => openCourse(key);
-                list.appendChild(btn);
+            // Featured (first 3)
+            const featured = COURSES.slice(0, 3);
+            document.getElementById('featuredGrid').innerHTML = featured.map(c => courseCardHTML(c)).join('');
+            renderTimeFiltered('all');
+            // update progress on cards
+            updateProgressIndicators();
+        }
+
+        function renderTimeFiltered(timeLimit) {
+            const grid = document.getElementById('timeFilteredGrid');
+            let filtered = COURSES;
+            if (timeLimit !== 'all') {
+                const limit = parseInt(timeLimit);
+                filtered = COURSES.filter(c => {
+                    const mins = parseInt(c.time);
+                    return !isNaN(mins) && mins <= limit;
+                });
+            }
+            grid.innerHTML = filtered.map(c => courseCardHTML(c)).join('');
+            updateProgressIndicators();
+        }
+
+        function courseCardHTML(c) {
+            const done = isCompleted(c.id);
+            return `
+                <div class="course-card" onclick="openCourse('${c.id}')">
+                    <div class="course-meta">
+                        <span class="badge">${c.category}</span>
+                        <span class="time">⏱️ ${c.time}</span>
+                        ${done ? '<span class="completed-badge">✅ Completed</span>' : ''}
+                    </div>
+                    <div class="course-title">${c.title}</div>
+                    <div class="course-progress"><div class="course-progress-bar" style="width:${done ? 100 : 0}%;"></div></div>
+                </div>
+            `;
+        }
+
+        function updateProgressIndicators() {
+            // just re-run progress bar widths - called after render
+            document.querySelectorAll('.course-card').forEach(card => {
+                // the progress bars are set inline via style
             });
         }
 
-        // ========== OPEN COURSE ==========
-        function openCourse(key) {
-            currentTopic = key;
-            const data = COURSES[key];
-            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('courseScreen').classList.remove('hidden');
-            document.getElementById('courseTitle').textContent = data.title;
-            document.getElementById('courseBody').innerHTML = data.content;
-            // Reset quiz state
-            currentQIndex = 0;
-            userAnswers = new Array(data.questions.length).fill(-1);
+        // ========== CATEGORIES ==========
+        function renderCategories() {
+            const cats = [...new Set(COURSES.map(c => c.category))];
+            const chipContainer = document.getElementById('categoryChips');
+            chipContainer.innerHTML = `<button class="chip active" data-cat="all">All</button>`;
+            cats.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'chip';
+                btn.dataset.cat = cat;
+                btn.textContent = cat;
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    renderCategoryGrid(this.dataset.cat);
+                });
+                chipContainer.appendChild(btn);
+            });
+            renderCategoryGrid('all');
         }
 
-        // ========== QUIZ LOGIC ==========
+        function renderCategoryGrid(cat) {
+            const grid = document.getElementById('categoryGrid');
+            const filtered = cat === 'all' ? COURSES : COURSES.filter(c => c.category === cat);
+            grid.innerHTML = filtered.map(c => courseCardHTML(c)).join('');
+            updateProgressIndicators();
+        }
+
+        // ========== PROGRESS ==========
+        function renderProgress() {
+            const completed = getCompleted();
+            document.getElementById('completedCount').textContent = completed.length;
+            document.getElementById('certCount').textContent = completed.length;
+            const list = document.getElementById('progressList');
+            if (completed.length === 0) {
+                list.innerHTML = `<div class="detail-box" style="text-align:center;color:var(--tg-theme-hint-color);">No courses completed yet. Start learning!</div>`;
+                return;
+            }
+            list.innerHTML = completed.map(id => {
+                const c = getCourse(id);
+                return c ? `<div class="stat-card"><span>✅ ${c.title}</span><span style="font-size:14px;color:#22c55e;">Certificate Earned</span></div>` :
+                    '';
+            }).join('');
+        }
+
+        // ====================================================================
+        //  5. COURSE DETAIL & QUIZ LOGIC
+        // ====================================================================
+        function openCourse(id) {
+            currentCourseId = id;
+            const c = getCourse(id);
+            if (!c) return;
+            // hide other sections, show detail
+            document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('courseDetailSection').classList.remove('hidden');
+            document.getElementById('detailTitle').textContent = c.title;
+            document.getElementById('detailCategory').textContent = c.category;
+            document.getElementById('detailTime').textContent = `⏱️ ${c.time}`;
+            document.getElementById('detailBody').innerHTML = c.content;
+            // reset quiz state
+            userAnswers = new Array(c.questions.length).fill(-1);
+            currentQIndex = 0;
+            document.getElementById('startQuizBtn').textContent = isCompleted(id) ? '🔄 Retake Quiz' : '📝 Start Quiz';
+        }
+
         function startQuiz() {
-            if (!currentTopic) return;
-            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('quizScreen').classList.remove('hidden');
-            document.getElementById('quizTitle').textContent = `📝 Quiz: ${COURSES[currentTopic].title}`;
-            userAnswers = new Array(COURSES[currentTopic].questions.length).fill(-1);
+            if (!currentCourseId) return;
+            const c = getCourse(currentCourseId);
+            if (!c) return;
+            document.getElementById('courseDetailSection').classList.add('hidden');
+            document.getElementById('quizSection').classList.remove('hidden');
+            document.getElementById('quizTitle').textContent = `📝 Quiz: ${c.title}`;
+            userAnswers = new Array(c.questions.length).fill(-1);
             currentQIndex = 0;
             renderQuestion();
         }
 
+        function exitQuiz() {
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('courseDetailSection').classList.remove('hidden');
+        }
+
         function renderQuestion() {
-            const data = COURSES[currentTopic];
-            const q = data.questions[currentQIndex];
+            const c = getCourse(currentCourseId);
+            if (!c) return;
+            const q = c.questions[currentQIndex];
             document.getElementById('questionText').textContent = `${currentQIndex+1}. ${q.q}`;
             const container = document.getElementById('optionsContainer');
             container.innerHTML = '';
             q.opts.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = 'option';
+                btn.className = 'option-btn';
                 if (userAnswers[currentQIndex] === idx) btn.classList.add('selected');
-                btn.textContent = String.fromCharCode(65 + idx) + ". " + opt; // A, B, C, D
+                btn.textContent = String.fromCharCode(65 + idx) + ". " + opt;
                 btn.onclick = () => selectOption(idx);
                 container.appendChild(btn);
             });
             document.getElementById('prevBtn').style.visibility = currentQIndex === 0 ? 'hidden' : 'visible';
-            document.getElementById('nextBtn').textContent = currentQIndex === data.questions.length - 1 ? 'Finish' : 'Next ➡';
+            const isLast = currentQIndex === c.questions.length - 1;
+            document.getElementById('nextBtn').textContent = isLast ? 'Finish' : 'Next ➡';
+            document.getElementById('submitQuizBtn').style.display = isLast ? 'block' : 'none';
         }
 
         function selectOption(idx) {
@@ -166,8 +854,9 @@
         }
 
         function nextQuestion() {
-            const data = COURSES[currentTopic];
-            if (currentQIndex === data.questions.length - 1) {
+            const c = getCourse(currentCourseId);
+            if (!c) return;
+            if (currentQIndex === c.questions.length - 1) {
                 submitQuiz();
             } else {
                 currentQIndex++;
@@ -176,95 +865,201 @@
         }
 
         function prevQuestion() {
-            if (currentQIndex > 0) { currentQIndex--; renderQuestion(); }
+            if (currentQIndex > 0) { currentQIndex--;
+                renderQuestion(); }
         }
 
         function submitQuiz() {
-            const data = COURSES[currentTopic];
-            // Check if all answered
+            const c = getCourse(currentCourseId);
+            if (!c) return;
             if (userAnswers.includes(-1)) {
                 if (!confirm("You have unanswered questions. Submit anyway?")) return;
             }
-            score = 0;
-            data.questions.forEach((q, i) => {
+            let score = 0;
+            c.questions.forEach((q, i) => {
                 if (userAnswers[i] === q.ans) score++;
             });
-            // Show result
-            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('resultScreen').classList.remove('hidden');
+            currentScore = score;
             const passed = score >= 4;
-            document.getElementById('resultText').innerHTML = passed ? '🎉 Congratulations!' : '😅 Keep Learning!';
-            document.getElementById('resultScore').textContent = `You scored ${score}/${data.questions.length}. ${passed ? 'Certificate Earned!' : 'Try another course.'}`;
-            generateCertificate(userName, data.title, passed);
+            if (passed) markCompleted(c.id);
+
+            // Show result
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+            document.getElementById('resultHeadline').textContent = passed ? '🎉 Congratulations!' : '😅 Keep Learning!';
+            document.getElementById('resultScoreText').textContent =
+                `You scored ${score}/${c.questions.length}. ${passed ? 'Certificate Earned!' : 'Try another course or retake this one.'}`;
+
+            generateCertificate(userName, c.title, passed, c.id);
         }
 
-        // ========== CERTIFICATE (CANVAS - NO API) ==========
-        function generateCertificate(name, topic, passed) {
+        // ====================================================================
+        //  6. CERTIFICATE GENERATOR (Canvas - Premium Design)
+        // ====================================================================
+        function generateCertificate(name, courseTitle, passed, courseId) {
             const canvas = document.getElementById('certCanvas');
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, 800, 500);
+            const W = 800,
+                H = 600;
+
+            // ---- Background ----
+            ctx.fillStyle = '#fcf9f2'; // parchment
+            ctx.fillRect(0, 0, W, H);
+
+            // ---- Outer Border (Dark Blue) ----
+            ctx.strokeStyle = '#1a365d';
+            ctx.lineWidth = 16;
+            ctx.strokeRect(20, 20, W - 40, H - 40);
+
+            // ---- Inner Border (Gold) ----
+            ctx.strokeStyle = '#c9a84c';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([10, 8]);
+            ctx.strokeRect(44, 44, W - 88, H - 88);
+            ctx.setLineDash([]); // reset
+
+            // ---- Corner Decorations ----
+            const corners = [
+                [44, 44],
+                [W - 44, 44],
+                [44, H - 44],
+                [W - 44, H - 44]
+            ];
+            corners.forEach(([x, y]) => {
+                ctx.fillStyle = '#c9a84c';
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = '#1a365d';
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // ---- If not passed ----
             if (!passed) {
-                ctx.fillStyle = '#e5e7eb';
-                ctx.fillRect(0, 0, 800, 500);
-                ctx.fillStyle = '#6b7280';
-                ctx.font = '30px sans-serif';
+                ctx.fillStyle = '#1a365d';
+                ctx.font = 'bold 32px serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('Complete the quiz to unlock', 400, 250);
-                ctx.fillText('your certificate.', 400, 300);
+                ctx.fillText('Complete the quiz to unlock', W / 2, H / 2 - 20);
+                ctx.font = '24px serif';
+                ctx.fillStyle = '#64748b';
+                ctx.fillText('your premium certificate.', W / 2, H / 2 + 40);
                 return;
             }
-            // Border
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 20;
-            ctx.strokeRect(10, 10, 780, 480);
-            // Background
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(20, 20, 760, 460);
-            ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold 40px serif';
+
+            // ---- Brand / Logo ----
+            ctx.fillStyle = '#1a365d';
+            ctx.font = 'bold 48px serif';
             ctx.textAlign = 'center';
-            ctx.fillText('📜 Certificate of Completion', 400, 100);
-            ctx.font = '24px sans-serif';
-            ctx.fillStyle = '#334155';
-            ctx.fillText('This certifies that', 400, 170);
-            ctx.font = 'bold 36px sans-serif';
-            ctx.fillStyle = '#2563eb';
-            ctx.fillText(name, 400, 230);
-            ctx.font = '22px sans-serif';
-            ctx.fillStyle = '#334155';
-            ctx.fillText(`has successfully completed the course`, 400, 290);
-            ctx.font = 'bold 28px sans-serif';
+            ctx.fillText('⚖️ LIBRA ACADEMY', W / 2, 110);
+
+            ctx.fillStyle = '#c9a84c';
+            ctx.font = '18px serif';
+            ctx.fillText('— School of Professional Studies —', W / 2, 145);
+
+            // ---- Main Text ----
+            ctx.fillStyle = '#1e293b';
+            ctx.font = '22px serif';
+            ctx.fillText('This certifies that', W / 2, 210);
+
             ctx.fillStyle = '#0f172a';
-            ctx.fillText(`"${topic}"`, 400, 340);
-            ctx.font = '18px sans-serif';
-            ctx.fillStyle = '#64748b';
-            ctx.fillText(`Date: ${new Date().toLocaleDateString()}`, 400, 410);
+            ctx.font = 'bold 36px serif';
+            ctx.fillText(name, W / 2, 270);
+
+            ctx.fillStyle = '#1e293b';
+            ctx.font = '20px serif';
+            ctx.fillText('has successfully completed the course', W / 2, 330);
+
+            ctx.fillStyle = '#1a365d';
+            ctx.font = 'bold 28px serif';
+            ctx.fillText(`"${courseTitle}"`, W / 2, 385);
+
+            // ---- Date & ID ----
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const certId = 'LIBRA-' + Date.now().toString().slice(-8);
+            ctx.fillStyle = '#475569';
             ctx.font = '16px sans-serif';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText('Generated by EduPortal • No AI needed', 400, 470);
+            ctx.fillText(`Date: ${date}  |  Certificate ID: ${certId}`, W / 2, 440);
+
+            // ---- Signature (Left) ----
+            ctx.fillStyle = '#1a365d';
+            ctx.font = '18px serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('_________________________', 80, 500);
+            ctx.font = '14px sans-serif';
+            ctx.fillText('Head of Academy', 80, 525);
+
+            // ---- Signature (Right) ----
+            ctx.textAlign = 'right';
+            ctx.fillText('_________________________', W - 80, 500);
+            ctx.font = '14px sans-serif';
+            ctx.fillText('Director, Libra Institute', W - 80, 525);
+
+            // ---- CENTER STAMP (Gold Seal) ----
+            const cx = W / 2,
+                cy = 510;
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.15)';
+            ctx.shadowBlur = 12;
+            // Outer circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, 36, 0, 2 * Math.PI);
+            ctx.fillStyle = '#c9a84c';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#1a365d';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            // Inner circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
+            ctx.fillStyle = '#fcf9f2';
+            ctx.fill();
+            ctx.strokeStyle = '#1a365d';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // Star / Text
+            ctx.fillStyle = '#1a365d';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('⭐', cx, cy + 6);
+            ctx.font = 'bold 9px sans-serif';
+            ctx.fillText('VERIFIED', cx, cy + 26);
+            ctx.restore();
+
+            // ---- Brand watermark (subtle) ----
+            ctx.globalAlpha = 0.04;
+            ctx.fillStyle = '#1a365d';
+            ctx.font = 'bold 120px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚖️', W / 2, 300);
+            ctx.globalAlpha = 1.0;
         }
 
+        // ====================================================================
+        //  7. DOWNLOAD & PRINT
+        // ====================================================================
         function downloadCert() {
             const canvas = document.getElementById('certCanvas');
             const link = document.createElement('a');
-            link.download = `certificate-${Date.now()}.png`;
+            link.download = `Libra_Certificate_${Date.now()}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
 
-        function showCert(name) {
-            document.querySelectorAll('[id$="Screen"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('resultScreen').classList.remove('hidden');
-            document.getElementById('resultText').innerHTML = '🎓 Preview';
-            document.getElementById('resultScore').textContent = 'Certificate preview (no quiz taken).';
-            generateCertificate(name || 'Demo User', 'Communication Skills', true);
+        function printCert() {
+            window.print();
         }
 
-        // ========== NAVIGATION ==========
-        function goHome() { renderHome(); }
+        // ====================================================================
+        //  8. INIT
+        // ====================================================================
+        // Initially show home
+        showSection('homeSection');
 
-        // ========== INIT ==========
-        renderHome();
+        // If coming from a deep link or just default
+        console.log('⚖️ Libra Academy loaded. Enjoy learning!');
     </script>
 </body>
 </html>
