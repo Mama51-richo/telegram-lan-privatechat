@@ -6,12 +6,21 @@
     <title>Libra EduPortal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ===== ROOT VARIABLES (Telegram Theme Support) ===== */
+        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        html,
+        body {
+            overflow-x: hidden;
+            max-width: 100vw;
+            background: var(--tg-theme-bg-color, #f4f6fa);
+            color: var(--tg-theme-text-color, #1e293b);
+            min-height: 100vh;
+            padding-bottom: 85px;
         }
         :root {
             --bg: var(--tg-theme-bg-color, #f4f6fa);
@@ -21,31 +30,25 @@
             --button-text: var(--tg-theme-button-text-color, #ffffff);
             --gold: #c9a959;
             --gold-light: #fdf6e3;
-            --shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
             --radius: 18px;
-        }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding-bottom: 85px;
-            /* Space for bottom nav */;
         }
         .hidden {
             display: none !important;
         }
+
         /* ===== HEADER ===== */
         .app-header {
             background: var(--secondary-bg);
-            padding: 16px 20px 12px;
+            padding: 14px 20px;
             position: sticky;
             top: 0;
             z-index: 10;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
         }
         .app-header h1 {
             font-size: 20px;
@@ -62,11 +65,13 @@
             opacity: 0.7;
         }
 
-        /* ===== PAGE CONTAINERS ===== */
+        /* ===== PAGES ===== */
         .page {
             display: none;
-            padding: 16px 16px 20px;
+            padding: 12px 14px 20px;
             animation: fadeUp 0.3s ease;
+            max-width: 600px;
+            margin: 0 auto;
         }
         .page.active {
             display: block;
@@ -74,7 +79,7 @@
         @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(12px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -82,20 +87,22 @@
             }
         }
 
-        /* ===== BOTTOM NAVIGATION ===== */
+        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: var(--secondary-bg);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0 env(safe-area-inset-bottom);
-            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 6px 0 env(safe-area-inset-bottom);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 99;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.02);
+            max-width: 600px;
+            margin: 0 auto;
         }
         .nav-item {
             display: flex;
@@ -103,14 +110,14 @@
             align-items: center;
             background: transparent;
             border: none;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text);
-            opacity: 0.5;
-            padding: 4px 12px;
+            opacity: 0.4;
+            padding: 4px 8px;
             cursor: pointer;
             transition: 0.2s;
             border-radius: 12px;
-            min-width: 60px;
+            min-width: 56px;
         }
         .nav-item.active {
             opacity: 1;
@@ -119,40 +126,46 @@
         }
         .nav-item .icon {
             font-size: 22px;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
-        /* ===== CARDS & COURSES ===== */
+        /* ===== CARDS ===== */
         .card {
             background: var(--secondary-bg);
             border-radius: var(--radius);
-            padding: 18px;
-            margin-bottom: 16px;
+            padding: 18px 16px;
+            margin-bottom: 14px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(0, 0, 0, 0.02);
             transition: 0.2s;
+            overflow: hidden;
         }
         .card-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .card-sub {
-            font-size: 14px;
-            opacity: 0.7;
+            font-size: 13px;
+            opacity: 0.6;
             margin-bottom: 12px;
         }
+
+        /* ===== COURSE ITEMS ===== */
         .course-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .course-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: var(--bg);
-            padding: 14px 16px;
+            padding: 12px 14px;
             border-radius: 14px;
             cursor: pointer;
             transition: 0.2s;
@@ -162,29 +175,30 @@
             transform: scale(0.97);
         }
         .course-item .info h4 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
         }
         .course-item .info p {
             font-size: 12px;
-            opacity: 0.6;
-            margin-top: 4px;
+            opacity: 0.5;
+            margin-top: 2px;
         }
         .course-item .badge {
             background: var(--button);
             color: var(--button-text);
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 11px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         /* ===== CATEGORY TABS ===== */
         .tab-bar {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
-            padding: 4px 0 16px;
+            padding: 2px 0 14px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
@@ -193,14 +207,14 @@
         }
         .tab-btn {
             background: var(--secondary-bg);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            padding: 8px 18px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 7px 16px;
             border-radius: 30px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             white-space: nowrap;
             color: var(--text);
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -213,9 +227,9 @@
 
         /* ===== QUIZ ===== */
         .question-text {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
-            margin: 16px 0 12px;
+            margin: 12px 0 14px;
             line-height: 1.4;
         }
         .option-btn {
@@ -224,10 +238,10 @@
             text-align: left;
             background: var(--bg);
             border: 2px solid transparent;
-            padding: 14px 16px;
-            margin-bottom: 8px;
+            padding: 12px 16px;
+            margin-bottom: 7px;
             border-radius: 14px;
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text);
             cursor: pointer;
             transition: 0.15s;
@@ -246,11 +260,11 @@
         }
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: var(--bg);
             border-radius: 10px;
             overflow: hidden;
-            margin: 12px 0;
+            margin: 10px 0;
         }
         .progress-fill {
             height: 100%;
@@ -259,27 +273,27 @@
             transition: width 0.4s ease;
         }
 
-        /* ===== CERTIFICATE CANVAS ===== */
+        /* ===== CERTIFICATE ===== */
         #certCanvas {
             width: 100%;
-            max-width: 420px;
             height: auto;
             aspect-ratio: 800 / 565;
             display: block;
-            margin: 10px auto;
+            margin: 6px auto;
             border-radius: 16px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
             border: 1px solid rgba(0, 0, 0, 0.04);
+            background: #fff;
         }
         .cert-actions {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 12px;
             flex-wrap: wrap;
         }
         .cert-actions button {
             flex: 1;
-            min-width: 120px;
+            min-width: 110px;
         }
 
         /* ===== BUTTONS ===== */
@@ -287,9 +301,9 @@
             background: var(--button);
             color: var(--button-text);
             border: none;
-            padding: 14px 20px;
+            padding: 13px 16px;
             border-radius: 14px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             width: 100%;
             cursor: pointer;
@@ -323,52 +337,86 @@
         .mt-12 {
             margin-top: 12px;
         }
-
-        /* ===== MISC ===== */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
         .chip {
             display: inline-block;
             background: var(--bg);
-            padding: 4px 12px;
+            padding: 3px 12px;
             border-radius: 30px;
             font-size: 12px;
             font-weight: 500;
-            margin-right: 6px;
+            margin-right: 4px;
             opacity: 0.8;
         }
         .text-center {
             text-align: center;
         }
-        .mb-8 {
-            margin-bottom: 8px;
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            text-align: center;
+            padding: 4px 0;
         }
-        .mt-8 {
-            margin-top: 8px;
+        .stats-row div {
+            flex: 1;
+        }
+        .stats-row strong {
+            font-size: 22px;
+            display: block;
         }
 
-        /* PRINT STYLES */
+        /* ===== PRINT STYLES (Enhanced) ===== */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
             body {
-                background: #fff;
-                padding: 0;
-                margin: 0;
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
             }
             .bottom-nav,
             .app-header,
-            .no-print {
+            .no-print,
+            .btn,
+            .cert-actions,
+            .tab-bar {
                 display: none !important;
+            }
+            .page {
+                padding: 0 !important;
+                margin: 0 auto !important;
+                max-width: 100% !important;
+                display: block !important;
+            }
+            #page-cert {
+                display: block !important;
+                padding: 10px !important;
             }
             #certCanvas {
                 max-width: 100%;
-                box-shadow: none;
-                border: 1px solid #ddd;
-                border-radius: 0;
-            }
-            .page {
-                padding: 0;
+                width: 100%;
+                height: auto;
+                aspect-ratio: 800 / 565;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+                margin: 0 auto !important;
             }
             .card {
-                box-shadow: none;
-                border: 1px solid #eee;
+                box-shadow: none !important;
+                border: 1px solid #eee !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                background: transparent !important;
             }
         }
     </style>
@@ -384,8 +432,8 @@
     <!-- ===== PAGE: HOME ===== -->
     <div id="page-home" class="page active">
         <div class="card" style="background:linear-gradient(145deg, var(--gold), #b8923a);color:#fff;border:none;">
-            <h2 style="font-size:22px;">🚀 Learn Anything</h2>
-            <p style="opacity:0.9;margin-top:6px;">Master new skills in minutes. Get certified instantly.</p>
+            <h2 style="font-size:20px;">🚀 Learn & Earn Certificates</h2>
+            <p style="opacity:0.9;margin-top:4px;font-size:14px;">Master new skills. Pass the quiz. Get your verified certificate instantly.</p>
         </div>
 
         <div class="card">
@@ -394,10 +442,10 @@
         </div>
 
         <div class="card">
-            <div class="card-title">📊 Your Stats</div>
-            <div style="display:flex;gap:16px;text-align:center;padding:8px 0;">
-                <div style="flex:1;"><strong id="statCourses">0</strong><br><small>Enrolled</small></div>
-                <div style="flex:1;"><strong id="statCert">0</strong><br><small>Certificates</small></div>
+            <div class="card-title">📊 Your Dashboard</div>
+            <div class="stats-row">
+                <div><strong id="statCourses">0</strong><br><small>Enrolled</small></div>
+                <div><strong id="statCert">0</strong><br><small>Certificates</small></div>
             </div>
         </div>
     </div>
@@ -418,39 +466,39 @@
         <div class="card">
             <div class="card-title">📖 My Enrollments</div>
             <div id="myCoursesList" style="margin-top:8px;">
-                <p style="opacity:0.5;text-align:center;">Start a course to see it here.</p>
+                <p style="opacity:0.4;text-align:center;padding:16px 0;">Start a course to see it here.</p>
             </div>
         </div>
     </div>
 
-    <!-- ===== PAGE: CERTIFICATE PREVIEW ===== -->
+    <!-- ===== PAGE: CERTIFICATE ===== -->
     <div id="page-cert" class="page">
-        <div class="card text-center">
-            <h2>🎓 Your Certificate</h2>
-            <p style="opacity:0.6;font-size:14px;">Preview & download your achievement</p>
+        <div class="card text-center no-print">
+            <h2 style="font-size:20px;">🎓 Your Certificate</h2>
+            <p style="opacity:0.6;font-size:13px;">Download or print your achievement</p>
         </div>
         <canvas id="certCanvas" width="800" height="565"></canvas>
         <div class="cert-actions no-print">
             <button class="btn btn-success" onclick="downloadCert()">⬇ Download PNG</button>
             <button class="btn btn-outline" onclick="window.print()">🖨️ Print</button>
         </div>
-        <div style="margin-top:12px;">
+        <div style="margin-top:10px;" class="no-print">
             <button class="btn btn-ghost" onclick="generateDemoCert()">🔄 Generate Demo Certificate</button>
         </div>
     </div>
 
     <!-- ===== PAGE: COURSE DETAIL ===== -->
     <div id="page-course" class="page">
-        <button class="btn btn-ghost no-print" onclick="goBackFromCourse()" style="width:auto;padding:8px 16px;margin-bottom:12px;">⬅ Back</button>
+        <button class="btn btn-ghost no-print" onclick="goBackFromCourse()" style="width:auto;padding:8px 16px;margin-bottom:10px;font-size:14px;">⬅ Back</button>
         <div class="card">
             <h2 id="courseDetailTitle" class="card-title"></h2>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
-                <span class="chip" id="detailDuration">⏱️ 2 hours</span>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px;">
+                <span class="chip" id="detailDuration">⏱️ 2h</span>
                 <span class="chip" id="detailLevel">📊 Intermediate</span>
                 <span class="chip" id="detailLessons">📄 3 lessons</span>
             </div>
-            <div id="courseDetailBody" style="line-height:1.7;margin:12px 0;"></div>
-            <button class="btn" onclick="startQuizFromDetail()">📝 Start Quiz</button>
+            <div id="courseDetailBody" style="line-height:1.7;font-size:15px;"></div>
+            <button class="btn mt-12" onclick="startQuizFromDetail()">📝 Start Quiz</button>
         </div>
     </div>
 
@@ -458,7 +506,7 @@
     <div id="page-quiz" class="page">
         <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <h2 id="quizTitle" style="font-size:18px;">Quiz</h2>
+                <h2 id="quizTitle" style="font-size:17px;">Quiz</h2>
                 <span id="quizCounter" style="font-weight:600;">1/5</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="quizProgress" style="width:20%;"></div></div>
@@ -476,15 +524,14 @@
     <div id="page-result" class="page">
         <div class="card text-center">
             <h2 id="resultTitle" style="font-size:24px;">🎉 Congratulations!</h2>
-            <p id="resultText" style="font-size:18px;margin:10px 0;">You scored 5/5</p>
-            <div id="resultBadge" style="font-size:48px;margin:8px 0;">🏆</div>
+            <p id="resultText" style="font-size:18px;margin:8px 0;">You scored 5/5</p>
+            <div id="resultBadge" style="font-size:48px;margin:6px 0;">🏆</div>
             <button class="btn" onclick="viewCertificateFromResult()">🎓 View Certificate</button>
             <button class="btn btn-ghost mt-8" onclick="goHome()">🏠 Home</button>
         </div>
     </div>
 
-
-    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <!-- ===== BOTTOM NAV ===== -->
     <div class="bottom-nav no-print">
         <button class="nav-item active" data-target="page-home"><span class="icon">🏠</span>Home</button>
         <button class="nav-item" data-target="page-categories"><span class="icon">📂</span>Categories</button>
@@ -494,13 +541,13 @@
 
     <script>
         // ============================================================
-        //  1. DATA: COURSES (with categories, time frames, content)
+        //  1. COURSE DATA (No API, fully static)
         // ============================================================
         const COURSES = [{
             id: 'comm101',
             category: 'soft',
             title: 'Communication Skills',
-            duration: '2.5 hours',
+            duration: '2.5h',
             level: 'Beginner',
             lessons: 4,
             content: `<p><b>Lesson 1: Active Listening</b><br>Focus entirely on the speaker. Nod, paraphrase, and ask open-ended questions. Avoid formulating your reply while they talk.</p>
@@ -509,33 +556,50 @@
                       <p><b>Lesson 4: Empathy</b><br>Acknowledge emotions. Say "I understand" before offering solutions. Builds trust instantly.</p>`,
             questions: [
                 { q: "What percentage of communication is body language?", opts: ["10%", "55%", "70%", "93%"], ans: 1 },
-                { q: "What is the first step of active listening?", opts: ["Interrupt", "Paraphrase", "Concentrate fully", "Judge quickly"], ans: 2 },
-                { q: "What does the Pyramid Principle suggest?", opts: ["Start with details", "Start with the conclusion", "Use long sentences", "Avoid structure"], ans: 1 },
-                { q: "Which is a non-verbal cue?", opts: ["Volume", "Eye contact", "Vocabulary", "Grammar"], ans: 1 },
-                { q: "How to show empathy?", opts: ["Say 'I understand'", "Talk louder", "Look away", "Interrupt"], ans: 0 }
+                { q: "What is the first step of active listening?", opts: ["Interrupt", "Paraphrase", "Concentrate fully",
+                        "Judge quickly"
+                    ], ans: 2 },
+                { q: "What does the Pyramid Principle suggest?", opts: ["Start with details",
+                        "Start with the conclusion", "Use long sentences", "Avoid structure"
+                    ], ans: 1 },
+                { q: "Which is a non-verbal cue?", opts: ["Volume", "Eye contact", "Vocabulary", "Grammar"],
+                ans: 1 },
+                { q: "How to show empathy?", opts: ["Say 'I understand'", "Talk louder", "Look away",
+                        "Interrupt"
+                    ], ans: 0 }
             ]
         }, {
             id: 'time101',
             category: 'soft',
             title: 'Time Management',
-            duration: '2 hours',
+            duration: '2h',
             level: 'Intermediate',
             lessons: 3,
             content: `<p><b>Lesson 1: Eisenhower Matrix</b><br>Categorize tasks: Urgent/Important. Focus on Important + Not Urgent (Quadrant 2) for long-term growth.</p>
                       <p><b>Lesson 2: Pomodoro Technique</b><br>25 min work, 5 min break. After 4 cycles, take a 15-30 min break. Boosts focus.</p>
                       <p><b>Lesson 3: The Art of Saying No</b><br>Politely decline tasks that don't align with your goals. Offer alternatives.</p>`,
             questions: [
-                { q: "What is Quadrant 2 in the Eisenhower Matrix?", opts: ["Urgent & Important", "Important but Not Urgent", "Urgent but Not Important", "Neither"], ans: 1 },
-                { q: "How long is a standard Pomodoro work session?", opts: ["15 min", "25 min", "45 min", "60 min"], ans: 1 },
-                { q: "What should you do with Urgent but Not Important tasks?", opts: ["Do them now", "Schedule", "Delegate", "Ignore"], ans: 2 },
-                { q: "What is a key habit for good time management?", opts: ["Multitasking", "Check email constantly", "Plan your day", "Work late"], ans: 2 },
-                { q: "How long is a long break after 4 Pomodoros?", opts: ["5 min", "10 min", "15-30 min", "1 hour"], ans: 2 }
+                { q: "What is Quadrant 2 in the Eisenhower Matrix?", opts: ["Urgent & Important",
+                        "Important but Not Urgent", "Urgent but Not Important", "Neither"
+                    ], ans: 1 },
+                { q: "How long is a standard Pomodoro work session?", opts: ["15 min", "25 min", "45 min",
+                        "60 min"
+                    ], ans: 1 },
+                { q: "What should you do with Urgent but Not Important tasks?", opts: ["Do them now",
+                        "Schedule", "Delegate", "Ignore"
+                    ], ans: 2 },
+                { q: "What is a key habit for good time management?", opts: ["Multitasking",
+                        "Check email constantly", "Plan your day", "Work late"
+                    ], ans: 2 },
+                { q: "How long is a long break after 4 Pomodoros?", opts: ["5 min", "10 min", "15-30 min",
+                        "1 hour"
+                    ], ans: 2 }
             ]
         }, {
             id: 'python101',
             category: 'tech',
             title: 'Python for Beginners',
-            duration: '4 hours',
+            duration: '4h',
             level: 'Beginner',
             lessons: 5,
             content: `<p><b>Lesson 1: Variables & Data Types</b><br>Python uses dynamic typing. Learn int, float, string, and boolean. Use <code>type()</code> to check.</p>
@@ -544,8 +608,12 @@
                       <p><b>Lesson 4: Lists & Dictionaries</b><br>Store collections. List methods: append, pop. Dict key-value pairs.</p>
                       <p><b>Lesson 5: Error Handling</b><br>Try/except blocks. Catch errors gracefully to prevent crashes.</p>`,
             questions: [
-                { q: "Which keyword defines a function in Python?", opts: ["function", "def", "define", "func"], ans: 1 },
-                { q: "What is the correct syntax for a for loop?", opts: ["for i in range(5):", "for i=0 to 5", "loop i in 5", "for (i=0;i<5;i++)"], ans: 0 },
+                { q: "Which keyword defines a function in Python?", opts: ["function", "def", "define",
+                        "func"
+                    ], ans: 1 },
+                { q: "What is the correct syntax for a for loop?", opts: ["for i in range(5):", "for i=0 to 5",
+                        "loop i in 5", "for (i=0;i<5;i++)"
+                    ], ans: 0 },
                 { q: "Which data type is immutable?", opts: ["List", "Dictionary", "Tuple", "Set"], ans: 2 },
                 { q: "How to catch an error?", opts: ["catch:", "except:", "error:", "try/catch"], ans: 1 },
                 { q: "What does <code>len([1,2,3])</code> return?", opts: ["2", "3", "4", "Error"], ans: 1 }
@@ -554,7 +622,7 @@
             id: 'startup101',
             category: 'business',
             title: 'Startup Fundamentals',
-            duration: '3 hours',
+            duration: '3h',
             level: 'Intermediate',
             lessons: 4,
             content: `<p><b>Lesson 1: Idea Validation</b><br>Survey your target audience. Build a Minimum Viable Product (MVP). Test with real users early.</p>
@@ -562,16 +630,24 @@
                       <p><b>Lesson 3: Pitching</b><br>Elevator pitch: Problem -> Solution -> Market Size -> Team. Keep it under 60 seconds.</p>
                       <p><b>Lesson 4: Fundraising</b><br>Bootstrapping vs. Angel Investors vs. Venture Capital. Understand dilution and term sheets.</p>`,
             questions: [
-                { q: "What does MVP stand for?", opts: ["Most Valuable Product", "Minimum Viable Product", "Major Value Proposition", "Model View Presenter"], ans: 1 },
+                { q: "What does MVP stand for?", opts: ["Most Valuable Product", "Minimum Viable Product",
+                        "Major Value Proposition", "Model View Presenter"
+                    ], ans: 1 },
                 { q: "How many blocks are in the Business Model Canvas?", opts: ["6", "7", "8", "9"], ans: 3 },
-                { q: "What is the first step of an elevator pitch?", opts: ["Team", "Market Size", "Problem", "Solution"], ans: 2 },
-                { q: "Which is NOT a funding source?", opts: ["Bootstrapping", "Angel Investors", "Venture Capital", "Government Grants only"], ans: 3 },
-                { q: "What is a key part of validation?", opts: ["Building full product", "Surveying customers", "Hiring staff", "Registering company"], ans: 1 }
+                { q: "What is the first step of an elevator pitch?", opts: ["Team", "Market Size", "Problem",
+                        "Solution"
+                    ], ans: 2 },
+                { q: "Which is NOT a funding source?", opts: ["Bootstrapping", "Angel Investors",
+                        "Venture Capital", "Government Grants only"
+                    ], ans: 3 },
+                { q: "What is a key part of validation?", opts: ["Building full product",
+                        "Surveying customers", "Hiring staff", "Registering company"
+                    ], ans: 1 }
             ]
         }];
 
         // ============================================================
-        //  2. STATE
+        //  2. APP STATE
         // ============================================================
         let currentCourseId = null;
         let currentQIndex = 0;
@@ -581,7 +657,7 @@
         let certificatesEarned = 0;
         let currentUserName = 'Student';
 
-        // Telegram Init
+        // Telegram Integration
         if (window.Telegram && Telegram.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
@@ -592,7 +668,7 @@
         document.getElementById('userGreeting').textContent = `👋 ${currentUserName}`;
 
         // ============================================================
-        //  3. NAVIGATION
+        //  3. NAVIGATION SYSTEM
         // ============================================================
         const navItems = document.querySelectorAll('.nav-item');
         const pages = {
@@ -611,11 +687,9 @@
             }
             const target = document.getElementById(pageId);
             if (target) target.classList.add('active');
-            // Update nav
             navItems.forEach(item => {
                 item.classList.toggle('active', item.dataset.target === pageId);
             });
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -623,9 +697,8 @@
             item.addEventListener('click', () => {
                 const target = item.dataset.target;
                 if (target === 'page-cert') generateDemoCert();
-                // Hide course/quiz/result if open
-                ['page-course', 'page-quiz', 'page-result'].forEach(id => document.getElementById(id).classList.remove(
-                'active'));
+                ['page-course', 'page-quiz', 'page-result'].forEach(id => document.getElementById(id).classList
+                    .remove('active'));
                 showPage(target, true);
                 if (target === 'page-home') renderHome();
                 if (target === 'page-categories') renderCategories('all');
@@ -633,18 +706,14 @@
             });
         });
 
-        function goHome() {
-            showPage('page-home', true);
-            renderHome();
-        }
+        function goHome() { showPage('page-home', true);
+            renderHome(); }
 
-        function goBackFromCourse() {
-            showPage('page-home', true);
-            renderHome();
-        }
+        function goBackFromCourse() { showPage('page-home', true);
+            renderHome(); }
 
         // ============================================================
-        //  4. RENDER HOME
+        //  4. RENDER FUNCTIONS
         // ============================================================
         function renderHome() {
             const grid = document.getElementById('featuredGrid');
@@ -653,10 +722,8 @@
             featured.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'course-item';
-                div.innerHTML = `
-                    <div class="info"><h4>${c.title}</h4><p>${c.duration} • ${c.level}</p></div>
-                    <span class="badge">Enroll</span>
-                `;
+                div.innerHTML =
+                    `<div class="info"><h4>${c.title}</h4><p>${c.duration} • ${c.level}</p></div><span class="badge">Enroll</span>`;
                 div.onclick = () => openCourse(c.id);
                 grid.appendChild(div);
             });
@@ -664,9 +731,7 @@
             document.getElementById('statCert').textContent = certificatesEarned;
         }
 
-        // ============================================================
-        //  5. CATEGORIES
-        // ============================================================
+        // Categories
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -680,28 +745,24 @@
             grid.innerHTML = '';
             const filtered = cat === 'all' ? COURSES : COURSES.filter(c => c.category === cat);
             if (!filtered.length) {
-                grid.innerHTML = '<p style="opacity:0.5;text-align:center;padding:20px;">No courses in this category.</p>';
+                grid.innerHTML = '<p style="opacity:0.4;text-align:center;padding:20px;">No courses in this category.</p>';
                 return;
             }
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'course-item';
-                div.innerHTML = `
-                    <div class="info"><h4>${c.title}</h4><p>${c.duration} • ${c.level}</p></div>
-                    <span class="badge">View</span>
-                `;
+                div.innerHTML =
+                    `<div class="info"><h4>${c.title}</h4><p>${c.duration} • ${c.level}</p></div><span class="badge">View</span>`;
                 div.onclick = () => openCourse(c.id);
                 grid.appendChild(div);
             });
         }
 
-        // ============================================================
-        //  6. MY COURSES
-        // ============================================================
         function renderMyCourses() {
             const container = document.getElementById('myCoursesList');
             if (!enrolledCourses.length) {
-                container.innerHTML = '<p style="opacity:0.5;text-align:center;padding:20px;">📭 You haven\'t enrolled in any course yet. Go to Home or Categories to start!</p>';
+                container.innerHTML =
+                    '<p style="opacity:0.4;text-align:center;padding:16px 0;">📭 No enrollments yet. Browse the catalog!</p>';
                 return;
             }
             container.innerHTML = '';
@@ -710,17 +771,15 @@
                 if (!c) return;
                 const div = document.createElement('div');
                 div.className = 'course-item';
-                div.innerHTML = `
-                    <div class="info"><h4>${c.title}</h4><p>${c.duration}</p></div>
-                    <span class="badge" style="background:#22c55e;">✅ Enrolled</span>
-                `;
+                div.innerHTML =
+                    `<div class="info"><h4>${c.title}</h4><p>${c.duration}</p></div><span class="badge" style="background:#22c55e;">✅ Enrolled</span>`;
                 div.onclick = () => openCourse(c.id);
                 container.appendChild(div);
             });
         }
 
         // ============================================================
-        //  7. COURSE DETAIL
+        //  5. COURSE DETAIL & QUIZ FLOW
         // ============================================================
         function openCourse(id) {
             currentCourseId = id;
@@ -734,10 +793,7 @@
             document.getElementById('detailLessons').textContent = `📄 ${c.lessons} lessons`;
             document.getElementById('courseDetailBody').innerHTML = c.content;
 
-            // Hide all main pages, show course detail
-            Object.keys(pages).forEach(k => {
-                if (k !== 'course') pages[k].classList.remove('active');
-            });
+            Object.keys(pages).forEach(k => { if (k !== 'course') pages[k].classList.remove('active'); });
             pages.course.classList.add('active');
             navItems.forEach(item => item.classList.remove('active'));
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -754,7 +810,7 @@
         }
 
         // ============================================================
-        //  8. QUIZ LOGIC
+        //  6. QUIZ ENGINE
         // ============================================================
         function renderQuestion() {
             const c = COURSES.find(co => co.id === currentCourseId);
@@ -787,34 +843,24 @@
             renderQuestion();
         }
 
-        function quizPrev() {
-            if (currentQIndex > 0) { currentQIndex--;
-                renderQuestion(); }
-        }
+        function quizPrev() { if (currentQIndex > 0) { currentQIndex--;
+                renderQuestion(); } }
 
         function quizNext() {
             const c = COURSES.find(co => co.id === currentCourseId);
             if (!c) return;
-            if (currentQIndex === c.questions.length - 1) {
-                submitQuizFinal();
-            } else {
-                currentQIndex++;
-                renderQuestion();
-            }
+            if (currentQIndex === c.questions.length - 1) submitQuizFinal();
+            else { currentQIndex++;
+                renderQuestion(); }
         }
 
         function submitQuizFinal() {
             const c = COURSES.find(co => co.id === currentCourseId);
             if (!c) return;
-            if (userAnswers.includes(-1)) {
-                if (!confirm("You have unanswered questions. Submit anyway?")) return;
-            }
+            if (userAnswers.includes(-1) && !confirm("You have unanswered questions. Submit anyway?")) return;
             quizScore = 0;
-            c.questions.forEach((q, i) => {
-                if (userAnswers[i] === q.ans) quizScore++;
-            });
+            c.questions.forEach((q, i) => { if (userAnswers[i] === q.ans) quizScore++; });
 
-            // Show result
             showPage('page-result', true);
             const passed = quizScore >= 4;
             document.getElementById('resultTitle').textContent = passed ? '🎉 Congratulations!' : '😅 Keep Learning!';
@@ -823,7 +869,6 @@
 
             if (passed) {
                 certificatesEarned++;
-                // Save cert data for later viewing
                 window._lastCert = {
                     name: currentUserName,
                     course: c.title,
@@ -831,11 +876,9 @@
                     id: `LIBRA-${Date.now().toString().slice(-6)}`,
                     passed: true
                 };
-                // Auto-generate cert in background
                 generateCertificate(window._lastCert);
             } else {
                 window._lastCert = { passed: false };
-                // Draw a "failed" cert or clear
                 const canvas = document.getElementById('certCanvas');
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, 800, 565);
@@ -851,16 +894,37 @@
 
         function viewCertificateFromResult() {
             showPage('page-cert', true);
-            if (window._lastCert?.passed) {
-                generateCertificate(window._lastCert);
-            } else {
-                generateDemoCert();
-            }
+            if (window._lastCert?.passed) generateCertificate(window._lastCert);
+            else generateDemoCert();
         }
 
         // ============================================================
-        //  9. CERTIFICATE DESIGN (Detailed, with Brand & Seal)
+        //  7. CERTIFICATE GENERATOR (with REAL signature curve)
         // ============================================================
+        function drawSignature(ctx, x, y) {
+            // Hand-drawn style bezier signature: "A. Mentor"
+            ctx.save();
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2.8;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            ctx.beginPath();
+            // Start with a slight loop
+            ctx.moveTo(x - 100, y + 2);
+            ctx.quadraticCurveTo(x - 85, y - 14, x - 70, y + 4);
+            ctx.quadraticCurveTo(x - 55, y + 16, x - 40, y - 6);
+            ctx.quadraticCurveTo(x - 25, y - 20, x - 10, y + 2);
+            ctx.quadraticCurveTo(x + 5, y + 18, x + 20, y - 8);
+            ctx.quadraticCurveTo(x + 35, y - 22, x + 50, y + 4);
+            ctx.quadraticCurveTo(x + 65, y + 20, x + 80, y - 6);
+            ctx.quadraticCurveTo(x + 95, y - 18, x + 110, y + 2);
+            // Final flourish
+            ctx.quadraticCurveTo(x + 120, y + 10, x + 125, y - 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
         function generateCertificate(data) {
             const canvas = document.getElementById('certCanvas');
             const ctx = canvas.getContext('2d');
@@ -869,7 +933,7 @@
 
             ctx.clearRect(0, 0, W, H);
 
-            // --- Background ---
+            // --- Background Gradient ---
             const grad = ctx.createLinearGradient(0, 0, W, H);
             grad.addColorStop(0, '#fdfbf7');
             grad.addColorStop(1, '#f7f2e5');
@@ -878,77 +942,75 @@
 
             // --- Outer Gold Border ---
             ctx.strokeStyle = '#c9a959';
-            ctx.lineWidth = 12;
-            ctx.strokeRect(20, 20, W - 40, H - 40);
+            ctx.lineWidth = 14;
+            ctx.strokeRect(18, 18, W - 36, H - 36);
 
             // --- Inner Accent Border ---
             ctx.strokeStyle = '#e8d5a3';
             ctx.lineWidth = 3;
-            ctx.strokeRect(40, 40, W - 80, H - 80);
+            ctx.strokeRect(36, 36, W - 72, H - 72);
 
             // --- Brand Header ---
             ctx.textAlign = 'center';
             ctx.fillStyle = '#8b7a4a';
             ctx.font = '14px sans-serif';
-            ctx.fillText('LIBRA ACADEMY', 400, 75);
+            ctx.fillText('LIBRA ACADEMY', 400, 72);
             ctx.fillStyle = '#c9a959';
             ctx.font = 'bold 12px sans-serif';
-            ctx.fillText('─── ✦ ───', 400, 95);
+            ctx.fillText('─── ✦ ───', 400, 92);
 
             // --- Main Title ---
             ctx.fillStyle = '#1e293b';
             ctx.font = 'bold 38px serif';
-            ctx.fillText('Certificate of Completion', 400, 155);
+            ctx.fillText('Certificate of Completion', 400, 150);
 
             // --- Sub text ---
             ctx.fillStyle = '#475569';
             ctx.font = '18px sans-serif';
-            ctx.fillText('This certifies that', 400, 210);
+            ctx.fillText('This certifies that', 400, 205);
 
             // --- Student Name ---
             ctx.fillStyle = '#0f172a';
             ctx.font = 'bold 34px sans-serif';
-            ctx.fillText(data.name || 'Student', 400, 270);
+            ctx.fillText(data.name || 'Student', 400, 265);
 
             // --- Course text ---
             ctx.fillStyle = '#334155';
             ctx.font = '18px sans-serif';
-            ctx.fillText('has successfully completed the course', 400, 320);
+            ctx.fillText('has successfully completed the course', 400, 315);
             ctx.fillStyle = '#7c3aed';
             ctx.font = 'bold 26px sans-serif';
-            ctx.fillText(`"${data.course || 'Course'}"`, 400, 365);
+            ctx.fillText(`"${data.course || 'Course'}"`, 400, 360);
 
-            // --- Footer: ID, Date, Signature, Stamp ---
+            // --- Footer: ID & Date ---
             ctx.fillStyle = '#64748b';
             ctx.font = '14px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(`Certificate ID: ${data.id || 'LIBRA-XXXX'}`, 60, 480);
+            ctx.fillText(`Certificate ID: ${data.id || 'LIBRA-XXXX'}`, 55, 480);
             ctx.textAlign = 'right';
-            ctx.fillText(`Date: ${data.date || new Date().toLocaleDateString()}`, 740, 480);
+            ctx.fillText(`Date: ${data.date || new Date().toLocaleDateString()}`, 745, 480);
 
-            // --- Signature ---
+            // --- REAL SIGNATURE (drawn curve) ---
+            drawSignature(ctx, 280, 500);
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#1e293b';
-            ctx.font = '16px sans-serif';
-            ctx.fillText('_________________________', 280, 500);
             ctx.fillStyle = '#475569';
             ctx.font = '14px sans-serif';
-            ctx.fillText('Director of Education', 280, 525);
+            ctx.fillText('Director of Education', 280, 530);
 
-            // --- School Stamp (Seal) ---
+            // --- School Stamp / Seal ---
             const cx = 560,
-                cy = 440,
+                cy = 445,
                 r = 50;
             ctx.save();
-            ctx.shadowColor = 'rgba(0,0,0,0.1)';
-            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(0,0,0,0.08)';
+            ctx.shadowBlur = 12;
             // Outer circle
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = '#fdfbf7';
             ctx.fill();
             ctx.strokeStyle = '#c9a959';
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 7;
             ctx.stroke();
             // Inner circle
             ctx.beginPath();
@@ -956,7 +1018,6 @@
             ctx.strokeStyle = '#b8923a';
             ctx.lineWidth = 2;
             ctx.stroke();
-            // Text inside seal
             ctx.shadowBlur = 0;
             ctx.fillStyle = '#8b7a4a';
             ctx.font = 'bold 11px sans-serif';
@@ -966,25 +1027,27 @@
             ctx.fillText('ACADEMY', cx, cy + 14);
             ctx.font = '8px sans-serif';
             ctx.fillText('★ EST. 2026 ★', cx, cy + 32);
-            // Star in center
             ctx.fillStyle = '#c9a959';
-            ctx.font = '18px serif';
-            ctx.fillText('✦', cx, cy - 28);
+            ctx.font = '20px serif';
+            ctx.fillText('✦', cx, cy - 30);
             ctx.restore();
 
-            // --- Decorative corner flourishes ---
+            // --- Decorative Corner Flourishes ---
             ctx.fillStyle = '#c9a959';
-            ctx.font = '28px serif';
+            ctx.font = '30px serif';
             ctx.textAlign = 'left';
-            ctx.fillText('❧', 45, 120);
+            ctx.fillText('❧', 45, 115);
             ctx.textAlign = 'right';
-            ctx.fillText('❧', 755, 120);
+            ctx.fillText('❧', 755, 115);
             ctx.textAlign = 'left';
-            ctx.fillText('❧', 45, 460);
+            ctx.fillText('❧', 45, 465);
             ctx.textAlign = 'right';
-            ctx.fillText('❧', 755, 460);
+            ctx.fillText('❧', 755, 465);
         }
 
+        // ============================================================
+        //  8. DEMO & DOWNLOAD
+        // ============================================================
         function generateDemoCert() {
             const data = {
                 name: currentUserName || 'Demo User',
@@ -995,7 +1058,6 @@
             };
             window._lastCert = data;
             generateCertificate(data);
-            // Navigate to cert page
             showPage('page-cert', true);
         }
 
@@ -1008,26 +1070,24 @@
         }
 
         // ============================================================
-        //  10. INIT
+        //  9. INIT
         // ============================================================
         renderHome();
         renderCategories('all');
-        // Preload a demo cert on first visit to cert tab
-        // But we'll let user click "Generate Demo" or earn one.
-        // Show empty state on cert page initially.
+        // Empty state for certificate
         (function initCert() {
             const canvas = document.getElementById('certCanvas');
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#f1f5f9';
             ctx.fillRect(0, 0, 800, 565);
             ctx.fillStyle = '#94a3b8';
-            ctx.font = '24px sans-serif';
+            ctx.font = '26px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('📜 Complete a course', 400, 260);
             ctx.fillText('to generate your certificate.', 400, 310);
         })();
 
-        console.log('🚀 Libra Academy Portal loaded successfully!');
+        console.log('🚀 Libra Academy Portal loaded. Full access for everyone!');
     </script>
 </body>
 </html>
