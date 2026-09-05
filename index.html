@@ -2,1502 +2,351 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#24150f" />
-  <title>soYam cosmo — Telegram Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edu Mini App</title>
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    /* ----- RESET & VARIABLES ----- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    :root {
-      --bg-warm: #F8F5F0;
-      --bg-card: #FFFFFF;
-      --bg-slate: #F4F6F8;
-      --bg-mocha: #1A0F08;
-      --ink: #251a15;
-      --muted: #766b64;
-      --gold: #C7A45A;
-      --gold-light: #EADFCA;
-      --chocolate: #2B1A13;
-      --chocolate2: #45271b;
-      --olive: #1F2A1E;
-      --emerald: #198754;
-      --ruby: #A62B35;
-      --amber: #b98214;
-      --line: #eadfd5;
-      --shadow: 0 10px 30px rgba(50, 30, 20, 0.08);
-      --radius: 20px;
-      --radius-sm: 12px;
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--bg-warm);
-      color: var(--ink);
-      font-family: var(--font-sans);
-      -webkit-font-smoothing: antialiased;
-      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--tg-theme-bg-color, #fff);
+      color: var(--tg-theme-text-color, #000);
+      padding: 16px;
+      min-height: 100vh;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    h2 { margin-bottom: 12px; font-size: 22px; }
+    p, li { line-height: 1.6; margin-bottom: 10px; }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--tg-theme-hint-color, #ccc);
+      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+      color: var(--tg-theme-text-color, #000);
+      margin-top: 8px;
     }
     button {
-      cursor: pointer;
-      border: 0;
-      font: inherit;
-    }
-    input, select, textarea {
-      font: inherit;
-    }
-    .app {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding-bottom: 80px;
-      position: relative;
-    }
-    .hidden {
-      display: none !important;
-    }
-
-    /* ----- HEADER / HERO (shared) ----- */
-    .hero {
-      background: linear-gradient(135deg, #24150f, #51301f);
-      color: #fff;
-      padding: 22px 20px 20px;
-      text-align: center;
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
-    .logo {
-      width: 72px;
-      height: 72px;
-      border: 2px solid var(--gold);
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 6px;
-      color: var(--gold);
-      font-family: var(--font-serif);
-      font-size: 28px;
-      font-weight: 700;
-      position: relative;
-    }
-    .logo::before {
-      content: "✦";
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      font-size: 14px;
-      color: var(--gold-light);
-      animation: glowPulse 2s infinite;
-    }
-    .logo::after {
-      content: "✦";
-      position: absolute;
-      bottom: -8px;
-      right: -8px;
-      font-size: 14px;
-      color: var(--gold-light);
-      animation: glowPulse 2s infinite 0.5s;
-    }
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.6; transform: scale(0.9); }
-      50% { opacity: 1; transform: scale(1.2); }
-    }
-    .brand {
-      font: 700 28px/1.2 var(--font-serif);
-      letter-spacing: 0.15em;
-    }
-    .brand .gold {
-      color: var(--gold);
-    }
-    .amharic {
-      font-size: 16px;
-      margin-top: 4px;
-      color: var(--gold-light);
-    }
-    .tagline {
-      color: #eadfca;
-      margin: 6px auto 8px;
-      max-width: 620px;
-      font-size: 13px;
-      opacity: 0.9;
-    }
-    .address {
-      font-size: 12px;
-      color: #e9ded5;
-      line-height: 1.6;
-    }
-    .address a {
-      color: var(--gold-light);
-      text-decoration: none;
-      border-bottom: 1px dotted rgba(255, 255, 255, 0.3);
-    }
-    .contact-strip {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    .contact-strip a {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 5px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: #fff;
-      text-decoration: none;
-      border: 1px solid #765542;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
-    .contact-strip a:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--gold);
-    }
-    .contact-strip a i {
-      color: var(--gold);
-    }
-
-    /* ----- LANGUAGE / CURRENCY BAR ----- */
-    .lang-bar {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding: 10px 16px;
-      background: #fff;
-      border-bottom: 1px solid var(--line);
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .lang-bar::-webkit-scrollbar { display: none; }
-    .lang-bar button {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 12px;
-      white-space: nowrap;
-      font-size: 12px;
-      color: var(--ink);
-      transition: 0.2s;
-    }
-    .lang-bar button.active {
-      background: var(--chocolate);
-      color: #fff;
-      border-color: var(--chocolate);
-    }
-    .lang-bar .currency {
-      margin-left: auto;
+      background: var(--tg-theme-button-color, #0088cc);
+      color: var(--tg-theme-button-text-color, #fff);
+      border: none;
       font-weight: 600;
-      color: var(--chocolate);
-      background: var(--gold-light);
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-    }
-
-    /* ----- MAIN CONTENT ----- */
-    main {
-      padding: 16px;
-    }
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 12px 0 14px;
-    }
-    .section-title h2 {
-      margin: 0;
-      font: 700 20px/1.2 var(--font-serif);
-      color: var(--chocolate);
-    }
-    .section-title .badge {
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--gold-light);
-      color: var(--chocolate);
-      padding: 3px 12px;
-      border-radius: 999px;
-    }
-
-    /* ----- CARDS ----- */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-    }
-    .card.dark {
-      background: var(--chocolate);
-      border-color: var(--chocolate2);
-      color: #fff;
-    }
-    .card.dark .muted {
-      color: #ccc;
-    }
-
-    /* ----- METRIC GRID ----- */
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .metric {
-      background: #f8f3ed;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 14px 12px;
-    }
-    .metric small {
-      font-size: 11px;
-      color: var(--muted);
-      display: block;
-      font-weight: 500;
-    }
-    .metric strong {
-      display: block;
-      font-size: 22px;
-      font-weight: 700;
-      margin-top: 2px;
-      color: var(--chocolate);
-    }
-    .metric .trend {
-      font-size: 12px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-    .metric .trend.up { color: var(--emerald); }
-    .metric .trend.down { color: var(--ruby); }
-
-    /* ----- BUTTONS & ACTIONS ----- */
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 10px;
-    }
-    .btn {
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      background: var(--chocolate);
-      color: #fff;
-      font-weight: 600;
-      text-align: center;
-      transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 13px;
-    }
-    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
-    .btn.gold { background: var(--gold); color: #fff; }
-    .btn.green { background: var(--emerald); }
-    .btn.ruby { background: var(--ruby); }
-    .btn.outline { background: transparent; border: 1px solid var(--line); color: var(--ink); }
-    .btn.small { padding: 8px 12px; font-size: 12px; }
-    .btn-block { width: 100%; }
-
-    /* ----- TABS (category) ----- */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      margin-bottom: 14px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tabs button {
-      white-space: nowrap;
-      padding: 6px 16px;
-      border-radius: 999px;
-      background: #fff;
-      border: 1px solid var(--line);
-      font-size: 13px;
-      transition: 0.2s;
-    }
-    .tabs button.active {
-      background: var(--chocolate);
-      color: #fff;
-      border-color: var(--chocolate);
-    }
-
-    /* ----- PRODUCT GRID ----- */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-    .product {
-      background: var(--bg-card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: 0.2s;
-    }
-    .product:hover { transform: translateY(-2px); }
-    .product-img {
-      height: 120px;
-      background: linear-gradient(145deg, #efe4d8, #fff);
-      display: grid;
-      place-items: center;
-      font-size: 44px;
-    }
-    .product-body {
-      padding: 12px;
-    }
-    .product h3 {
-      margin: 0 0 2px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .product .meta {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .product .price {
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--chocolate);
-    }
-    .product .add {
-      background: var(--chocolate);
-      color: #fff;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      width: 100%;
-      margin-top: 6px;
-    }
-
-    /* ----- LIST ITEMS ----- */
-    .list {
-      display: grid;
-      gap: 10px;
-    }
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      background: #fcfaf8;
-    }
-    .list-item .info { flex: 1; }
-    .list-item .info strong { display: block; font-size: 14px; }
-    .list-item .info small { color: var(--muted); font-size: 12px; }
-
-    /* ----- BADGES ----- */
-    .badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-    .badge.green { background: #e5f6ed; color: var(--emerald); }
-    .badge.amber { background: #fff2d2; color: var(--amber); }
-    .badge.ruby { background: #fde8ea; color: var(--ruby); }
-    .badge.gold { background: #fcf6ea; color: var(--gold); }
-
-    /* ----- LOYALTY WIDGET ----- */
-    .loyalty {
-      background: linear-gradient(135deg, #2b1a13, #4a2d1f);
-      color: #fff;
-      border-radius: var(--radius-sm);
-      padding: 14px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .loyalty .status {
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .loyalty .status i { color: var(--gold); margin-right: 6px; }
-    .loyalty .points {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-    }
-    .loyalty .points strong { color: var(--gold); }
-
-    /* ----- FULFILLMENT TOGGLE ----- */
-    .fulfill-toggle {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 10px 0 14px;
-    }
-    .fulfill-opt {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      text-align: center;
-      font-weight: 500;
-      transition: 0.2s;
-    }
-    .fulfill-opt.active {
-      border-color: var(--gold);
-      background: #fcf6ea;
-    }
-    .fulfill-opt i { display: block; font-size: 24px; margin-bottom: 4px; color: var(--gold); }
-
-    /* ----- BOTTOM NAV ----- */
-    .bottom-nav {
-      position: fixed;
-      z-index: 20;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(1100px, 100%);
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: space-around;
-      padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-    }
-    .bottom-nav button {
-      background: none;
-      color: var(--muted);
-      font-size: 10px;
-      padding: 4px 6px;
-      border-radius: 12px;
-      transition: 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1px;
-      flex: 1;
-      max-width: 80px;
-    }
-    .bottom-nav button i { font-size: 20px; }
-    .bottom-nav button.sel { color: var(--chocolate); font-weight: 600; }
-    .bottom-nav button .badge-dot {
-      background: var(--ruby);
-      color: #fff;
-      border-radius: 50%;
-      padding: 0 5px;
-      font-size: 9px;
-      line-height: 16px;
-      min-width: 16px;
-      text-align: center;
-      margin-left: 4px;
-    }
-
-    /* ----- SCANNER OVERLAY (demo) ----- */
-    .scanner-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      backdrop-filter: blur(8px);
-    }
-    .scanner-overlay.active { display: flex; }
-    .scanner-box {
-      width: 220px;
-      height: 220px;
-      border: 3px solid var(--gold);
-      border-radius: var(--radius);
-      display: grid;
-      place-items: center;
-      position: relative;
-      animation: pulse 1.6s infinite;
-    }
-    .scanner-box i { font-size: 64px; color: var(--gold); opacity: 0.6; }
-    @keyframes pulse { 0%,100% { box-shadow: 0 0 20px rgba(199,164,90,0.2); } 50% { box-shadow: 0 0 60px rgba(199,164,90,0.4); } }
-    .scanner-close {
-      margin-top: 30px;
-      padding: 10px 30px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      border: 1px solid #765542;
-    }
-
-    /* ----- EOD PANEL ----- */
-    .eod-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      font-size: 13px;
-      border-bottom: 1px solid var(--line);
-    }
-    .eod-row:last-child { border-bottom: 0; }
-    .eod-row .label { color: var(--muted); }
-    .eod-row .value { font-weight: 600; }
-    .eod-row .value.gold { color: var(--gold); }
-    .eod-row .value.green { color: var(--emerald); }
-
-    /* ----- AI INSIGHTS ----- */
-    .insight-chip {
-      display: inline-block;
-      background: #f0ebe5;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      margin: 4px 6px 4px 0;
-      border: 1px solid var(--line);
-    }
-    .insight-chip i { margin-right: 6px; color: var(--gold); }
-
-    /* ----- TABLE (inventory) ----- */
-    .table-wrap { overflow-x: auto; }
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    .table th, .table td {
-      padding: 10px 8px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-    }
-    .table th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
-
-    /* ----- STAFF LIST ----- */
-    .staff-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .staff-item:last-child { border-bottom: 0; }
-
-    /* ----- RESPONSIVE ----- */
-    @media (min-width: 700px) {
-      .grid { grid-template-columns: repeat(4, 1fr); }
-      .metric-grid { grid-template-columns: repeat(4, 1fr); }
-      main { padding: 22px 30px; }
-      .actions { grid-template-columns: repeat(4, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .brand { font-size: 22px; }
-      .logo { width: 60px; height: 60px; font-size: 24px; }
-      .grid { gap: 10px; }
-      .product-img { height: 100px; }
-    }
-
-    /* ----- TOAST ----- */
-    .toast {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--chocolate);
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 999px;
-      font-size: 14px;
-      z-index: 200;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-      animation: fadeUp 0.3s ease;
-      max-width: 90%;
-      text-align: center;
-      pointer-events: none;
-    }
-    @keyframes fadeUp { 0% { opacity:0; transform: translateX(-50%) translateY(12px); } 100% { opacity:1; transform: translateX(-50%) translateY(0); } }
-
-    /* Portal selector (multi-role) */
-    .portal-screen {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #24150f, #51301f);
-      color: #fff;
-      padding: 40px 20px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .portal-screen .logo { width: 80px; height: 80px; font-size: 32px; }
-    .portal-screen h1 { font-family: var(--font-serif); margin: 16px 0 8px; }
-    .portal-card {
-      background: #fff;
-      color: var(--ink);
-      max-width: 480px;
-      width: 100%;
-      padding: 24px;
-      border-radius: 28px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      margin-top: 20px;
-    }
-    .portal-choice {
-      display: block;
-      width: 100%;
-      text-align: left;
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 16px;
-      margin: 8px 0;
-      transition: 0.2s;
       cursor: pointer;
     }
-    .portal-choice:hover { border-color: var(--gold); background: #fcf9f5; }
-    .portal-choice strong { display: block; font-size: 16px; }
-    .portal-choice span { font-size: 13px; color: var(--muted); }
+    button:active { opacity: 0.7; }
+    .quiz-option {
+      display: block;
+      padding: 10px 14px;
+      margin: 6px 0;
+      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+      border-radius: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .quiz-option.selected {
+      border-color: var(--tg-theme-button-color, #0088cc);
+      background: var(--tg-theme-button-color, #0088cc);
+      color: #fff;
+    }
+    .quiz-option input { display: none; }
+    canvas { width: 100%; max-width: 600px; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .cert-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .cert-actions button { flex: 1; }
+    #courseContent { white-space: pre-wrap; }
+    .tag { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      border-radius: 20px; 
+      background: var(--tg-theme-button-color, #0088cc); 
+      color: #fff; 
+      font-size: 14px; 
+      margin-bottom: 12px;
+    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <div id="app"></div>
+  <!-- ========== SCREEN 1: HOME ========== -->
+  <div id="screen-home" class="screen active">
+    <h2>📚 What do you want to learn?</h2>
+    <p style="color: var(--tg-theme-hint-color, #888);">Enter a topic and AI will generate a mini-course with a quiz.</p>
+    <input id="topicInput" type="text" placeholder="e.g., Communication Skills, Python Basics, Public Speaking" />
+    <button id="generateBtn" onclick="generateCourse()">🚀 Enroll & Generate</button>
+  </div>
+
+  <!-- ========== SCREEN 2: COURSE ========== -->
+  <div id="screen-course" class="screen">
+    <span class="tag" id="courseTag">📖 Reading Material</span>
+    <h2 id="courseTitle"></h2>
+    <div id="courseContent"></div>
+    <button onclick="startQuiz()">📝 Take Quiz</button>
+  </div>
+
+  <!-- ========== SCREEN 3: QUIZ ========== -->
+  <div id="screen-quiz" class="screen">
+    <span class="tag">🧠 Quiz (5 Questions)</span>
+    <h2>Test Your Knowledge</h2>
+    <div id="quizContainer"></div>
+    <button onclick="submitQuiz()">✅ Submit Answers</button>
+  </div>
+
+  <!-- ========== SCREEN 4: CERTIFICATE ========== -->
+  <div id="screen-cert" class="screen">
+    <span class="tag">🎉 Congratulations!</span>
+    <h2>You Passed!</h2>
+    <canvas id="certCanvas" width="600" height="400"></canvas>
+    <div class="cert-actions">
+      <button onclick="downloadCert()">⬇️ Download PNG</button>
+      <button onclick="resetApp()">🔄 Learn New Topic</button>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 5: FAIL ========== -->
+  <div id="screen-fail" class="screen">
+    <span class="tag" style="background: #e74c3c;">😓 Not Quite</span>
+    <h2>Score below 4/5</h2>
+    <p>Review the material and try again.</p>
+    <button onclick="startQuiz()">🔁 Retry Quiz</button>
+    <button onclick="resetApp()" style="margin-top: 8px; background: #666;">📚 Choose New Topic</button>
+  </div>
 
   <script>
-    // ================================================================
-    // DATA STORE (static for prototype)
-    // ================================================================
-    const STORE = {
-      name: "soYam cosmo",
-      am: "ሶያም ኮስሞቲክስ",
-      owner: "Rahel Mulatu",
-      address: "Betel Building, Ground Floor, Addis Ababa, Ethiopia",
-      phone: "+251919096451",
-      maps: "https://maps.app.goo.gl/FMJMrTvD2wDPGJUv8",
+    // ============================================================
+    // 🔑 PASTE YOUR RESTRICTED GEMINI API KEY HERE
+    // ============================================================
+    const GEMINI_KEY = "YOUR_API_KEY_HERE";  // <-- REPLACE THIS
 
-      products: [
-        { id: 1, name: "Luxury Face Cream", cat: "Skincare", price: 850, stock: 24, icon: "🧴" },
-        { id: 2, name: "Vitamin C Serum", cat: "Skincare", price: 1200, stock: 18, icon: "✨" },
-        { id: 3, name: "Body Lotion", cat: "Skincare", price: 650, stock: 42, icon: "🧴" },
-        { id: 4, name: "Beauty Fragrance", cat: "Fragrance", price: 1450, stock: 11, icon: "🌸" },
-        { id: 5, name: "Hair Care Oil", cat: "Haircare", price: 700, stock: 27, icon: "💧" },
-        { id: 6, name: "Liquid Detergent", cat: "Detergent", price: 390, stock: 65, icon: "🫧" },
-        { id: 7, name: "Laundry Soap", cat: "Detergent", price: 250, stock: 53, icon: "🧼" },
-        { id: 8, name: "Makeup Set", cat: "Makeup", price: 1850, stock: 8, icon: "💄" }
-      ],
+    const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=" + GEMINI_KEY;
 
-      orders: [
-        { id: "#1024", customer: "Amanuel K.", total: 2850, status: "PAYMENT_PENDING", date: "Today" },
-        { id: "#1023", customer: "Selam T.", total: 1450, status: "DELIVERY", date: "Today" },
-        { id: "#1022", customer: "Dawit M.", total: 850, status: "OWNER_PENDING", date: "Yesterday" },
-        { id: "#1021", customer: "Hana W.", total: 2450, status: "DELIVERY", date: "Yesterday" }
-      ],
+    let courseData = null;
+    let userName = "Student";
 
-      staff: [
-        { name: "Hewot M.", handle: "@hewot_m", role: "Sales Associate", active: true, revenue: 58400 },
-        { name: "Alemu K.", handle: "@alemu_k", role: "Driver", active: true },
-        { name: "Bereket H.", handle: "@bere_h", role: "Sales Associate", active: true },
-        { name: "Sami A.", handle: "@sami_a", role: "Sales Associate", active: false }
-      ],
-
-      // For demo metrics
-      metrics: {
-        revenue: 284750,
-        stockCapital: 142300,
-        grossProfit: 68200,
-        profitMargin: 23.6,
-        cac: 6.8,
-        aov: 560,
-        cagr: 7.1,
-        ordersToday: 28,
-        revenueToday: 42300,
-        avgFulfillment: 32,
-        customerRating: 4.8,
-        outForDelivery: 6,
-        pendingOrders: 12,
-        inStorePicks: 14,
-        deliveries: 8,
-        lowStock: 2
+    // Get Telegram user name if available
+    try {
+      if (window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name) {
+        userName = Telegram.WebApp.initDataUnsafe.user.first_name;
       }
-    };
+    } catch (_) {}
 
-    // ================================================================
-    // APPLICATION STATE
-    // ================================================================
-    let state = {
-      portal: null,       // 'customer' | 'staff' | 'owner' | 'driver'
-      tab: 'home',
-      category: 'All',
-      cart: [],
-      lang: 'English',
-      fulfillment: 'pickup', // 'pickup' or 'delivery'
-      orders: [...STORE.orders],
-      products: [...STORE.products],
-      staff: [...STORE.staff],
-      user: null,
-      roles: [],
-      loyaltyPoints: 2450
-    };
+    // Expand Telegram Mini App to full height
+    try { Telegram.WebApp.expand(); } catch (_) {}
 
-    // ================================================================
-    // TELEGRAM INTEGRATION (simulated)
-    // ================================================================
-    const tg = window.Telegram?.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    function getTelegramUser() {
-      const u = tg?.initDataUnsafe?.user;
-      if (u) return u;
-      return { id: "demo-buyer", first_name: "Telegram", last_name: "User", username: "demo" };
+    // ---------- Utility ----------
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
     }
 
-    // Simulate role resolution
-    function resolveRoles() {
-      const u = getTelegramUser();
-      state.user = u;
-      const userId = String(u.id);
-      // For demo: owner id = "123456" (simulate owner)
-      const ownerIds = window.SOYAM_OWNER_IDS || ['123456']; // add your test id
-      if (ownerIds.includes(userId)) return ['OWNER', 'STAFF'];
-      // check if in staff list (by username)
-      const foundStaff = state.staff.find(s => s.handle === ('@' + u.username) && s.active);
-      if (foundStaff) return ['STAFF'];
-      // driver demo: if username is 'driver_demo'
-      if (u.username === 'driver_demo') return ['DRIVER'];
-      return ['CUSTOMER'];
-    }
+    // ---------- Generate Course via AI ----------
+    async function generateCourse() {
+      const topic = document.getElementById('topicInput').value.trim();
+      if (!topic) { alert("Please enter a topic."); return; }
 
-    // ================================================================
-    // HELPERS
-    // ================================================================
-    function money(n) { return n.toLocaleString() + ' Br'; }
-    function esc(s) { return String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[m])); }
+      document.getElementById('generateBtn').innerText = "⏳ Generating...";
+      document.getElementById('generateBtn').disabled = true;
 
-    let toastTimeout;
-    function toast(msg) {
-      const old = document.querySelector('.toast');
-      if (old) old.remove();
-      const d = document.createElement('div');
-      d.className = 'toast';
-      d.textContent = msg;
-      document.body.appendChild(d);
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => d.remove(), 2200);
-    }
+      const prompt = `
+You are an expert educator. Create a short course on "${topic}".
+Respond ONLY with valid JSON in this exact structure:
+{
+  "title": "Course Title",
+  "content": "At least 600 words of educational content, split into paragraphs with bullet points where relevant.",
+  "questions": [
+    { "question": "MCQ question 1?", "options": ["A", "B", "C", "D"], "answer": 0 },
+    { "question": "MCQ question 2?", "options": ["A", "B", "C", "D"], "answer": 1 },
+    { "question": "MCQ question 3?", "options": ["A", "B", "C", "D"], "answer": 2 },
+    { "question": "MCQ question 4?", "options": ["A", "B", "C", "D"], "answer": 3 },
+    { "question": "MCQ question 5?", "options": ["A", "B", "C", "D"], "answer": 0 }
+  ]
+}
+The "answer" field must be the index (0-3) of the correct option.
+`;
 
-    // ================================================================
-    // RENDER ENGINE
-    // ================================================================
-    function render() {
-      state.roles = resolveRoles();
-      if (!state.portal) {
-        // If only customer, go directly
-        if (state.roles.length === 1 && state.roles[0] === 'CUSTOMER') {
-          state.portal = 'customer';
-        } else if (state.roles.includes('OWNER')) {
-          return renderPortalSelector();
-        } else {
-          state.portal = state.roles[0]?.toLowerCase() || 'customer';
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (!res.ok) throw new Error("API error: " + res.status);
+
+        const data = await res.json();
+        let rawText = data.candidates[0].content.parts[0].text;
+
+        // Remove markdown code fences
+        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        courseData = JSON.parse(rawText);
+
+        // Validate
+        if (!courseData.title || !courseData.content || !courseData.questions || courseData.questions.length !== 5) {
+          throw new Error("Invalid JSON structure from AI");
         }
-      }
-      // Ensure portal is allowed
-      if (!state.roles.includes(state.portal.toUpperCase()) && state.portal !== 'customer') {
-        state.portal = 'customer';
-      }
-      switch (state.portal) {
-        case 'owner': renderOwner(); break;
-        case 'staff': renderStaff(); break;
-        case 'driver': renderDriver(); break;
-        default: renderCustomer();
+
+        // Save to localStorage
+        localStorage.setItem('edu_course', JSON.stringify(courseData));
+        localStorage.setItem('edu_topic', document.getElementById('topicInput').value);
+
+        renderCourse();
+
+      } catch (err) {
+        alert("Generation failed: " + err.message + "\nPlease try again.");
+        console.error(err);
+      } finally {
+        document.getElementById('generateBtn').innerText = "🚀 Enroll & Generate";
+        document.getElementById('generateBtn').disabled = false;
       }
     }
 
-    function renderPortalSelector() {
-      document.getElementById('app').innerHTML = `
-        <div class="portal-screen">
-          <div class="logo">SY</div>
-          <h1>Welcome, ${state.user?.first_name || 'Owner'}</h1>
-          <p style="opacity:0.8;max-width:400px;">Choose your workspace</p>
-          <div class="portal-card">
-            <button class="portal-choice" onclick="setPortal('owner')">
-              <strong>👑 Executive Command Center</strong>
-              <span>Business analytics, inventory, staff & financial control</span>
-            </button>
-            <button class="portal-choice" onclick="setPortal('staff')">
-              <strong>🏪 Retail Operations Hub</strong>
-              <span>Store operations, payments, deliveries & performance</span>
-            </button>
-            <button class="portal-choice" onclick="setPortal('customer')">
-              <strong>🛍️ Customer Storefront</strong>
-              <span>Shop, loyalty, rewards & order tracking</span>
-            </button>
-          </div>
-        </div>
-      `;
+    // ---------- Render Course ----------
+    function renderCourse() {
+      if (!courseData) return;
+      document.getElementById('courseTitle').innerText = courseData.title;
+      document.getElementById('courseContent').innerHTML = courseData.content.replace(/\n/g, '<br>');
+      showScreen('screen-course');
     }
 
-    function setPortal(p) {
-      state.portal = p;
-      state.tab = 'home';
-      render();
+    // ---------- Start Quiz ----------
+    function startQuiz() {
+      if (!courseData) return;
+      showScreen('screen-quiz');
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      courseData.questions.forEach((q, idx) => {
+        const div = document.createElement('div');
+        div.style.marginBottom = '20px';
+        div.innerHTML = `<strong>${idx+1}. ${q.question}</strong>`;
+
+        const optDiv = document.createElement('div');
+        optDiv.style.marginTop = '6px';
+
+        q.options.forEach((opt, optIdx) => {
+          const label = document.createElement('label');
+          label.className = 'quiz-option';
+          label.innerHTML = `<input type="radio" name="q${idx}" value="${optIdx}"> ${opt}`;
+          // Toggle selected style
+          label.addEventListener('click', function(e) {
+            // Unselect siblings
+            this.parentElement.querySelectorAll('.quiz-option').forEach(l => l.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+          });
+          optDiv.appendChild(label);
+        });
+
+        div.appendChild(optDiv);
+        container.appendChild(div);
+      });
     }
 
-    function switchPortal() {
-      if (state.portal === 'owner' && state.roles.includes('STAFF')) {
-        state.portal = 'staff';
-      } else if (state.portal === 'staff' && state.roles.includes('OWNER')) {
-        state.portal = 'owner';
-      } else if (state.roles.length > 1) {
-        const idx = state.roles.findIndex(r => r.toLowerCase() === state.portal);
-        const next = (idx + 1) % state.roles.length;
-        state.portal = state.roles[next].toLowerCase();
-      } else {
-        toast('Only one role available');
+    // ---------- Submit Quiz ----------
+    function submitQuiz() {
+      let correct = 0;
+      let allAnswered = true;
+
+      courseData.questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!selected) { allAnswered = false; return; }
+        if (parseInt(selected.value) === q.answer) correct++;
+      });
+
+      if (!allAnswered) {
+        alert("Please answer all 5 questions before submitting.");
         return;
       }
-      state.tab = 'home';
-      render();
-    }
 
-    // ================================================================
-    // CUSTOMER PORTAL
-    // ================================================================
-    function renderCustomer() {
-      const products = state.products.filter(p => state.category === 'All' || p.cat === state.category);
-      let content = '';
-
-      if (state.tab === 'home') {
-        content = `
-          <!-- Loyalty -->
-          <div class="loyalty">
-            <div class="status"><i class="fas fa-star"></i> Gold Member</div>
-            <div class="points"><strong>${state.loyaltyPoints}</strong> pts · Next at 3,000</div>
-          </div>
-          <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
-            <button class="btn outline small" onclick="toast('Rewards offers')"><i class="fas fa-gift"></i> Rewards</button>
-            <button class="btn outline small" onclick="toast('Tutorials')"><i class="fas fa-play-circle"></i> Tutorials</button>
-            <button class="btn outline small" onclick="toast('Refer & Earn')"><i class="fas fa-share-alt"></i> Refer & Earn</button>
-          </div>
-          <!-- Metrics -->
-          <div class="metric-grid">
-            <div class="metric"><small>In‑Store Picks</small><strong>${STORE.metrics.inStorePicks}</strong></div>
-            <div class="metric"><small>Out for Delivery</small><strong>${STORE.metrics.outForDelivery}</strong></div>
-            <div class="metric"><small>Today Orders</small><strong>${STORE.metrics.ordersToday}</strong><span class="trend up">↑ 18%</span></div>
-            <div class="metric"><small>Revenue</small><strong>${money(STORE.metrics.revenueToday)}</strong><span class="trend up">↑ 12%</span></div>
-          </div>
-          <div class="metric-grid">
-            <div class="metric"><small>Avg. Fulfillment</small><strong>${STORE.metrics.avgFulfillment} min</strong><span class="trend up">↑ 8%</span></div>
-            <div class="metric"><small>Customer Rating</small><strong>${STORE.metrics.customerRating}</strong><span class="trend up">↑ 0.3</span></div>
-          </div>
-          <!-- Out for Delivery widget -->
-          <div class="card" style="background:#fcf6ea; border-color:var(--gold);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span><i class="fas fa-truck" style="color:var(--gold);"></i> <strong>Out for Delivery</strong></span>
-              <span><span class="badge amber">${STORE.metrics.outForDelivery} remaining</span></span>
-            </div>
-            <div style="margin-top:6px; font-size:13px;">
-              <i class="fas fa-user-circle"></i> Driver Alemu · On the way
-              <button class="btn small outline" style="margin-left:8px;" onclick="toast('📍 Map view')"><i class="fas fa-map"></i> View Map</button>
-            </div>
-          </div>
-          <!-- Top Performer -->
-          <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span><i class="fas fa-trophy" style="color:var(--gold);"></i> <strong>Top Performer</strong></span>
-            </div>
-            <div style="margin-top:6px; display:flex; justify-content:space-between;">
-              <span><strong>Hewot M.</strong> · Sales Associate</span>
-              <span><strong>${money(58400)}</strong> <span class="trend up">↑ 18%</span></span>
-            </div>
-          </div>
-          <!-- Category tabs -->
-          <div class="tabs">
-            ${['All','Skincare','Makeup','Fragrance','Haircare','Detergent'].map(c =>
-              `<button class="${state.category===c?'active':''}" onclick="state.category='${c}';render()">${c}</button>`
-            ).join('')}
-          </div>
-          <!-- Product grid -->
-          <div class="grid">
-            ${products.map(p => `
-              <div class="product">
-                <div class="product-img">${p.icon}</div>
-                <div class="product-body">
-                  <h3>${esc(p.name)}</h3>
-                  <div class="meta">${p.cat} · Stock ${p.stock}</div>
-                  <span class="price">${money(p.price)}</span>
-                  <button class="add" onclick="addToCart(${p.id})">+ Add</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <!-- Custom request -->
-          <div class="card" style="margin-top:16px; border:1px dashed var(--gold);">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <i class="fas fa-camera" style="color:var(--gold);"></i>
-              <span><strong>Can't find a product?</strong> Upload Photo or Name</span>
-              <button class="btn small outline" onclick="toast('📸 Custom order request')">Request</button>
-            </div>
-          </div>
-        `;
-      } else if (state.tab === 'orders') {
-        content = `
-          <div class="section-title"><h2>My Orders</h2></div>
-          <div class="list">
-            ${state.orders.map(o => `
-              <div class="list-item">
-                <div class="info"><strong>${o.id}</strong><small>${o.date} · ${money(o.total)}</small></div>
-                <span class="badge ${o.status==='DELIVERY'?'green':o.status==='PAYMENT_PENDING'?'amber':'ruby'}">${o.status.replace('_',' ')}</span>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      } else if (state.tab === 'cart') {
-        content = renderCart();
-      } else if (state.tab === 'loyalty') {
-        content = `
-          <div class="section-title"><h2>Loyalty & Rewards</h2></div>
-          <div class="card">
-            <div style="display:flex; justify-content:space-between;">
-              <span><strong>Gold Member</strong></span>
-              <span><strong>${state.loyaltyPoints}</strong> pts</span>
-            </div>
-            <div style="background:#e9e0d8; height:8px; border-radius:999px; margin:8px 0;">
-              <div style="background:var(--gold); height:8px; border-radius:999px; width:${(state.loyaltyPoints/3000)*100}%;"></div>
-            </div>
-            <p style="font-size:13px; color:var(--muted);">Next reward at 3,000 pts</p>
-            <button class="btn outline small" onclick="toast('Redeem rewards')">Redeem</button>
-          </div>
-        `;
-      }
-
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          ${heroHTML()}
-          <div class="lang-bar">
-            ${['English','አማርኛ','ትግርኛ','Oromiffa','Gurage','Soomaali'].map(l =>
-              `<button class="${state.lang===l?'active':''}" onclick="state.lang='${l}';render()">${l}</button>`
-            ).join('')}
-            <span class="currency">🇪🇹 Br</span>
-          </div>
-          <main>${content}</main>
-          ${bottomNav('customer')}
-        </div>
-      `;
-    }
-
-    function renderCart() {
-      const items = state.cart.map(x => ({ ...state.products.find(p => p.id === x.id), qty: x.qty }));
-      const total = items.reduce((a, x) => a + x.price * x.qty, 0);
-      if (!items.length) {
-        return `<div class="card" style="text-align:center; padding:30px;"><div style="font-size:48px;">🛒</div><h3>Your basket is empty</h3><button class="btn" onclick="state.tab='home';render()">Browse</button></div>`;
-      }
-      return `
-        <div class="section-title"><h2>Your Basket</h2></div>
-        <div class="list">
-          ${items.map(x => `
-            <div class="list-item">
-              <div class="info"><strong>${esc(x.name)}</strong><small>${x.qty} × ${money(x.price)}</small></div>
-              <span>${money(x.qty*x.price)}</span>
-            </div>
-          `).join('')}
-        </div>
-        <div class="card">
-          <h3>Fulfillment</h3>
-          <div class="fulfill-toggle">
-            <div class="fulfill-opt ${state.fulfillment==='pickup'?'active':''}" onclick="state.fulfillment='pickup';render()"><i class="fas fa-store"></i> In‑Person</div>
-            <div class="fulfill-opt ${state.fulfillment==='delivery'?'active':''}" onclick="state.fulfillment='delivery';render()"><i class="fas fa-truck"></i> Delivery</div>
-          </div>
-          ${state.fulfillment==='delivery' ? `
-            <label style="font-size:12px; color:var(--muted); display:block; margin:8px 0 4px;">Full Name</label>
-            <input id="deliveryName" placeholder="Your name" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:6px;" />
-            <label style="font-size:12px; color:var(--muted); display:block; margin:8px 0 4px;">Phone</label>
-            <input id="deliveryPhone" placeholder="Phone" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:6px;" />
-            <label style="font-size:12px; color:var(--muted); display:block; margin:8px 0 4px;">Address</label>
-            <textarea id="deliveryAddr" rows="2" placeholder="Delivery address" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px;"></textarea>
-          ` : ''}
-          <h3 style="margin-top:14px;">Total: ${money(total)}</h3>
-          <button class="btn green" onclick="checkout(${total})">Proceed to Payment</button>
-        </div>
-      `;
-    }
-
-    function addToCart(id) {
-      const existing = state.cart.find(x => x.id === id);
-      if (existing) existing.qty++;
-      else state.cart.push({ id, qty: 1 });
-      toast('Added to cart');
-      render();
-    }
-
-    function checkout(total) {
-      if (!state.cart.length) return;
-      // Simulate payment screen
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          ${heroHTML()}
-          <main>
-            <div class="section-title"><h2>Payment</h2></div>
-            <div class="card">
-              <p style="font-size:13px; color:var(--muted);">Upload payment proof (screenshot) for verification.</p>
-              <label style="font-size:12px; color:var(--muted); display:block; margin:8px 0 4px;">Payment Method</label>
-              <select style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px;">
-                <option>Bank Transfer</option><option>Telebirr</option><option>Cash on Collection</option>
-              </select>
-              <label style="font-size:12px; color:var(--muted); display:block;">Upload Proof</label>
-              <input type="file" accept="image/*" style="margin:4px 0 12px;" />
-              <h3>Total: ${money(total)}</h3>
-              <button class="btn green" onclick="submitOrder(${total})">Submit Order</button>
-            </div>
-          </main>
-        </div>
-      `;
-    }
-
-    function submitOrder(total) {
-      const id = '#' + (1025 + state.orders.length);
-      state.orders.unshift({ id, customer: 'Telegram Customer', total, status: 'PAYMENT_PENDING', date: 'Today' });
-      state.cart = [];
-      state.tab = 'orders';
-      toast('✅ Order submitted!');
-      render();
-    }
-
-    // ================================================================
-    // STAFF PORTAL
-    // ================================================================
-    function renderStaff() {
-      const pending = state.orders.filter(o => o.status === 'PAYMENT_PENDING').length;
-      const lowStock = state.products.filter(p => p.stock < 10).length;
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          <header class="hero">
-            <div class="logo">SY</div>
-            <div class="brand">🏪 Retail Operations Hub</div>
-            <div class="amharic">${STORE.am}</div>
-            <div class="address">${STORE.address}</div>
-          </header>
-          <main>
-            <div class="section-title">
-              <h2>Store Operations</h2>
-              <span class="badge" style="background:var(--emerald); color:#fff;">🟢 LIVE</span>
-            </div>
-            <div class="metric-grid">
-              <div class="metric"><small>Total Revenue (month)</small><strong>${money(STORE.metrics.revenue)}</strong><span class="trend up">↑ 18%</span></div>
-              <div class="metric"><small>Stock Capital</small><strong>${money(STORE.metrics.stockCapital)}</strong><span class="trend up">↑ 12%</span></div>
-              <div class="metric"><small>Gross Profit</small><strong>${money(STORE.metrics.grossProfit)}</strong><span class="trend up">↑ 15%</span></div>
-              <div class="metric"><small>Pending Orders</small><strong>${pending}</strong></div>
-            </div>
-            <!-- QR Scan -->
-            <button class="btn gold btn-block" style="padding:14px; font-size:16px; margin-bottom:12px;" onclick="openScanner()">
-              <i class="fas fa-qrcode"></i> SCAN ITEM QR
-            </button>
-            <!-- Payment Verification -->
-            <div class="card">
-              <h3><i class="fas fa-check-circle" style="color:var(--emerald);"></i> Payment Verification</h3>
-              ${state.orders.filter(o => o.status === 'PAYMENT_PENDING').map(o => `
-                <div class="list-item">
-                  <div class="info"><strong>${o.id}</strong><small>${money(o.total)} · ${o.customer}</small></div>
-                  <button class="btn green small" onclick="verifyOrder('${o.id}')">✅ Verify</button>
-                </div>
-              `).join('') || '<p style="color:var(--muted); font-size:13px;">No pending payments.</p>'}
-            </div>
-            <!-- Quick Actions -->
-            <div class="card">
-              <h3>Quick Actions</h3>
-              <div class="actions">
-                <button class="btn outline small" onclick="toast('📦 Inventory view')"><i class="fas fa-boxes"></i> Inventory</button>
-                <button class="btn outline small" onclick="toast('🚛 Delivery queue')"><i class="fas fa-truck"></i> Deliveries</button>
-                <button class="btn outline small" onclick="toast('📊 Sales summary')"><i class="fas fa-chart-bar"></i> Reports</button>
-                ${state.roles.includes('OWNER') ? `<button class="btn outline small" onclick="switchPortal()"><i class="fas fa-crown"></i> Owner</button>` : ''}
-              </div>
-            </div>
-            <!-- Top Performer -->
-            <div class="card">
-              <div style="display:flex; justify-content:space-between;">
-                <span><i class="fas fa-trophy" style="color:var(--gold);"></i> <strong>Top Performer</strong></span>
-              </div>
-              <div style="margin-top:6px; display:flex; justify-content:space-between;">
-                <span><strong>Hewot M.</strong> · Sales Associate</span>
-                <span><strong>${money(58400)}</strong> <span class="trend up">↑ 18%</span></span>
-              </div>
-            </div>
-          </main>
-          ${bottomNav('staff')}
-        </div>
-      `;
-    }
-
-    function verifyOrder(id) {
-      const o = state.orders.find(x => x.id === id);
-      if (o) { o.status = 'DELIVERY'; toast('✅ Payment verified'); render(); }
-    }
-
-    // ================================================================
-    // OWNER PORTAL
-    // ================================================================
-    function renderOwner() {
-      const pendingAudit = state.orders.filter(o => o.status === 'OWNER_PENDING').length;
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          <header class="hero" style="background: linear-gradient(135deg, #1A0F08, #2D1F14);">
-            <div class="logo">SY</div>
-            <div class="brand">👑 Executive Command Center</div>
-            <div class="amharic">${STORE.am}</div>
-            <div class="address">${STORE.owner} · ${STORE.address}</div>
-          </header>
-          <main>
-            <div class="section-title">
-              <h2>Business Analytics</h2>
-              <span class="badge" style="background:var(--ruby); color:#fff;">🔒 SECURE</span>
-            </div>
-            <!-- Metrics -->
-            <div class="metric-grid">
-              <div class="metric"><small>Profit Margin</small><strong>${STORE.metrics.profitMargin}%</strong></div>
-              <div class="metric"><small>CAC</small><strong>${STORE.metrics.cac} Br</strong></div>
-              <div class="metric"><small>AOV</small><strong>${STORE.metrics.aov} Br</strong></div>
-              <div class="metric"><small>CAGR</small><strong>${STORE.metrics.cagr}%</strong></div>
-            </div>
-            <!-- AI Insights -->
-            <div class="card" style="background: #f0ebe5; border-color: var(--gold);">
-              <h3><i class="fas fa-robot" style="color:var(--gold);"></i> AI Insights</h3>
-              <div style="display:flex; flex-wrap:wrap; gap:4px;">
-                <span class="insight-chip"><i class="fas fa-exclamation-triangle" style="color:var(--amber);"></i> Reorder soon: 12 products low</span>
-                <span class="insight-chip"><i class="fas fa-clock" style="color:var(--ruby);"></i> 3 products expire in 30 days</span>
-                <span class="insight-chip"><i class="fas fa-chart-line" style="color:var(--emerald);"></i> Peak sales: Next Friday</span>
-                <span class="insight-chip"><i class="fas fa-arrow-up" style="color:var(--emerald);"></i> Skincare demand ↑ 18%</span>
-              </div>
-            </div>
-            <!-- Quick Actions -->
-            <div class="card">
-              <h3>Quick Actions</h3>
-              <div class="actions">
-                <button class="btn gold small" onclick="ownerInventory()"><i class="fas fa-plus"></i> Add Stock</button>
-                <button class="btn outline small" onclick="ownerInventory()"><i class="fas fa-edit"></i> Edit Prices</button>
-                <button class="btn outline small" onclick="ownerStaff()"><i class="fas fa-users"></i> Staff</button>
-                <button class="btn outline small" onclick="toast('📊 Reports')"><i class="fas fa-file-alt"></i> Reports</button>
-              </div>
-            </div>
-            <!-- Top Performer -->
-            <div class="card">
-              <div style="display:flex; justify-content:space-between;">
-                <span><i class="fas fa-trophy" style="color:var(--gold);"></i> <strong>Top Performer</strong></span>
-              </div>
-              <div style="margin-top:6px; display:flex; justify-content:space-between;">
-                <span><strong>Hewot M.</strong> · Sales Associate</span>
-                <span><strong>${money(58400)}</strong> <span class="trend up">↑ 18%</span></span>
-              </div>
-            </div>
-            <!-- EOD Panel -->
-            <div class="card" style="border:2px solid var(--gold);">
-              <h3><i class="fas fa-lock" style="color:var(--gold);"></i> Daily Financial Lock</h3>
-              <div class="eod-row"><span class="label">📅 Date</span><span class="value">2026-09-02</span></div>
-              <div class="eod-row"><span class="label">🧾 Total Sales (units)</span><span class="value">47</span></div>
-              <div class="eod-row"><span class="label">💰 Cash in Hand</span><span class="value gold">18,200 Br</span></div>
-              <div class="eod-row"><span class="label">📱 Mobile Banking</span><span class="value gold">32,450 Br</span></div>
-              <div class="eod-row"><span class="label">✅ Variance</span><span class="value green">0 Br — Matched</span></div>
-              <button class="btn green btn-block" style="margin-top:12px;" onclick="closeDay()">🔒 Close Daily Transactions</button>
-            </div>
-            <!-- Staff mini -->
-            <div class="card">
-              <h3>Staff Registry</h3>
-              ${state.staff.filter(s => s.active).map(s => `
-                <div class="staff-item">
-                  <div><strong>${s.name}</strong> <span style="font-size:12px; color:var(--muted);">${s.handle}</span></div>
-                  <span class="badge green">Active</span>
-                </div>
-              `).join('')}
-              <button class="btn outline small" onclick="ownerStaff()">Manage Staff</button>
-            </div>
-          </main>
-          ${bottomNav('owner')}
-        </div>
-      `;
-    }
-
-    // Owner sub-views
-    function ownerInventory() {
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          <header class="hero"><div class="brand">📦 Inventory Control</div></header>
-          <main>
-            <div class="card">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 style="margin:0;">Products</h2>
-                <button class="btn gold small" onclick="addStockForm()">+ Add Stock</button>
-              </div>
-              <div class="table-wrap">
-                <table class="table">
-                  <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Price</th><th></th></tr></thead>
-                  <tbody>
-                    ${state.products.map(p => `
-                      <tr>
-                        <td>${p.icon} ${esc(p.name)}</td>
-                        <td>${p.cat}</td>
-                        <td><span class="badge ${p.stock<10?'ruby':p.stock<20?'amber':'green'}">${p.stock}</span></td>
-                        <td>${money(p.price)}</td>
-                        <td><button class="btn small outline" onclick="editPrice(${p.id})">Edit</button></td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <button class="btn outline" onclick="render()">← Dashboard</button>
-          </main>
-        </div>
-      `;
-    }
-
-    function editPrice(id) {
-      const p = state.products.find(x => x.id === id);
-      const n = prompt('New retail price (Br)', p.price);
-      if (n && Number(n) > 0) { p.price = Number(n); toast('Price updated'); ownerInventory(); }
-    }
-
-    function addStockForm() {
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          <header class="hero"><div class="brand">➕ Add Stock Item</div></header>
-          <main>
-            <div class="card">
-              <label style="font-size:12px; color:var(--muted);">Category</label>
-              <select id="catSelect" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px;">
-                ${['Skincare','Makeup','Fragrance','Haircare','Detergent','Cosmetics & Beauty'].map(c => `<option>${c}</option>`).join('')}
-              </select>
-              <label style="font-size:12px; color:var(--muted);">Product Name</label>
-              <input id="prodName" placeholder="Name" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px;" />
-              <label style="font-size:12px; color:var(--muted);">Buying Price (Br)</label>
-              <input id="prodCost" type="number" placeholder="0" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px;" />
-              <label style="font-size:12px; color:var(--muted);">Quantity</label>
-              <input id="prodQty" type="number" placeholder="0" style="width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px;" />
-              <div class="actions" style="grid-template-columns:1fr 1fr;">
-                <button class="btn green" onclick="saveStock()">💾 Save</button>
-                <button class="btn outline" onclick="render()">Cancel</button>
-              </div>
-            </div>
-          </main>
-        </div>
-      `;
-    }
-
-    function saveStock() {
-      const name = document.getElementById('prodName').value.trim();
-      const cat = document.getElementById('catSelect').value;
-      const cost = Number(document.getElementById('prodCost').value);
-      const qty = Number(document.getElementById('prodQty').value);
-      if (!name || !qty) return toast('Name and quantity required');
-      state.products.push({ id: Date.now(), name, cat, price: cost || 0, stock: qty, icon: '📦' });
-      toast('Stock added');
-      render();
-    }
-
-    function ownerStaff() {
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          <header class="hero"><div class="brand">👥 Staff Management</div></header>
-          <main>
-            <div class="card">
-              <button class="btn small" onclick="addStaffForm()">+ Add Staff</button>
-              <div class="list" style="margin-top:12px;">
-                ${state.staff.map(s => `
-                  <div class="list-item">
-                    <div class="info"><strong>${s.name}</strong><small>${s.handle} · ${s.role}</small></div>
-                    <div>
-                      <span class="badge ${s.active?'green':'ruby'}">${s.active?'Active':'Suspended'}</span>
-                      <button class="btn small ruby" style="padding:4px 8px;" onclick="toggleStaff('${s.handle}')">${s.active?'Suspend':'Activate'}</button>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-            <button class="btn outline" onclick="render()">← Dashboard</button>
-          </main>
-        </div>
-      `;
-    }
-
-    function toggleStaff(handle) {
-      const s = state.staff.find(x => x.handle === handle);
-      if (s) { s.active = !s.active; toast(`${s.name} ${s.active?'activated':'suspended'}`); ownerStaff(); }
-    }
-
-    function addStaffForm() {
-      const name = prompt('Full name');
-      if (!name) return;
-      const handle = prompt('Telegram handle (e.g. @username)');
-      if (!handle) return;
-      state.staff.push({ name, handle, role: 'Sales Associate', active: true, revenue: 0 });
-      toast('Staff added');
-      ownerStaff();
-    }
-
-    function closeDay() {
-      if (confirm('Close and lock today\'s transactions?')) {
-        toast('🔒 Daily ledger closed (demo)');
-      }
-    }
-
-    // ================================================================
-    // DRIVER PORTAL
-    // ================================================================
-    function renderDriver() {
-      document.getElementById('app').innerHTML = `
-        <div class="app">
-          <header class="hero">
-            <div class="logo">SY</div>
-            <div class="brand">🚚 Logistics Dispatch</div>
-            <div class="address">${STORE.address}</div>
-          </header>
-          <main>
-            <div class="section-title">
-              <h2>Assigned Deliveries</h2>
-              <span class="badge" style="background:var(--emerald); color:#fff;">🟢 ONLINE</span>
-            </div>
-            <div class="card">
-              <div class="list-item">
-                <div class="info"><strong>Order #1023</strong><small>Drop‑off: Addis Ababa · Contact protected</small></div>
-                <span class="badge amber">ASSIGNED</span>
-              </div>
-              <div class="actions" style="margin-top:12px;">
-                <button class="btn outline small" onclick="toast('📍 Navigate')"><i class="fas fa-map"></i> Navigate</button>
-                <button class="btn green small" onclick="toast('✅ Delivery marked done')">Mark Delivered</button>
-              </div>
-            </div>
-          </main>
-          ${bottomNav('driver')}
-        </div>
-      `;
-    }
-
-    // ================================================================
-    // SCANNER OVERLAY
-    // ================================================================
-    function openScanner() {
-      document.getElementById('scannerOverlay').classList.add('active');
-      setTimeout(() => {
-        closeScanner();
-        toast('📸 Scanned: Product added to basket');
-      }, 2500);
-    }
-    function closeScanner() {
-      document.getElementById('scannerOverlay').classList.remove('active');
-    }
-
-    // ================================================================
-    // HERO & BOTTOM NAV HELPERS
-    // ================================================================
-    function heroHTML() {
-      return `
-        <header class="hero">
-          <div class="logo">SY</div>
-          <div class="brand">soYam <span class="gold">cosmo</span></div>
-          <div class="amharic">${STORE.am}</div>
-          <div class="tagline">✦ Premium Beauty Essentials — Authentic cosmetics, detergents & beauty products. Shop with confidence.</div>
-          <div class="address">📍 ${STORE.address} · <a href="${STORE.maps}" target="_blank">Google Maps</a></div>
-          <div class="contact-strip">
-            <a href="https://t.me/rahm34" target="_blank"><i class="fab fa-telegram-plane"></i> Telegram</a>
-            <a href="tel:${STORE.phone}"><i class="fas fa-phone"></i> Call</a>
-            <a href="https://wa.me/${STORE.phone.replace('+','')}" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-          </div>
-        </header>
-      `;
-    }
-
-    function bottomNav(activePortal) {
-      const isCustomer = activePortal === 'customer';
-      const isStaff = activePortal === 'staff';
-      const isOwner = activePortal === 'owner';
-      const isDriver = activePortal === 'driver';
-      const cartCount = state.cart.reduce((a, x) => a + x.qty, 0);
-
-      let tabs = [];
-      if (isCustomer) {
-        tabs = [
-          { id: 'home', icon: 'fa-home', label: 'Home' },
-          { id: 'orders', icon: 'fa-clipboard-list', label: 'Orders' },
-          { id: 'cart', icon: 'fa-shopping-bag', label: 'Cart', badge: cartCount || '' },
-          { id: 'loyalty', icon: 'fa-star', label: 'Loyalty' }
-        ];
-      } else if (isStaff) {
-        tabs = [
-          { id: 'home', icon: 'fa-home', label: 'Dashboard' },
-          { id: 'orders', icon: 'fa-clipboard-list', label: 'Orders' },
-          { id: 'scan', icon: 'fa-qrcode', label: 'Scan' }
-        ];
-      } else if (isOwner) {
-        tabs = [
-          { id: 'home', icon: 'fa-home', label: 'Dashboard' },
-          { id: 'inventory', icon: 'fa-boxes', label: 'Stock' },
-          { id: 'staff', icon: 'fa-users', label: 'Staff' },
-          { id: 'orders', icon: 'fa-clipboard-list', label: 'Orders' }
-        ];
-      } else if (isDriver) {
-        tabs = [
-          { id: 'home', icon: 'fa-home', label: 'Route' },
-          { id: 'deliveries', icon: 'fa-truck', label: 'Deliveries' }
-        ];
-      }
-
-      const actionMap = {
-        'home': () => { state.tab = 'home'; render(); },
-        'orders': () => { state.tab = 'orders'; render(); },
-        'cart': () => { state.tab = 'cart'; render(); },
-        'loyalty': () => { state.tab = 'loyalty'; render(); },
-        'scan': () => openScanner(),
-        'inventory': () => ownerInventory(),
-        'staff': () => ownerStaff(),
-        'deliveries': () => toast('📦 Deliveries list')
-      };
-
-      return `
-        <nav class="bottom-nav">
-          ${tabs.map(t => {
-            const isActive = state.tab === t.id || (t.id === 'home' && !state.tab);
-            const badgeHtml = t.badge ? `<span class="badge-dot">${t.badge}</span>` : '';
-            return `<button class="${isActive?'sel':''}" onclick="(${actionMap[t.id]||(()=>toast('Coming soon'))})()">
-              <i class="fas ${t.icon}"></i> ${t.label} ${badgeHtml}
-            </button>`;
-          }).join('')}
-          <button onclick="toast('💬 Contact support')"><i class="fas fa-headset"></i> Contact</button>
-        </nav>
-      `;
-    }
-
-    // ================================================================
-    // INIT
-    // ================================================================
-    // Add scanner overlay to body
-    const overlay = document.createElement('div');
-    overlay.className = 'scanner-overlay';
-    overlay.id = 'scannerOverlay';
-    overlay.innerHTML = `
-      <div class="scanner-box"><i class="fas fa-camera"></i></div>
-      <p style="color:#fff; margin-top:16px;">Scanning barcode / QR...</p>
-      <button class="scanner-close" onclick="closeScanner()">Cancel</button>
-    `;
-    document.body.appendChild(overlay);
-
-    // Start
-    render();
-
-    // Simulate role for demo: if URL contains ?role=owner, set owner id
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('role') === 'owner') {
-      // Override user id to simulate owner
-      if (tg) {
-        tg.initDataUnsafe.user.id = '123456';
+      if (correct >= 4) {
+        showCertificate();
       } else {
-        // fallback
-        localStorage.setItem('demo_owner', 'true');
+        showScreen('screen-fail');
+        document.querySelector('#screen-fail p').innerHTML = 
+          `You scored <strong>${correct}/5</strong>. Passing score is 4/5. Review the material and try again.`;
       }
-      render();
     }
 
-    console.log('🚀 soYam cosmo · Mini App ready');
+    // ---------- Show Certificate ----------
+    function showCertificate() {
+      showScreen('screen-cert');
+      const canvas = document.getElementById('certCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#1a2634';
+      ctx.fillRect(0, 0, 600, 400);
+
+      // Border
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(20, 20, 560, 360);
+
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 36px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🎓 CERTIFICATE', 300, 90);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '22px Arial';
+      ctx.fillText('This certifies that', 300, 150);
+
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 32px Arial';
+      ctx.fillText(userName, 300, 205);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '18px Arial';
+      ctx.fillText(`has successfully completed the course:`, 300, 255);
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 20px Arial';
+      ctx.fillText(`"${courseData.title}"`, 300, 300);
+
+      ctx.fillStyle = '#aaaaaa';
+      ctx.font = '14px Arial';
+      ctx.fillText(`Date: ${new Date().toLocaleDateString()}`, 300, 350);
+    }
+
+    // ---------- Download Certificate ----------
+    function downloadCert() {
+      const canvas = document.getElementById('certCanvas');
+      const link = document.createElement('a');
+      link.download = `${courseData.title.replace(/\s/g,'_')}_certificate.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // ---------- Reset App ----------
+    function resetApp() {
+      localStorage.removeItem('edu_course');
+      localStorage.removeItem('edu_topic');
+      courseData = null;
+      document.getElementById('topicInput').value = '';
+      showScreen('screen-home');
+    }
+
+    // ---------- Restore on load ----------
+    window.onload = function() {
+      const saved = localStorage.getItem('edu_course');
+      if (saved) {
+        try {
+          courseData = JSON.parse(saved);
+          renderCourse();
+          return;
+        } catch (_) {}
+      }
+      showScreen('screen-home');
+    };
+
+    // Enter key triggers generate
+    document.getElementById('topicInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') generateCourse();
+    });
   </script>
 </body>
 </html>
